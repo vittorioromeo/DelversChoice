@@ -11,7 +11,7 @@
 
 namespace ggj
 {
-	class GameSession;
+	struct GameSession;
 
 	namespace Impl
 	{
@@ -813,7 +813,7 @@ namespace ggj
 		}
 	};
 
-	class GameSession;
+	struct GameSession;
 
 	struct Choice
 	{
