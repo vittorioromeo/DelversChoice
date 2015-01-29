@@ -1,6 +1,8 @@
 #ifndef GGJ2015_BOILERPLATE
 #define GGJ2015_BOILERPLATE
 
+#include "../GGJ2015/Common.hpp"
+
 namespace Boilerplate
 {
 	class App
@@ -37,8 +39,6 @@ namespace Boilerplate
 	{
 		private:
 			ssvs::GameWindow gameWindow;
-
-			// TODO: ssvu::Maybe<T> / Uncertain<T>?
 			ssvu::AlignedStorageFor<T> app;
 
 		public:

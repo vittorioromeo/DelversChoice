@@ -36,6 +36,7 @@
 #include "../GGJ2015/DCSlotChoice.hpp"
 #include "../GGJ2015/DCGameApp.hpp"
 
+// TODO: ssvu::Maybe<T> / Uncertain<T>?
 // TODO: better resource caching system in SSVS
 // TODO: load resources from folder, not json?
 // TODO: aspect ratio resizing
