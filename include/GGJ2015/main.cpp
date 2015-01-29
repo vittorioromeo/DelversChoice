@@ -42,6 +42,7 @@ namespace ggj
 
 			// Textures
 			CACHE_ASSET(sf::Texture, slotChoice, ".png");
+			CACHE_ASSET(sf::Texture, slotChoiceBlocked, ".png");
 			CACHE_ASSET(sf::Texture, iconHPS, ".png");
 			CACHE_ASSET(sf::Texture, iconATK, ".png");
 			CACHE_ASSET(sf::Texture, iconDEF, ".png");
@@ -68,17 +69,17 @@ namespace ggj
 			CACHE_ASSET(sf::Texture, panellog, ".png");
 
 			// Sounds
-			CACHE_ASSET(sf::SoundBuffer, lvl1, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, lvl2, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, lvl3, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, lvl4, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, menu, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, powerup, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, drop, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, grab, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, equipArmor, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, equipWpn, ".wav");
-			CACHE_ASSET(sf::SoundBuffer, lose, ".wav");
+			CACHE_ASSET(sf::SoundBuffer, lvl1, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, lvl2, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, lvl3, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, lvl4, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, menu, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, powerup, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, drop, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, grab, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, equipArmor, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, equipWpn, ".ogg");
+			CACHE_ASSET(sf::SoundBuffer, lose, ".ogg");
 
 			std::vector<sf::SoundBuffer*> swordSnds, maceSnds, spearSnds;
 
@@ -88,9 +89,9 @@ namespace ggj
 
 				for(auto& e : elems)
 				{
-					swordSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("sword/" + e + ".wav"));
-					maceSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("mace/" + e + ".wav"));
-					spearSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("spear/" + e + ".wav"));
+					swordSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("sword/" + e + ".ogg"));
+					maceSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("mace/" + e + ".ogg"));
+					spearSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("spear/" + e + ".ogg"));
 				}
 
 				soundPlayer.setVolume(100.f);
@@ -1471,6 +1472,9 @@ namespace ggj
 							txtLog{mkTxtOBSmall()}, txtMode{mkTxtOBSmall()};
 
 			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked}, txtMenu{*getAssets().fontObStroked};
+			BP::Str* bpstrRoom;
+			BP::Str* bpstrMode;
+
 			std::vector<SlotChoice> slotChoices;
 			sf::Sprite dropsModalSprite;
 			CreatureStatsDraw csdPlayer;
@@ -1557,6 +1561,18 @@ namespace ggj
 				}
 			}
 
+			inline const auto& getModeStr()
+			{
+				static auto array(ssvu::makeArray
+				(
+					"Beginner mode",
+					"Official mode",
+					"Hardcore mode"
+				));
+
+				return array[static_cast<int>(gs.mode)];
+			}
+
 			inline void update(FT mFT)
 			{
 				txtCredits.update(mFT);
@@ -1620,6 +1636,9 @@ namespace ggj
 				}
 				else if(gs.state == GameSession::State::Dead)
 				{
+					bpstrRoom->setStr(ssvu::toStr(gs.roomNumber));
+					bpstrMode->setStr(getModeStr());
+
 					txtRestart.update(mFT);
 				}
 
@@ -1635,17 +1654,7 @@ namespace ggj
 				}
 			}
 
-			inline const auto& getModeStr()
-			{
-				static auto array(ssvu::makeArray
-				(
-					"Beginner mode",
-					"Official mode",
-					"Hardcore mode"
-				));
 
-				return array[static_cast<int>(gs.mode)];
-			}
 
 			inline void drawPlaying()
 			{
@@ -1698,12 +1707,19 @@ namespace ggj
 						if(i == 0)
 						{
 							sc.drawInCenter(gameWindow, *getAssets().back);
+							sc.txtNum.setString("1");
 							sc.txtStr.setString("Back");
 						}
 						else if(gs.currentDrops->has(i - 1))
 						{
 							gs.currentDrops->drops[i -1]->draw(gameWindow, sc.shape.getPosition(), sc.getCenter());
+							sc.txtNum.setString(ssvu::toStr(i + 1));
 							sc.txtStr.setString("Pickup");
+						}
+						else
+						{
+							sc.txtNum.setString("");
+							sc.txtStr.setString("");
 						}
 
 						sc.update();
@@ -1722,7 +1738,9 @@ namespace ggj
 						auto& sc(slotChoices[i]);
 						const auto& gc(gs.choices[i]);
 
+						sc.txtNum.setString(gc == nullptr ? "" : ssvu::toStr(i + 1));
 						sc.txtStr.setString(gc == nullptr ? "Blocked" : gc->getChoiceStr());
+						sc.sprite.setTexture(gc == nullptr ? *getAssets().slotChoiceBlocked : *getAssets().slotChoice);
 						sc.update();
 
 						render(sc.shape);
@@ -1808,13 +1826,13 @@ namespace ggj
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}
 			{
 				txtCredits	<< txtCredits.mk<BP::Trk>(-3)
-							<< mkTP(txtMenu, sfc::White) << "Global Game Jam 2015\n"
+							<< mkTP(txtCredits, sfc::White) << "Global Game Jam 2015\n"
 							<< sfc::White << "Developer: " << sfc::Red << "Vittorio Romeo\n"
 							<< sfc::White << "2D Artist: " << sfc::Red << "Vittorio Romeo\n"
-							<< sfc::White << "Audio: " << sfc::Red << "Nicola Bombaci\n"
-							<< sfc::White << "Designer: " << sfc::Red << "Sergio Zavettieri\n"
-							<< sfc::White << "Additional help: " << sfc::Red << "Davide Iuffrida\n"
-							<< sfc::Blue << "http://vittorioromeo.info\nhttp://nicolabombaci.com";
+							<< sfc::White << "Audio: " << sfc::Green << "Nicola Bombaci\n"
+							<< sfc::White << "Designer: " << sfc::Yellow << "Sergio Zavettieri\n"
+							<< sfc::White << "Additional help: " << sfc::Magenta << "Davide Iuffrida\n"
+							<< sfc::Cyan << "http://vittorioromeo.info\nhttp://nicolabombaci.com";
 
 				txtMenu	<< txtMenu.mk<BP::Trk>(-3)
 						<< mkTP(txtMenu, sfc::Red) << "1. " << sfc::White << "Beginner mode\n"
@@ -1825,8 +1843,10 @@ namespace ggj
 				txtRestart	<< txtRestart.mk<BP::Trk>(-3)
 							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "1 " << sfc::White << "for menu.\n"
 							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "2 " << sfc::White << "to restart.\n"
-							<< sfc::White << "You reached room " << sfc::Green << ssvu::toStr(gs.roomNumber) << sfc::White << ".\n"
-							<< sfc::Cyan << "(" << getModeStr() << ")";
+							<< sfc::White << "You reached room " << sfc::Green << txtRestart.mk<BP::Str>(bpstrRoom, "") << sfc::White << ".\n"
+							<< sfc::Cyan << "(" << txtRestart.mk<BP::Str>(bpstrMode, "") << ")";
+
+
 
 				for(int i{0}; i < 4; ++i) slotChoices.emplace_back(i);
 
