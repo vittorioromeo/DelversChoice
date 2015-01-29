@@ -11,6 +11,9 @@
 
 namespace ggj
 {
+	namespace BP = ssvs::BTRP;
+	using sfc = sf::Color;
+
 	struct GameSession;
 
 	namespace Impl
@@ -61,6 +64,8 @@ namespace ggj
 			CACHE_ASSET(sf::Texture, wpnSword, ".png");
 			CACHE_ASSET(sf::Texture, wpnSpear, ".png");
 			CACHE_ASSET(sf::Texture, armDrop, ".png");
+			CACHE_ASSET(sf::Texture, panelsmall, ".png");
+			CACHE_ASSET(sf::Texture, panellog, ".png");
 
 			// Sounds
 			CACHE_ASSET(sf::SoundBuffer, lvl1, ".wav");
@@ -528,32 +533,33 @@ namespace ggj
 	struct StatRichText
 	{
 		ssvs::BitmapTextRich txt{*getAssets().fontObStroked};
-		ssvs::BTRPart* pssExtra;
-		ssvs::BTRPString* psTotal;
-		ssvs::BTRPString* psBase;
-		ssvs::BTRPString* psBonus;
+		BP::Group* pssExtra;
+		BP::Str* psTotal;
+		BP::Str* psBase;
+		BP::Str* psBonus;
+		BP::ClFG* clfgBonus;
 
 		inline StatRichText()
 		{
-			txt.addTracking(-3);
+			txt	<< txt.mk<BP::Trk>(-3)
+				<< sf::Color::White
+				<< txt.mk<BP::Str>(psTotal, "")
+				<< txt.mk<BP::Group>(pssExtra);
 
-			txt << sf::Color::White;
-			psTotal = &txt.addStr("");
+			(*pssExtra) << sf::Color::White
+						<< " ("
+						<< pssExtra->mk<BP::Str>(psBase, "")
+						<< sf::Color::White
+						<< "+"
+						<< pssExtra->mk<BP::ClFG>(clfgBonus, sf::Color::Green)
+						<< pssExtra->mk<BP::Str>(psBonus, "")
+						<< sf::Color::White
+						<< ")";
 
-			pssExtra = &txt.addGroup();
-
-			(*pssExtra) << sf::Color::White << " (";
-
-			(*pssExtra) << sf::Color::Red;
-			psBase = &pssExtra->addStr("");
-
-			(*pssExtra) << sf::Color::White << "+";
-
-			(*pssExtra) << sf::Color::Green;
-			psBonus = &pssExtra->addStr("");
-
-			(*pssExtra) << sf::Color::White << ")";
+			clfgBonus->setAnimPulse(0.05f, 100);
 		}
+
+		inline void update(FT mFT) { txt.update(mFT); }
 
 		inline void set(StatType mX)
 		{
@@ -565,6 +571,12 @@ namespace ggj
 
 		inline void set(StatType mBase, StatType mBonus)
 		{
+			if(mBonus == 0)
+			{
+				set(mBase);
+				return;
+			}
+
 			pssExtra->setEnabled(true);
 
 			auto sBase(ssvu::toStr(mBase));
@@ -590,6 +602,8 @@ namespace ggj
 			eST.setTexture(*getAssets().eST);
 			eWK.setTexture(*getAssets().eWK);
 		}
+
+		inline void update(FT mFT) { srtATK.update(mFT); }
 
 		inline void commonDraw(Weapon& mW, ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f&)
 		{
@@ -633,6 +647,8 @@ namespace ggj
 			eTY.setTexture(*getAssets().eTY);
 		}
 
+		inline void update(FT mFT) { srtDEF.update(mFT); }
+
 		inline void commonDraw(Armor& mA, ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f&)
 		{
 			iconDEF.setPosition(pos + mPos);
@@ -670,6 +686,8 @@ namespace ggj
 		{
 			iconHPS.setTexture(*getAssets().iconHPS);
 		}
+
+		inline void update(FT mFT) { wsd.update(mFT); asd.update(mFT); }
 
 		inline void draw(Creature& mC, ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f& mCenter)
 		{
@@ -824,6 +842,7 @@ namespace ggj
 		inline virtual ~Choice() { }
 
 		inline virtual void execute() { }
+		inline virtual void update(FT) { }
 		inline virtual void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) { }
 
 		inline virtual std::string getChoiceStr() { return ""; }
@@ -862,6 +881,7 @@ namespace ggj
 		}
 
 		inline void execute() override;
+		inline void update(FT mFT) override { csd.update(mFT); }
 		inline void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
 
 		inline std::string getChoiceStr() override { return "Fight"; }
@@ -1448,9 +1468,9 @@ namespace ggj
 		private:
 			GameSession gs;
 			ssvs::BitmapText txtTimer{mkTxtOBBig()}, txtRoom{mkTxtOBBig()}, txtDeath{mkTxtOBBig()},
-							txtLog{mkTxtOBSmall()}, txtRestart{mkTxtOBSmall()}, txtMode{mkTxtOBSmall()};
+							txtLog{mkTxtOBSmall()}, txtMode{mkTxtOBSmall()};
 
-			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked};
+			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked}, txtMenu{*getAssets().fontObStroked};
 			std::vector<SlotChoice> slotChoices;
 			sf::Sprite dropsModalSprite;
 			CreatureStatsDraw csdPlayer;
@@ -1539,12 +1559,19 @@ namespace ggj
 
 			inline void update(FT mFT)
 			{
+				txtCredits.update(mFT);
+
+
+
 				gameCamera.update<float>(mFT);
 
 				if(gs.deathTextTime > 0) gs.deathTextTime -= mFT;
 
 				if(gs.state == GameSession::State::Playing)
 				{
+					csdPlayer.update(mFT);
+					for(auto& c : gs.choices) if(c != nullptr) c->update(mFT);
+
 					if(gs.timerEnabled) gs.timer -= mFT;
 
 					if(!gs.player.isDead())
@@ -1562,16 +1589,10 @@ namespace ggj
 						auto intt(ssvu::getFTToSeconds(static_cast<int>(gs.timer)));
 						auto gts(intt >= 10 ? ssvu::toStr(intt) : "0" + ssvu::toStr(intt));
 
-						auto third(gameWindow.getWidth() / 5.f);
+						// auto third(gameWindow.getWidth() / 5.f);
 
 						txtTimer.setString(gs.timerEnabled ? "00:" + gts : "XX:XX");
-
-						ssvs::setOrigin(txtTimer, ssvs::getLocalCenter);
-						txtTimer.setPosition(third * 1.f, 20);
-
-						txtRoom.setString("Room:" + ssvu::toStr(gs.roomNumber));
-						ssvs::setOrigin(txtRoom, ssvs::getLocalCenter);
-						txtRoom.setPosition(third * 4.f, 20);
+						txtRoom.setString(ssvu::toStr(gs.roomNumber));
 
 						// TODO: wtf
 						auto els(getEventLogStream().str());
@@ -1595,7 +1616,11 @@ namespace ggj
 				}
 				else if(gs.state == GameSession::State::Menu)
 				{
-
+					txtMenu.update(mFT);
+				}
+				else if(gs.state == GameSession::State::Dead)
+				{
+					txtRestart.update(mFT);
 				}
 
 				if(gs.shake > 0)
@@ -1624,6 +1649,36 @@ namespace ggj
 
 			inline void drawPlaying()
 			{
+				// Panel: timer
+				sf::Sprite p1{*getAssets().panelsmall};
+				ssvs::setOrigin(p1, ssvs::getLocalNW);
+				p1.setPosition(10, 5);
+				render(p1);
+
+				ssvs::setOrigin(txtTimer, ssvs::getLocalCenter);
+				txtTimer.setPosition(ssvs::getGlobalCenter(p1) + Vec2f(0, 3));
+
+
+
+				// Panel: room
+				sf::Sprite p2{*getAssets().panelsmall};
+				ssvs::setOrigin(p2, ssvs::getLocalNE);
+				p2.setPosition(320 - 10, 5);
+				render(p2);
+
+				ssvs::setOrigin(txtRoom, ssvs::getLocalCenter);
+				txtRoom.setPosition(ssvs::getGlobalCenter(p2) + Vec2f(0, 3));
+
+
+
+				// Panel: log
+				sf::Sprite p3{*getAssets().panellog};
+				ssvs::setOrigin(p3, ssvs::getLocalSW);
+				p3.setPosition(70, 240 - 5);
+				render(p3);
+
+
+
 				txtMode.setString(getModeStr());
 				ssvs::setOrigin(txtMode, ssvs::getLocalCenterS);
 				txtMode.setPosition(320 / 2.f, 40 - 2);
@@ -1703,6 +1758,7 @@ namespace ggj
 
 				ssvs::setOrigin(txtDeath, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtRestart, ssvs::getLocalCenter);
+				ssvs::setOrigin(txtMenu, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtCredits, ssvs::getLocalSW);
 
 				txtCredits.setPosition(5, 240 - 5);
@@ -1710,10 +1766,9 @@ namespace ggj
 				if(gs.state == GameSession::State::Dead)
 				{
 					txtDeath.setString("You have perished.");
-					txtRestart.setString("Press 1 for menu.\n"
-										 "Press 2 to restart.\n\n"
-										 "You reached room " + ssvu::toStr(gs.roomNumber) + ".\n"
-										 "(" + getModeStr() + ")");
+
+					//txtRestart.clear();
+
 
 					txtDeath.setPosition(320 / 2.f, 80);
 					txtRestart.setPosition(320 / 2.f, 120);
@@ -1722,7 +1777,7 @@ namespace ggj
 					render(txtRestart);
 
 					txtDeath.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
-					txtRestart.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
+					//txtRestart.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
 				}
 
 				if(gs.state == GameSession::State::Menu)
@@ -1731,37 +1786,47 @@ namespace ggj
 					txtDeath.setColor(sf::Color(255, 255, 255, 255));
 
 					txtDeath.setPosition(320 / 2.f, 30);
-					txtRestart.setPosition(320 / 2.f, 70);
+					txtMenu.setPosition(320 / 2.f, 70);
 
-					txtRestart.setString("1. Beginner mode\n"
-										 "2. Official mode\n"
-										 "3. Hardcore mode\n"
-										 "4. Exit game");
 
-					txtRestart.setColor(sf::Color(255, 255, 255, 255));
 
 					render(txtDeath);
-					render(txtRestart);
+					render(txtMenu);
 					render(txtCredits);
 				}
+			}
+
+			inline auto& mkTP(ssvs::BitmapTextRich& mTxt, const sf::Color& mC)
+			{
+				BP::ClFG* temp;
+				auto& res(mTxt.template mk<BP::ClFG>(temp, mC));
+				temp->setAnimPulse(0.05f, 100);
+				return res;
 			}
 
 		public:
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}
 			{
-				using sfc = sf::Color;
+				txtCredits	<< txtCredits.mk<BP::Trk>(-3)
+							<< mkTP(txtMenu, sfc::White) << "Global Game Jam 2015\n"
+							<< sfc::White << "Developer: " << sfc::Red << "Vittorio Romeo\n"
+							<< sfc::White << "2D Artist: " << sfc::Red << "Vittorio Romeo\n"
+							<< sfc::White << "Audio: " << sfc::Red << "Nicola Bombaci\n"
+							<< sfc::White << "Designer: " << sfc::Red << "Sergio Zavettieri\n"
+							<< sfc::White << "Additional help: " << sfc::Red << "Davide Iuffrida\n"
+							<< sfc::Blue << "http://vittorioromeo.info\nhttp://nicolabombaci.com";
 
-				txtCredits.addTracking(-3);
+				txtMenu	<< txtMenu.mk<BP::Trk>(-3)
+						<< mkTP(txtMenu, sfc::Red) << "1. " << sfc::White << "Beginner mode\n"
+						<< mkTP(txtMenu, sfc::Red) << "2. " << sfc::White << "Official mode\n"
+						<< mkTP(txtMenu, sfc::Red) << "3. " << sfc::White << "Hardcore mode\n"
+						<< mkTP(txtMenu, sfc::Red) << "4. " << sfc::White << "Exit game\n";
 
-				txtCredits
-					<< sfc::White  << "Global Game Jam 2015\n"
-					<< sfc::White << "Developer: " << sfc::Red << "Vittorio Romeo\n"
-					<< sfc::White << "2D Artist: " << sfc::Red << "Vittorio Romeo\n"
-					<< sfc::White << "Audio: " << sfc::Red << "Nicola Bombaci\n"
-					<< sfc::White << "Designer: " << sfc::Red << "Sergio Zavettieri\n"
-					<< sfc::White << "Additional help: " << sfc::Red << "Davide Iuffrida\n"
-					<< sfc::Blue << "http://vittorioromeo.info\nhttp://nicolabombaci.com";
-
+				txtRestart	<< txtRestart.mk<BP::Trk>(-3)
+							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "1 " << sfc::White << "for menu.\n"
+							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "2 " << sfc::White << "to restart.\n"
+							<< sfc::White << "You reached room " << sfc::Green << ssvu::toStr(gs.roomNumber) << sfc::White << ".\n"
+							<< sfc::Cyan << "(" << getModeStr() << ")";
 
 				for(int i{0}; i < 4; ++i) slotChoices.emplace_back(i);
 
@@ -1786,6 +1851,6 @@ int main()
 {
 	SSVUT_RUN();
 
-	Boilerplate::AppRunner<ggj::GameApp>{"Delver's choice - GGJ2015 - RC6", 320, 240};
+	Boilerplate::AppRunner<ggj::GameApp>{"Delver's choice - GGJ2015 - RC7", 320, 240};
 	return 0;
 }

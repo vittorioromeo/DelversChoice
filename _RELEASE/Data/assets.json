@@ -27,7 +27,10 @@
 		"wpnSpear.png",
 
 		"armDrop.png",
-		"enemy.png"
+		"enemy.png",
+
+		"panelsmall.png",
+		"panellog.png"
 	],
 	"soundBuffers":
 	[	
