@@ -37,6 +37,8 @@ namespace Boilerplate
 	{
 		private:
 			ssvs::GameWindow gameWindow;
+
+			// TODO: ssvu::Maybe<T> / Uncertain<T>?
 			ssvu::AlignedStorageFor<T> app;
 
 		public:

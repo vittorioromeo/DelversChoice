@@ -7,7 +7,9 @@
 // TODO: rich bitmap text
 // TODO: game state virtual funcs
 
-#define CACHE_ASSET(mType, mName, mExt) mType* mName{&assetLoader.assetManager.get<mType>(SSVPP_TOSTR(mName) mExt)}
+#define CACHE_ASSET_IMPL(mType, mName, mExt)		mType* mName{&assetLoader.assetManager.get<mType>(SSVPP_TOSTR(mName) mExt)};
+#define CACHE_ASSETS_FOR_IMPL(mIdx, mData, mArg)	CACHE_ASSET_IMPL(SSVPP_TPL_ELEM(mData, 0), mArg, SSVPP_TPL_ELEM(mData, 1))
+#define CACHE_ASSETS(mType, mExt, ...)				SSVPP_FOREACH(CACHE_ASSETS_FOR_IMPL, SSVPP_TPL_MAKE(mType, mExt), __VA_ARGS__)
 
 namespace ggj
 {
@@ -30,64 +32,38 @@ namespace ggj
 
 		struct Assets
 		{
-			AssetLoader assetLoader{};
+			AssetLoader assetLoader;
 
 			// Audio players
 			ssvs::SoundPlayer soundPlayer;
 			ssvs::MusicPlayer musicPlayer;
 
 			// BitmapFonts
-			CACHE_ASSET(ssvs::BitmapFont, fontObStroked, "");
-			CACHE_ASSET(ssvs::BitmapFont, fontObBig, "");
+			CACHE_ASSETS(ssvs::BitmapFont, "",
+						 fontObStroked, fontObBig)
 
 			// Textures
-			CACHE_ASSET(sf::Texture, slotChoice, ".png");
-			CACHE_ASSET(sf::Texture, slotChoiceBlocked, ".png");
-			CACHE_ASSET(sf::Texture, iconHPS, ".png");
-			CACHE_ASSET(sf::Texture, iconATK, ".png");
-			CACHE_ASSET(sf::Texture, iconDEF, ".png");
-			CACHE_ASSET(sf::Texture, drops, ".png");
-			CACHE_ASSET(sf::Texture, enemy, ".png");
-			CACHE_ASSET(sf::Texture, blocked, ".png");
-			CACHE_ASSET(sf::Texture, back, ".png");
-			CACHE_ASSET(sf::Texture, dropsModal, ".png");
-			CACHE_ASSET(sf::Texture, advance, ".png");
-			CACHE_ASSET(sf::Texture, itemCard, ".png");
-			CACHE_ASSET(sf::Texture, eFire, ".png");
-			CACHE_ASSET(sf::Texture, eWater, ".png");
-			CACHE_ASSET(sf::Texture, eEarth, ".png");
-			CACHE_ASSET(sf::Texture, eLightning, ".png");
-			CACHE_ASSET(sf::Texture, eST, ".png");
-			CACHE_ASSET(sf::Texture, eWK, ".png");
-			CACHE_ASSET(sf::Texture, eTY, ".png");
-			CACHE_ASSET(sf::Texture, equipCard, ".png");
-			CACHE_ASSET(sf::Texture, wpnMace, ".png");
-			CACHE_ASSET(sf::Texture, wpnSword, ".png");
-			CACHE_ASSET(sf::Texture, wpnSpear, ".png");
-			CACHE_ASSET(sf::Texture, armDrop, ".png");
-			CACHE_ASSET(sf::Texture, panelsmall, ".png");
-			CACHE_ASSET(sf::Texture, panellog, ".png");
+			CACHE_ASSETS(sf::Texture, ".png",
+						slotChoice, slotChoiceBlocked,
+						iconHPS, iconATK, iconDEF,
+						drops, enemy, blocked, back,
+						dropsModal, advance, itemCard,
+						eFire, eWater, eEarth, eLightning,
+						eST, eWK, eTY, equipCard,
+						wpnMace, wpnSword, wpnSpear,
+						armDrop, panelsmall, panellog)
 
 			// Sounds
-			CACHE_ASSET(sf::SoundBuffer, lvl1, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, lvl2, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, lvl3, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, lvl4, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, menu, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, powerup, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, drop, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, grab, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, equipArmor, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, equipWpn, ".ogg");
-			CACHE_ASSET(sf::SoundBuffer, lose, ".ogg");
+			CACHE_ASSETS(sf::SoundBuffer, ".ogg",
+						 lvl1, lvl2, lvl3, lvl4,
+						 menu, powerup, drop, grab,
+						 equipArmor, equipWpn, lose)
 
 			std::vector<sf::SoundBuffer*> swordSnds, maceSnds, spearSnds;
 
 			inline Assets()
 			{
-				std::vector<std::string> elems{"normal","fire","water","earth","lightning"};
-
-				for(auto& e : elems)
+				for(const auto& e : {"normal"s, "fire"s, "water"s, "earth"s, "lightning"s})
 				{
 					swordSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("sword/" + e + ".ogg"));
 					maceSnds.emplace_back(&assetLoader.assetManager.get<sf::SoundBuffer>("mace/" + e + ".ogg"));
@@ -108,6 +84,7 @@ namespace ggj
 	template<typename TArg, typename... TArgs> inline auto mkShuffledVector(TArg&& mArg, TArgs&&... mArgs)
 	{
 		std::vector<TArg> result;
+		result.reserve(1 + sizeof...(TArgs));
 		result.emplace_back(ssvu::fwd<TArg>(mArg));
 		ssvu::forArgs([&result](auto&& mX){ result.emplace_back(ssvu::fwd<decltype(mX)>(mX)); }, ssvu::fwd<TArgs>(mArgs)...);
 		ssvu::shuffle(result);
@@ -450,7 +427,7 @@ namespace ggj
 		inline InstantEffect(Type mType, Stat mStat, float mValue) : type{mType}, stat{mStat}, value{mValue} { }
 		inline void apply(GameSession& mGameSession, Creature& mX);
 
-		inline std::string getStrType()
+		inline const auto& getStrType()
 		{
 			static auto array(ssvu::makeArray
 			(
@@ -463,7 +440,7 @@ namespace ggj
 			return array[static_cast<int>(type)];
 		}
 
-		inline std::string getStrStat()
+		inline const auto& getStrStat()
 		{
 			static auto array(ssvu::makeArray
 			(
