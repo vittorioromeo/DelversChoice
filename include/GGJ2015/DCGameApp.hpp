@@ -14,7 +14,7 @@ namespace ggj
 			ssvs::BitmapText txtTimer{mkTxtOBBig()}, txtRoom{mkTxtOBBig()}, txtDeath{mkTxtOBBig()},
 							txtLog{mkTxtOBSmall()}, txtMode{mkTxtOBSmall()};
 
-			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked}, txtMenu{*getAssets().fontObStroked};
+			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked}, txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked};
 			BP::Str* bpstrRoom;
 			BP::Str* bpstrMode;
 
@@ -320,6 +320,7 @@ namespace ggj
 				ssvs::setOrigin(txtDeath, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtRestart, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtMenu, ssvs::getLocalCenter);
+				ssvs::setOrigin(txtScores, ssvs::getLocalSE);
 				ssvs::setOrigin(txtCredits, ssvs::getLocalSW);
 
 				txtCredits.setPosition(5, 240 - 5);
@@ -349,10 +350,11 @@ namespace ggj
 					txtDeath.setPosition(320 / 2.f, 30);
 					txtMenu.setPosition(320 / 2.f, 70);
 
-
+					txtScores.setPosition(320 - 15, 240 - 5);
 
 					render(txtDeath);
 					render(txtMenu);
+					render(txtScores);
 					render(txtCredits);
 				}
 			}
@@ -377,6 +379,7 @@ namespace ggj
 							<< sfc::White << "Additional help: " << sfc::Magenta << "Davide Iuffrida\n"
 							<< sfc::Cyan << "http://vittorioromeo.info\nhttp://nicolabombaci.com";
 
+				txtMenu.setAlign(ssvs::TextAlign::Center);
 				txtMenu	<< txtMenu.mk<BP::Trk>(-3)
 						<< mkTP(txtMenu, sfc::Red) << "1. " << sfc::White << "Beginner mode\n"
 						<< mkTP(txtMenu, sfc::Red) << "2. " << sfc::White << "Official mode\n"
@@ -389,6 +392,12 @@ namespace ggj
 							<< sfc::White << "You reached room " << sfc::Green << txtRestart.mk<BP::Str>(bpstrRoom, "") << sfc::White << ".\n"
 							<< sfc::Cyan << "(" << txtRestart.mk<BP::Str>(bpstrMode, "") << ")";
 
+				txtScores.setAlign(ssvs::TextAlign::Right);
+				txtScores	<< txtScores.mk<BP::Trk>(-3)
+							<< mkTP(txtScores, sfc::Red) << "High scores:\n"
+							<< sfc::White << "Beginner: " << mkTP(txtScores, sfc::Green) << "X\n"
+							<< sfc::White << "Official: " << mkTP(txtScores, sfc::Green) << "X\n"
+							<< sfc::White << "Hardcore: " << mkTP(txtScores, sfc::Green) << "X\n";
 
 
 				for(int i{0}; i < 4; ++i) slotChoices.emplace_back(i);

@@ -8,19 +8,33 @@ namespace ggj
 	struct DropIE : public Drop
 	{
 		std::vector<InstantEffect> ies;
-		std::vector<ssvs::BitmapText> bts;
+		ssvs::BitmapTextRich btr{*getAssets().fontObStroked};
 
 		inline DropIE(GameSession& mGameSession) : Drop{mGameSession} { }
+
+		inline void recalculateText()
+		{
+			// TODO: clear doesnt work
+			// btr.clear();
+
+			//btr = ssvs::BitmapTextRich{*getAssets().fontObStroked};
+			btr.setAlign(ssvs::TextAlign::Center);
+			btr << btr.mk<BP::Trk>(-3);
+
+			for(auto& x : ies)
+			{
+				btr << sfc::Red << x.getStrType()
+					<< sfc::White << ssvu::toStr(static_cast<int>(x.value)) << " "
+					<< sfc::Cyan << x.getStrStat() << "\n";
+			}
+
+
+		}
 
 		inline void addIE(InstantEffect mIE)
 		{
 			ies.emplace_back(mIE);
-
-			ssvs::BitmapText txt{mkTxtOBSmall()};
-			txt.setString(mIE.getStrType() + ssvu::toStr(static_cast<int>(mIE.value)) + " " + mIE.getStrStat());
-			ssvs::setOrigin(txt, ssvs::getLocalCenter);
-
-			bts.emplace_back(txt);
+			recalculateText();
 		}
 
 		inline void apply(Creature& mX) override
@@ -32,15 +46,12 @@ namespace ggj
 		inline void draw(ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f& mCenter) override
 		{
 			Drop::draw(mGW, mPos, mCenter);
+			//recalculateText();
+			// TODO stuff
+			ssvs::setOrigin(btr, ssvs::getLocalCenter);
+			btr.setPosition(card.getPosition());
+			mGW.draw(btr);
 
-			int i{0};
-			for(auto& t : bts)
-			{
-				t.setPosition(card.getPosition() + Vec2f{0, -15.f + (10 * i)});
-				mGW.draw(t);
-
-				++i;
-			}
 		}
 	};
 }
