@@ -42,6 +42,8 @@
 // TODO: aspect ratio resizing
 // TODO: rich bitmap text
 // TODO: game state virtual funcs
+// TODO: save profile
+// TODO: change txtScores position, optimize align
 
 int main()
 {
