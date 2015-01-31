@@ -8,7 +8,7 @@ namespace ggj
 	inline ChoiceItemDrop::ChoiceItemDrop(GameSession& mGS, SizeT mIdx) : Choice{mGS, mIdx}
 	{
 		drops.setTexture(*getAssets().drops);
-		itemDrops = mGS.generateDrops(mGS.roomNumber);
+		itemDrops = mGS.generateDrops();
 	}
 	inline void ChoiceItemDrop::execute()
 	{

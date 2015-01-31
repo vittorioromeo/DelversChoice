@@ -41,6 +41,107 @@ namespace ggj
 	{
 		return ssvu::toStr(mBase + mBonus) + " (" + ssvu::toStr(mBase) + "+" + ssvu::toStr(mBonus) + ")";
 	}
+
+	struct GameData
+	{
+		bool timerEnabled;
+		int timerMax;
+
+		float valueHPS;
+		float valueATK;
+		float valueDEF;
+
+		float difficulty;
+		float difficultyInc;
+		float difficultyEnemyMult;
+		float rndRangeMultiplier;
+		float meanDeviationRatio;
+
+		int section1;
+		int section2;
+		int section3;
+		int section4;
+
+		int section0ChoiceCount;
+		int section1ChoiceCount;
+		int section2ChoiceCount;
+		int section3ChoiceCount;
+		int section4ChoiceCount;
+
+		float choiceChanceCreature;
+		float choiceChanceSingleDrop;
+		float choiceChanceMultipleDrop;
+
+		inline GameData() { }
+		inline GameData(const std::string& mMode)
+		{
+			using namespace ssvj;
+
+			auto jv(Val::fromFile("Data/gameData.json"));
+			const auto& jObj(jv[mMode]);
+
+			#define GGJ_LFJ(mType, mName) mName = jObj[SSVPP_TOSTR(mName)].as<mType>()
+
+			GGJ_LFJ(bool, timerEnabled);
+			GGJ_LFJ(int, timerMax);
+
+			GGJ_LFJ(float, valueHPS);
+			GGJ_LFJ(float, valueATK);
+			GGJ_LFJ(float, valueDEF);
+
+			GGJ_LFJ(float, difficulty);
+			GGJ_LFJ(float, difficultyInc);
+			GGJ_LFJ(float, difficultyEnemyMult);
+			GGJ_LFJ(float, rndRangeMultiplier);
+			GGJ_LFJ(float, meanDeviationRatio);
+
+			GGJ_LFJ(int, section1);
+			GGJ_LFJ(int, section2);
+			GGJ_LFJ(int, section3);
+			GGJ_LFJ(int, section4);
+
+			GGJ_LFJ(int, section0ChoiceCount);
+			GGJ_LFJ(int, section1ChoiceCount);
+			GGJ_LFJ(int, section2ChoiceCount);
+			GGJ_LFJ(int, section3ChoiceCount);
+			GGJ_LFJ(int, section4ChoiceCount);
+
+			GGJ_LFJ(float, choiceChanceCreature);
+			GGJ_LFJ(float, choiceChanceSingleDrop);
+			GGJ_LFJ(float, choiceChanceMultipleDrop);
+		}
+
+		inline float getRndR(float mMean, float mDeviation) noexcept
+		{
+			return ssvu::getRndRNormal(mMean, mDeviation);
+		}
+
+		inline float getRndValue(bool mEnemy)
+		{
+			auto mean(difficulty);
+			if(mEnemy) mean *= difficultyEnemyMult;
+			return getRndR(mean, mean * meanDeviationRatio);
+		}
+
+		inline float getRndDropValue()
+		{
+			auto mean(difficulty);
+			return getRndR(mean, mean * (meanDeviationRatio * 0.6f));
+		}
+
+		inline float getHPS(float mValue) { return mValue / valueHPS; }
+		inline float getATK(float mValue) { return mValue / valueATK; }
+		inline float getDEF(float mValue) { return mValue / valueDEF; }
+
+		/*inline float getRndStat(bool mEnemy, float mValue)
+		{
+			auto mean(difficulty);
+			if(mEnemy) mean *= difficultyEnemyMult;
+
+			return getRndR(mean, mean * meanDeviationRatio);
+		}*/
+
+	};
 }
 
 #endif

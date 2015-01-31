@@ -133,7 +133,7 @@ namespace ggj
 					csdPlayer.update(mFT);
 					for(auto& c : gs.choices) if(c != nullptr) c->update(mFT);
 
-					if(gs.timerEnabled) gs.timer -= mFT;
+					if(gs.gd.timerEnabled) gs.timer -= mFT;
 
 					if(!gs.player.isDead())
 					{
@@ -152,7 +152,7 @@ namespace ggj
 
 						// auto third(gameWindow.getWidth() / 5.f);
 
-						txtTimer.setString(gs.timerEnabled ? "00:" + gts : "XX:XX");
+						txtTimer.setString(gs.gd.timerEnabled ? "00:" + gts : "XX:XX");
 						txtRoom.setString(ssvu::toStr(gs.roomNumber));
 
 						// TODO: wtf
@@ -178,6 +178,7 @@ namespace ggj
 				else if(gs.state == GameSession::State::Menu)
 				{
 					txtMenu.update(mFT);
+					txtScores.update(mFT);
 				}
 				else if(gs.state == GameSession::State::Dead)
 				{
@@ -228,7 +229,7 @@ namespace ggj
 				// Panel: log
 				sf::Sprite p3{*getAssets().panellog};
 				ssvs::setOrigin(p3, ssvs::getLocalSW);
-				p3.setPosition(70, 240 - 5);
+				p3.setPosition(70 + 12, 240 - 5);
 				render(p3);
 
 
@@ -395,12 +396,23 @@ namespace ggj
 							<< sfc::White << "You reached room " << sfc::Green << *bpstrRoom << sfc::White << ".\n"
 							<< sfc::Cyan << "(" << *bpstrMode << ")";
 
+				auto sScoreName(&txtScores.mk<BP::Str>("Player"));
+				auto sScoreBeginner(&txtScores.mk<BP::Str>("X"));
+				auto sScoreOfficial(&txtScores.mk<BP::Str>("X"));
+				auto sScoreHardcore(&txtScores.mk<BP::Str>("X"));
+				auto sScorePlayedGames(&txtScores.mk<BP::Str>("X"));
+				auto sScorePlayedTime(&txtScores.mk<BP::Str>("X"));
+
 				txtScores.setAlign(ssvs::TextAlign::Right);
 				txtScores	<< txtScores.mk<BP::Trk>(-3)
+							<< sfc::White << "Welcome, " << mkTP(txtScores, sfc::Cyan) << *sScoreName << "!\n\n"
 							<< mkTP(txtScores, sfc::Red) << "High scores:\n"
-							<< sfc::White << "Beginner: " << mkTP(txtScores, sfc::Green) << "X\n"
-							<< sfc::White << "Official: " << mkTP(txtScores, sfc::Green) << "X\n"
-							<< sfc::White << "Hardcore: " << mkTP(txtScores, sfc::Green) << "X\n";
+							<< sfc::White << "Beginner: " << mkTP(txtScores, sfc::Green) << *sScoreBeginner << "\n"
+							<< sfc::White << "Official: " << mkTP(txtScores, sfc::Green) << *sScoreOfficial << "\n"
+							<< sfc::White << "Hardcore: " << mkTP(txtScores, sfc::Green) << *sScoreHardcore << "\n\n"
+							<< mkTP(txtScores, sfc::Red) << "Statistics:\n"
+							<< sfc::White << "Games played: " << mkTP(txtScores, sfc::Green) << *sScorePlayedGames << "\n"
+							<< sfc::White << "Time played: " << mkTP(txtScores, sfc::Green) << *sScorePlayedTime << "\n";
 
 
 				for(int i{0}; i < 4; ++i) slotChoices.emplace_back(i);
@@ -411,7 +423,7 @@ namespace ggj
 				dropsModalSprite.setTexture(*getAssets().dropsModal);
 				dropsModalSprite.setPosition(10, 40);
 
-				txtLog.setPosition(Vec2f{75, 180});
+				txtLog.setPosition(Vec2f{75 + 12, 180});
 
 				initInput();
 

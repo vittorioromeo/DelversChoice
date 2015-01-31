@@ -1,0 +1,94 @@
+{
+	"beginner":
+	{
+		"timerEnabled": false,
+		"timerMax": 0,
+
+		"valueHPS": 1.0,
+		"valueATK": 7.0,
+		"valueDEF": 12.0,
+		
+		"difficulty": 200.0,
+		"difficultyInc": 1.0,
+		"difficultyEnemyMult": 0.85,
+		"rndRangeMultiplier": 1.10,
+		"meanDeviationRatio": 0.20,
+
+		"section1": 10,
+		"section2": 20,
+		"section3": 30,
+		"section4": 40,
+
+		"section0ChoiceCount": 2,
+		"section1ChoiceCount": 3,
+		"section2ChoiceCount": 4,
+		"section3ChoiceCount": 4,
+		"section4ChoiceCount": 4,
+
+		"choiceChanceCreature": 1.0,
+		"choiceChanceSingleDrop": 0.25,
+		"choiceChanceMultipleDrop": 0.10
+	},
+
+	"official":
+	{	
+		"timerEnabled": true,
+		"timerMax": 10,
+
+		"valueHPS": 1.0,
+		"valueATK": 7.0,
+		"valueDEF": 12.0,
+		
+		"difficulty": 200.0,
+		"difficultyInc": 1.0,
+		"difficultyEnemyMult": 0.85,
+		"rndRangeMultiplier": 1.10,
+		"meanDeviationRatio": 0.20,
+
+		"section1": 10,
+		"section2": 20,
+		"section3": 30,
+		"section4": 40,
+
+		"section0ChoiceCount": 2,
+		"section1ChoiceCount": 3,
+		"section2ChoiceCount": 4,
+		"section3ChoiceCount": 4,
+		"section4ChoiceCount": 4,
+
+		"choiceChanceCreature": 1.0,
+		"choiceChanceSingleDrop": 0.25,
+		"choiceChanceMultipleDrop": 0.10
+	},
+
+	"hardcore":
+	{	
+		"timerEnabled": true,
+		"timerMax": 6,
+
+		"valueHPS": 1.0,
+		"valueATK": 7.0,
+		"valueDEF": 12.0,
+		
+		"difficulty": 250.0,
+		"difficultyInc": 1.5,
+		"difficultyEnemyMult": 0.9,
+		"rndRangeMultiplier": 1.10,
+		"meanDeviationRatio": 0.20,
+
+		"section1": 10,
+		"section2": 20,
+		"section3": 30,
+		"section4": 40,
+
+		"section0ChoiceCount": 2,
+		"section1ChoiceCount": 3,
+		"section2ChoiceCount": 4,
+		"section3ChoiceCount": 4,
+		"section4ChoiceCount": 4,
+
+		"choiceChanceCreature": 1.0,
+		"choiceChanceSingleDrop": 0.25,
+		"choiceChanceMultipleDrop": 0.10
+	}
+}

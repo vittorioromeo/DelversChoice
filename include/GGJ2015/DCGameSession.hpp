@@ -2,6 +2,7 @@
 #define GGJ2015_GAMESESSION
 
 #include "../GGJ2015/DCCommon.hpp"
+#include "../GGJ2015/DCInstantEffect.hpp"
 
 namespace ggj
 {
@@ -16,8 +17,8 @@ namespace ggj
 		ssvu::UPtr<Choice> choices[Constants::maxChoices];
 		ssvu::UPtr<Choice> nextChoices[Constants::maxChoices];
 		float timer;
-		float difficulty{1.f};
-		float rndMultiplier{1.2f};
+
+		GameData gd;
 
 		sf::SoundBuffer* currentMusic{nullptr};
 		sf::Sound music;
@@ -25,31 +26,19 @@ namespace ggj
 		ItemDrops* currentDrops{nullptr};
 
 		float shake{0}, deathTextTime{0};
-		float difficultyInc{0.03f};
 
 		Mode mode{Mode::Official};
-		bool timerEnabled{true};
-
-		inline void sustain()
-		{
-			if(player.isDead()) return;
-
-			float x(1.f + (roomNumber * 1.5f / difficulty));
-			ssvu::clampMax(x, 20);
-
-			eventLo() << "You drain " << static_cast<int>(x) << " HPS defeating the enemy\n";
-			player.hps += x;
-		}
 
 		inline void restart()
 		{
 			music.stop();
 			getAssets().soundPlayer.stop();
 
-			if(mode == Mode::Official || mode == Mode::Beginner) { difficulty = 1.f; difficultyInc = 0.038f; }
-			if(mode == Mode::Hardcore) { difficulty = 1.f; difficultyInc = 0.087f; }
-
-			timerEnabled = (mode != Mode::Beginner);
+			// Load gamedata
+			std::string modeKey{"beginner"};
+			if(mode == Mode::Official) modeKey = "official";
+			else if(mode == Mode::Hardcore) modeKey = "hardcore";
+			gd = GameData{modeKey};
 
 			state = State::Playing;
 			roomNumber = 0;
@@ -57,20 +46,11 @@ namespace ggj
 			for(auto& c : choices) c.release();
 			for(auto& c : nextChoices) c.release();
 
-			Weapon startingWeapon;
-			startingWeapon.atk = 5;
-			startingWeapon.name = "Starting weapon";
-			player.bonusATK = 1;
-
-			Armor startingArmor;
-			startingArmor.def = 2;
-			startingArmor.name = "Starting armor";
-			player.bonusDEF = 1;
-
+			// TODO: name from profile
+			player = generateCreature(false);
 			player.name = "Player";
-			player.hps = 150;
-			player.weapon = startingWeapon;
-			player.armor = startingArmor;
+			player.bonusATK = 4;
+			player.bonusDEF = 2;
 
 			advance();
 		}
@@ -125,10 +105,9 @@ namespace ggj
 			else if(mode == Mode::Hardcore) timer = ssvu::getSecondsToFT(6);
 		}
 
-		inline void generateRndElements(int mL, ElementBitset& mX)
+		inline void generateRndElements(ElementBitset& mX)
 		{
-			auto d(static_cast<int>(mL * difficulty));
-
+			// TODO: calc
 			if(roomNumber < 10) return;
 
 			auto i(0u);
@@ -136,30 +115,34 @@ namespace ggj
 
 			if(ssvu::getRnd(0, 100) < 50) mX[indices[i++]] = true;
 
-			if(d < 20) return;
+			if(roomNumber < 20) return;
 			if(ssvu::getRnd(0, 100) < 45) mX[indices[i++]] = true;
 
-			if(d < 30) return;
+			if(roomNumber < 30) return;
 			if(ssvu::getRnd(0, 100) < 40) mX[indices[i++]] = true;
 
-			if(d < 40) return;
+			if(roomNumber < 40) return;
 			if(ssvu::getRnd(0, 100) < 35) mX[indices[i++]] = true;
 		}
 
-		inline int getRndStat(int mL, float, float)
+		inline InstantEffect generateInstantEffect(InstantEffect::Stat mStat, InstantEffect::Type mType, float mValue)
 		{
-			auto d(static_cast<int>(((mL * 0.8f) + 4) * difficulty));
+			float ieValue;
 
-			return ssvu::getClampedMin(ssvu::getRnd((int)(d * 0.65f), (int)(d * 1.55f)), 0);
-//			return ssvu::getClampedMin(1, d + ssvu::getRnd(static_cast<int>((mMultMin * d) * rndMultiplier), static_cast<int>((mMultMax * d) * rndMultiplier)));
-		}
+			switch(mStat)
+			{
+				case InstantEffect::Stat::SHPS: ieValue = mValue / gd.valueHPS; break;
+				case InstantEffect::Stat::SATK: ieValue = mValue / gd.valueATK; break;
+				case InstantEffect::Stat::SDEF: ieValue = mValue / gd.valueDEF; break;
+			}
 
-		inline InstantEffect generateInstantEffect(InstantEffect::Stat mStat, InstantEffect::Type mType, int mL)
-		{
-			float val(ssvu::getClampedMin((mL / 8) + ssvu::getRnd(0, 3 + (mL / 12)), 1));
-			if(mStat == InstantEffect::Stat::SHPS) val = mL * (10 + ssvu::getRnd(-2, 3));
+			ssvu::clampMin(ieValue, 1);
 
-			return {mType, mStat, val};
+			InstantEffect result{mType, mStat, ieValue};
+
+			ssvu::lo() << result.getStrType() << result.getStrStat() << ", value: " << mValue << "\n";
+
+			return result;
 		}
 
 		inline auto getShuffledStats()
@@ -172,24 +155,35 @@ namespace ggj
 			);
 		}
 
-		inline auto addIEs(int mL, DropIE& dIE)
+		inline auto addIEs(DropIE& dIE)
 		{
+			float valueTotal(gd.getRndDropValue());
+			float splitPositive(ssvu::getRndRNormal(0.75f, 0.045f));
+			float splitNegative(1.f - splitPositive);
+			if(ssvu::getRnd(0, 50) > 25) std::swap(splitPositive, splitNegative);
+
+			// ssvu::lo() << "valueTotal: " << valueTotal << "\n";
+					   // << "\nsplitPositive: " << valueTotal * splitPositive
+					   // << "\nsplitNegative: " << valueTotal * splitNegative << "\n";
+
 			auto ss(getShuffledStats());
 
-			dIE.addIE(generateInstantEffect(ss[0], InstantEffect::Type::Add, mL));
-			dIE.addIE(generateInstantEffect(ss[1], InstantEffect::Type::Sub, mL));
+			dIE.addIE(generateInstantEffect(ss[0], InstantEffect::Type::Add, valueTotal * splitPositive));
+			dIE.addIE(generateInstantEffect(ss[1], InstantEffect::Type::Sub, valueTotal * splitNegative));
+
+			ssvu::lo() << "\n\n";
 		}
 
 
-		inline auto generateDropIE(int mL)
+		inline auto generateDropIE()
 		{
 			auto dIE(ssvu::makeUPtr<DropIE>(*this));
 
-			addIEs(mL, *dIE);
+			addIEs(*dIE);
 
-			if(ssvu::getRnd(0, 100) < ssvu::getClampedMax(mL, 35))
+			if(ssvu::getRnd(0, 100) < 35)
 			{
-				addIEs(mL, *dIE);
+				addIEs(*dIE);
 			}
 
 			// if(ssvu::getRnd(0, 100) < 25) dIE->addIE(generateInstantEffect(mL));
@@ -197,147 +191,183 @@ namespace ggj
 			return dIE;
 		}
 
-		inline auto generateDropWeapon(int mL)
+		inline auto generateDropWeapon()
 		{
 			auto dr(ssvu::makeUPtr<WeaponDrop>(*this));
-			dr->weapon = generateWeapon(mL);
+			dr->weapon = generateWeapon(gd.getRndDropValue());
 
 			return dr;
 		}
 
-		inline auto generateDropArmor(int mL)
+		inline auto generateDropArmor()
 		{
 			auto dr(ssvu::makeUPtr<ArmorDrop>(*this));
-			dr->armor = generateArmor(mL);
+			dr->armor = generateArmor(gd.getRndDropValue());
 
 			return dr;
 		}
 
-		inline ssvu::UPtr<Drop> generateRndDrop(int mL)
+		inline ssvu::UPtr<Drop> generateRndDrop()
 		{
 			if(ssvu::getRnd(0, 50) > 21)
 			{
-				return std::move(generateDropIE(mL));
+				return std::move(generateDropIE());
 			}
 			else
 			{
 				if(ssvu::getRnd(0, 50) > 19)
-					return std::move(generateDropWeapon(mL));
+					return std::move(generateDropWeapon());
 				else
-					return std::move(generateDropArmor(mL));
+					return std::move(generateDropArmor());
 			}
 		}
 
-		inline ItemDrops generateDrops(int mL)
+		inline ItemDrops generateDrops()
 		{
-//			auto d(static_cast<int>(mL * difficultyMultiplier));
-
 			ItemDrops result;
 
 			auto i(0u);
-			result.drops[i] = std::move(generateRndDrop(mL));
+			result.drops[i] = std::move(generateRndDrop());
 
 			for(; i < Constants::maxDrops; ++i)
 			{
 				if(ssvu::getRnd(0, 50) > 20) continue;
 
-				result.drops[i] = std::move(generateRndDrop(mL));
+				result.drops[i] = std::move(generateRndDrop());
 			}
 
 			return result;
 		}
 
-		inline Weapon generateWeapon(int mL)
+		inline Weapon generateWeapon(float mValue)
 		{
-			auto d(static_cast<int>(mL * difficulty));
-
 			Weapon result;
 
-			result.name = "Generated name TODO (lvl: " + ssvu::toStr(d) + ")";
-			result.atk = getRndStat(mL, 0.5f, 1.8f) + 1;
-			generateRndElements(mL, result.strongAgainst);
-			generateRndElements(mL, result.weakAgainst);
+			result.name = "TODO";
+			result.atk = gd.getATK(mValue);
+			generateRndElements(result.strongAgainst);
+			generateRndElements(result.weakAgainst);
 			result.type = static_cast<Weapon::Type>(ssvu::getRnd(0, 3));
 
 			return result;
 		}
 
-		inline Armor generateArmor(int mL)
+		inline Armor generateArmor(float mValue)
 		{
-			auto d(static_cast<int>(mL * difficulty));
-
 			Armor result;
 
-			result.name = "Generated name TODO (lvl: " + ssvu::toStr(d) + ")";
-			result.def = getRndStat(mL, 0.5f, 1.8f) * 0.7f;
-			generateRndElements(mL, result.elementTypes);
+			result.name = "TODO";
+			result.def = gd.getDEF(mValue) * 0.8f;
+			generateRndElements(result.elementTypes);
 
 			return result;
 		}
 
-		inline Creature generateCreature(int mL)
+		inline Creature generateCreature(bool mEnemy)
 		{
-			auto d(static_cast<int>(mL * difficulty));
+			auto valueTotal(gd.getRndValue(mEnemy));
+
+
+
+			// TODO: cleanup, ssvu, etc
+			std::vector<float> bucket;
+			for(auto i(0u); i < 2; ++i) bucket.emplace_back(ssvu::getRndR(0, 3.f));
+			bucket.emplace_back(0.f);
+			bucket.emplace_back(3.f);
+			ssvu::sort(bucket);
+			ssvu::lo() << bucket << "\n";
+
+			auto split1(bucket[1] - bucket[0]);
+			auto split2(bucket[2] - bucket[1]);
+			auto split3(bucket[3] - bucket[2]);
+
+			auto valueSplit1(valueTotal * split1 / 3.f);
+			auto valueSplit2(valueTotal * split2 / 3.f);
+			auto valueSplit3(valueTotal * split3 / 3.f);
+
+			ssvu::lo()	<< "valueTotal: " << valueTotal << "\n"
+						<< "valueSplit1: " << valueSplit1 << "\n"
+						<< "valueSplit2: " << valueSplit2 << "\n"
+						<< "valueSplit3: " << valueSplit3 << "\n\n";
 
 			Creature result;
 
-			result.name = getGen().generateCreatureName();
-			result.armor = generateArmor(ssvu::getClampedMin(mL * 0.69f + difficulty - 1, 1));
-			result.weapon = generateWeapon(mL - 1);
-			result.hps = d * 5 + ssvu::getRnd(0, d * 3);
+			// result.name = getGen().generateCreatureName();
+			result.name = "TODO";
+			result.armor = generateArmor(valueSplit1);
+			result.weapon = generateWeapon(valueSplit2);
+			result.hps = gd.getHPS(valueSplit3);
 
 			return result;
 		}
 
-		inline ssvu::UPtr<Choice> generateChoiceCreature(int mIdx, int mL)
+		inline ssvu::UPtr<Choice> generateChoiceCreature(int mIdx)
 		{
 			auto choice(ssvu::makeUPtr<ChoiceCreature>(*this, mIdx));
-			choice->creature = generateCreature((mL + difficulty + (roomNumber / 10)) * difficulty);
+			choice->creature = generateCreature(true);
 			return std::move(choice);
 		}
 
-		inline ssvu::UPtr<Choice> generateChoiceSingleDrop(int mIdx, int mL)
+		inline ssvu::UPtr<Choice> generateChoiceSingleDrop(int mIdx)
 		{
 			auto choice(ssvu::makeUPtr<ChoiceSingleDrop>(*this, mIdx));
-			choice->drop = generateRndDrop(mL);
+			choice->drop = generateRndDrop();
 			return std::move(choice);
 		}
 
-		inline ssvu::UPtr<Choice> generateChoiceMultipleDrop(int mIdx, int mL)
+		inline ssvu::UPtr<Choice> generateChoiceMultipleDrop(int mIdx)
 		{
 			auto choice(ssvu::makeUPtr<ChoiceItemDrop>(*this, mIdx));
-			choice->itemDrops = generateDrops(mL);
+			choice->itemDrops = generateDrops();
 			return std::move(choice);
+		}
+
+		// TODO: test, cleanup, to ssvu, remove in gen?
+		template<typename T> inline auto& weightedChance(T& mC)
+		{
+			float weightTotal{0.f};
+			for(auto i(0u); i < mC.size(); ++i) weightTotal += mC[i].first;
+
+			auto r(ssvu::getRndR(0, weightTotal));
+			for(auto i(0u); i < mC.size(); ++i)
+			{
+				if(r < mC[i].first) return mC[i].second;
+				r -= mC[i].second;
+			}
+
+			SSVU_UNREACHABLE();
 		}
 
 		inline void generateChoices()
 		{
-			auto choiceNumber(2);
+			int choiceCount;
 
-			if(roomNumber > 10) choiceNumber = 3;
-			else if(roomNumber > 20) choiceNumber = 4;
+			if(roomNumber < gd.section1)		choiceCount = gd.section0ChoiceCount;
+			else if(roomNumber < gd.section2)	choiceCount = gd.section1ChoiceCount;
+			else if(roomNumber < gd.section3)	choiceCount = gd.section2ChoiceCount;
+			else if(roomNumber < gd.section4)	choiceCount = gd.section3ChoiceCount;
+			else								choiceCount = gd.section4ChoiceCount;
 
 			auto indices(mkShuffledVector<int>(0, 1, 2, 3));
 			for(auto& c : choices) c.release();
 
-			for(int i{0}; i < choiceNumber; ++i)
+			std::vector<std::pair<float, int>> v
+			{
+				{gd.choiceChanceCreature, 0},
+				{gd.choiceChanceSingleDrop, 1},
+				{gd.choiceChanceMultipleDrop, 2}
+			};
+
+			for(int i{0}; i < choiceCount; ++i)
 			{
 				auto idx(indices[i]);
+				auto type(weightedChance(v));
 
-				if(ssvu::getRnd(0, 100) > 15)
+				switch(type)
 				{
-					choices[idx] = generateChoiceCreature(idx, roomNumber);
-				}
-				else
-				{
-					if(ssvu::getRnd(0, 100) > 20)
-					{
-						choices[idx] = generateChoiceSingleDrop(idx, roomNumber);
-					}
-					else
-					{
-						choices[idx] = generateChoiceMultipleDrop(idx, roomNumber);
-					}
+					case 0: choices[idx] = generateChoiceCreature(idx);		break;
+					case 1: choices[idx] = generateChoiceSingleDrop(idx);	break;
+					case 2: choices[idx] = generateChoiceMultipleDrop(idx);	break;
 				}
 			}
 		}
@@ -358,18 +388,17 @@ namespace ggj
 		{
 			++roomNumber;
 
-			if(roomNumber < 10)			currentMusic = getAssets().lvl1;
-			else if(roomNumber < 20)	currentMusic = getAssets().lvl2;
-			else if(roomNumber < 30)	currentMusic = getAssets().lvl3;
-			else if(roomNumber < 40)	currentMusic = getAssets().lvl4;
+			if(roomNumber < gd.section1)		currentMusic = getAssets().lvl1;
+			else if(roomNumber < gd.section2)	currentMusic = getAssets().lvl2;
+			else if(roomNumber < gd.section3)	currentMusic = getAssets().lvl3;
+			else if(roomNumber < gd.section4)	currentMusic = getAssets().lvl4;
 
 			refreshMusic();
 
-			if(roomNumber % 5 == 0)
-			{
-				eventLo() << "Increasing difficulty...\n";
-				difficulty += difficultyInc;
-			}
+			// eventLo() << "Increasing difficulty...\n";
+
+			// TODO: gd.advance();
+			gd.difficulty += gd.difficultyInc;
 
 			generateChoices();
 			resetTimer();

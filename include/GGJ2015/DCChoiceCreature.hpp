@@ -21,7 +21,11 @@ namespace ggj
 		}
 
 		inline void execute() override;
-		inline void update(FT mFT) override { csd.update(mFT); }
+		inline void update(FT mFT) override
+		{
+			csd.update(mFT);
+			hoverRads = ssvu::wrapRad(hoverRads + 0.05f);
+		}
 		inline void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
 
 		inline std::string getChoiceStr() override { return "Fight"; }
