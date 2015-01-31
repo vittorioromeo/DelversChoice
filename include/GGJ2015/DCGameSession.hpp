@@ -285,6 +285,14 @@ namespace ggj
 			auto valueSplit2(valueTotal * split2 / 3.f);
 			auto valueSplit3(valueTotal * split3 / 3.f);
 
+			auto avg((valueSplit1 + valueSplit2 + valueSplit3) / 3.f);
+
+			// Bring numbers closer together
+			// The smaller the coefficient, the closer the numbers will be
+			valueSplit1 = avg + 0.4f * (valueSplit1 - avg);
+			valueSplit2 = avg + 0.4f * (valueSplit2 - avg);
+			valueSplit3 = avg + 0.4f * (valueSplit3 - avg);
+
 			ssvu::lo()	<< "valueTotal: " << valueTotal << "\n"
 						<< "valueSplit1: " << valueSplit1 << "\n"
 						<< "valueSplit2: " << valueSplit2 << "\n"

@@ -126,7 +126,7 @@ namespace ggj
 		inline float getRndDropValue()
 		{
 			auto mean(difficulty);
-			return getRndR(mean, mean * (meanDeviationRatio * 0.6f));
+			return getRndR(mean, mean * (meanDeviationRatio * 0.6f)) * 0.4f;
 		}
 
 		inline float getHPS(float mValue) { return mValue / valueHPS; }

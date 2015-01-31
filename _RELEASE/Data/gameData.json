@@ -8,8 +8,8 @@
 		"valueATK": 7.0,
 		"valueDEF": 12.0,
 		
-		"difficulty": 200.0,
-		"difficultyInc": 1.0,
+		"difficulty": 60.0,
+		"difficultyInc": 10.0,
 		"difficultyEnemyMult": 0.85,
 		"rndRangeMultiplier": 1.10,
 		"meanDeviationRatio": 0.20,
@@ -39,8 +39,8 @@
 		"valueATK": 7.0,
 		"valueDEF": 12.0,
 		
-		"difficulty": 200.0,
-		"difficultyInc": 1.0,
+		"difficulty": 60.0,
+		"difficultyInc": 10.0,
 		"difficultyEnemyMult": 0.85,
 		"rndRangeMultiplier": 1.10,
 		"meanDeviationRatio": 0.20,
@@ -70,8 +70,8 @@
 		"valueATK": 7.0,
 		"valueDEF": 12.0,
 		
-		"difficulty": 250.0,
-		"difficultyInc": 1.5,
+		"difficulty": 80.0,
+		"difficultyInc": 15.0,
 		"difficultyEnemyMult": 0.9,
 		"rndRangeMultiplier": 1.10,
 		"meanDeviationRatio": 0.20,

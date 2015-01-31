@@ -24,7 +24,7 @@ namespace ggj
 		if(burn == 0) return;
 
 		// TODO: calc
-		auto x(burn * (4 * mGameSession.roomNumber * mGameSession.gd.difficulty));
+		auto x(burn * (mGameSession.gd.difficulty) / 10.f);
 
 		hps -= x;
 		eventLo() << name << " suffers " << x << " stat burn dmg!\n";
