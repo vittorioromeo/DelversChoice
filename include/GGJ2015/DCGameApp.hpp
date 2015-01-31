@@ -128,6 +128,8 @@ namespace ggj
 
 				if(gs.state == GameSession::State::Playing)
 				{
+					if(gs.currentDrops != nullptr) gs.currentDrops->update(mFT);
+
 					csdPlayer.update(mFT);
 					for(auto& c : gs.choices) if(c != nullptr) c->update(mFT);
 
@@ -350,7 +352,7 @@ namespace ggj
 					txtDeath.setPosition(320 / 2.f, 30);
 					txtMenu.setPosition(320 / 2.f, 70);
 
-					txtScores.setPosition(320 - 15, 240 - 5);
+					txtScores.setPosition(320 - 5, 240 - 5);
 
 					render(txtDeath);
 					render(txtMenu);
@@ -361,10 +363,9 @@ namespace ggj
 
 			inline auto& mkTP(ssvs::BitmapTextRich& mTxt, const sf::Color& mC)
 			{
-				BP::ClFG* temp;
-				auto& res(mTxt.template mk<BP::ClFG>(temp, mC));
-				temp->setAnimPulse(0.05f, 100);
-				return res;
+				auto& temp(mTxt.template mk<BP::ClFG>(mC));
+				temp.setAnimPulse(0.05f, 100);
+				return temp;
 			}
 
 		public:
@@ -386,11 +387,13 @@ namespace ggj
 						<< mkTP(txtMenu, sfc::Red) << "3. " << sfc::White << "Hardcore mode\n"
 						<< mkTP(txtMenu, sfc::Red) << "4. " << sfc::White << "Exit game\n";
 
+				bpstrRoom = &txtRestart.mk<BP::Str>();
+				bpstrMode = &txtRestart.mk<BP::Str>();
 				txtRestart	<< txtRestart.mk<BP::Trk>(-3)
 							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "1 " << sfc::White << "for menu.\n"
 							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "2 " << sfc::White << "to restart.\n"
-							<< sfc::White << "You reached room " << sfc::Green << txtRestart.mk<BP::Str>(bpstrRoom, "") << sfc::White << ".\n"
-							<< sfc::Cyan << "(" << txtRestart.mk<BP::Str>(bpstrMode, "") << ")";
+							<< sfc::White << "You reached room " << sfc::Green << *bpstrRoom << sfc::White << ".\n"
+							<< sfc::Cyan << "(" << *bpstrMode << ")";
 
 				txtScores.setAlign(ssvs::TextAlign::Right);
 				txtScores	<< txtScores.mk<BP::Trk>(-3)

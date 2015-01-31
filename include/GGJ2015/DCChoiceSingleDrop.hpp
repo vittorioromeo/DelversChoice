@@ -11,7 +11,8 @@ namespace ggj
 
 		ChoiceSingleDrop(GameSession& mGS, SizeT mIdx);
 
-		inline void execute() override;
+		void execute() override;
+		void update(FT) override;
 		inline void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
 
 		inline std::string getChoiceStr() override { return "Pickup"; }

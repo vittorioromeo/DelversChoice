@@ -2,6 +2,8 @@
 #define GGJ2015_DCDROPIE
 
 #include "../GGJ2015/DCCommon.hpp"
+#include "../GGJ2015/DCDrop.hpp"
+#include "../GGJ2015/DCInstantEffect.hpp"
 
 namespace ggj
 {
@@ -12,23 +14,25 @@ namespace ggj
 
 		inline DropIE(GameSession& mGameSession) : Drop{mGameSession} { }
 
+		inline void ieToRichText(InstantEffect& mX)
+		{
+			auto& cl(btr.mk<BP::ClFG>(sfc::Green));
+			cl.setAnimPulse(0.05f, 110);
+
+			if(mX.type == InstantEffect::Type::Sub) cl.setColor(sfc::Red);
+
+			btr << cl << mX.getStrType()
+				<< ssvu::toStr(static_cast<int>(mX.value)) << " "
+				<< sfc::White << mX.getStrStat() << "\n";
+		}
+
 		inline void recalculateText()
 		{
-			// TODO: clear doesnt work
-			// btr.clear();
-
-			//btr = ssvs::BitmapTextRich{*getAssets().fontObStroked};
+			btr.clear();
 			btr.setAlign(ssvs::TextAlign::Center);
 			btr << btr.mk<BP::Trk>(-3);
 
-			for(auto& x : ies)
-			{
-				btr << sfc::Red << x.getStrType()
-					<< sfc::White << ssvu::toStr(static_cast<int>(x.value)) << " "
-					<< sfc::Cyan << x.getStrStat() << "\n";
-			}
-
-
+			for(auto& x : ies) ieToRichText(x);
 		}
 
 		inline void addIE(InstantEffect mIE)
@@ -43,11 +47,14 @@ namespace ggj
 			for(auto& x : ies) x.apply(gameSession, mX);
 		}
 
+		inline void update(FT mFT) override
+		{
+			btr.update(mFT);
+		}
+
 		inline void draw(ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f& mCenter) override
 		{
 			Drop::draw(mGW, mPos, mCenter);
-			//recalculateText();
-			// TODO stuff
 			ssvs::setOrigin(btr, ssvs::getLocalCenter);
 			btr.setPosition(card.getPosition());
 			mGW.draw(btr);

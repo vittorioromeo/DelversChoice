@@ -25,6 +25,11 @@ namespace ggj
 			drops[mIdx]->apply(mX);
 			drops[mIdx].release();
 		}
+
+		inline void update(FT mFT)
+		{
+			for(auto& p : drops) if(p != nullptr) p->update(mFT);
+		}
 	};
 }
 

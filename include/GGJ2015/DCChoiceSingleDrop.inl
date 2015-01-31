@@ -16,10 +16,14 @@ namespace ggj
 		drop->apply(gameSession.player);
 		gameSession.resetChoiceAt(idx, ssvu::makeUPtr<ChoiceAdvance>(gameSession, idx));
 	}
+	inline void ChoiceSingleDrop::update(FT mFT)
+	{
+		if(drop == nullptr) return;
+		drop->update(mFT);
+	}
 	inline void ChoiceSingleDrop::draw(ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f& mCenter)
 	{
 		if(drop == nullptr) return;
-
 		drop->draw(mGW, mPos, mCenter);
 	}
 }

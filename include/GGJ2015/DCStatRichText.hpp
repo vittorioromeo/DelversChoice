@@ -16,20 +16,16 @@ namespace ggj
 
 		inline StatRichText()
 		{
-			txt	<< txt.mk<BP::Trk>(-3)
-				<< sf::Color::White
-				<< txt.mk<BP::Str>(psTotal, "")
-				<< txt.mk<BP::Group>(pssExtra);
+			psTotal = &txt.mk<BP::Str>();
+			pssExtra = &txt.mk<BP::Group>();
 
-			(*pssExtra) << sf::Color::White
-						<< " ("
-						<< pssExtra->mk<BP::Str>(psBase, "")
-						<< sf::Color::White
-						<< "+"
-						<< pssExtra->mk<BP::ClFG>(clfgBonus, sf::Color::Green)
-						<< pssExtra->mk<BP::Str>(psBonus, "")
-						<< sf::Color::White
-						<< ")";
+			txt	<< txt.mk<BP::Trk>(-3) << sfc::White << *psTotal << *pssExtra;
+
+			psBase = &pssExtra->mk<BP::Str>();
+			clfgBonus = &pssExtra->mk<BP::ClFG>(sfc::Green);
+			psBonus = &pssExtra->mk<BP::Str>();
+
+			(*pssExtra) << sfc::White << " (" << *psBase << sfc::White << "+" << *clfgBonus << *psBonus << sfc::White << ")";
 
 			clfgBonus->setAnimPulse(0.05f, 100);
 		}

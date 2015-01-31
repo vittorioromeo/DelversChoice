@@ -19,6 +19,7 @@ namespace ggj
 		inline virtual ~Drop() { }
 		inline virtual void apply(Creature&) { }
 
+		inline virtual void update(FT) { }
 		inline virtual void draw(ssvs::GameWindow& mGW, const Vec2f&, const Vec2f& mCenter)
 		{
 			card.setPosition(mCenter + Vec2f{0, -20.f});
