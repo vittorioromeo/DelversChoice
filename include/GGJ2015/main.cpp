@@ -46,6 +46,7 @@
 int main()
 {
 	SSVUT_RUN();
+
 /*
 	int n = 0;
 
@@ -72,7 +73,7 @@ int main()
 
 return 0;
 */
-	Boilerplate::AppRunner<ggj::GameApp>{"Delver's choice - GGJ2015 - RC7", 320, 240};
+	Boilerplate::AppRunner<ggj::GameApp>{"Delver's Choice - v1.0", 320, 240};
 	return 0;
 }
 
