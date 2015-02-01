@@ -9,8 +9,8 @@
 		"valueDEF": 12.0,
 		
 		"difficulty": 60.0,
-		"difficultyInc": 10.0,
-		"difficultyEnemyMult": 0.85,
+		"difficultyInc": 12.0,
+		"difficultyEnemyMult": 1.0,
 		"rndRangeMultiplier": 1.10,
 		"meanDeviationRatio": 0.20,
 
@@ -27,7 +27,18 @@
 
 		"choiceChanceCreature": 1.0,
 		"choiceChanceSingleDrop": 0.25,
-		"choiceChanceMultipleDrop": 0.10
+		"choiceChanceMultipleDrop": 0.10,
+
+		"dropDeviationMult": 0.5,
+		"dropValueMult": 0.29,
+
+		"multipleDropChance": 0.3,
+
+		"dropChanceIE": 0.5,
+		"dropChanceWeapon": 0.25,
+		"dropChanceArmor": 0.25,
+
+		"multipleIEChance": 0.3
 	},
 
 	"official":
@@ -40,8 +51,8 @@
 		"valueDEF": 12.0,
 		
 		"difficulty": 60.0,
-		"difficultyInc": 10.0,
-		"difficultyEnemyMult": 0.85,
+		"difficultyInc": 12.0,
+		"difficultyEnemyMult": 1.0,
 		"rndRangeMultiplier": 1.10,
 		"meanDeviationRatio": 0.20,
 
@@ -58,7 +69,18 @@
 
 		"choiceChanceCreature": 1.0,
 		"choiceChanceSingleDrop": 0.25,
-		"choiceChanceMultipleDrop": 0.10
+		"choiceChanceMultipleDrop": 0.10,
+
+		"dropDeviationMult": 0.5,
+		"dropValueMult": 0.29,
+
+		"multipleDropChance": 0.3,
+
+		"dropChanceIE": 0.5,
+		"dropChanceWeapon": 0.25,
+		"dropChanceArmor": 0.25,
+
+		"multipleIEChance": 0.3
 	},
 
 	"hardcore":
@@ -72,7 +94,7 @@
 		
 		"difficulty": 80.0,
 		"difficultyInc": 15.0,
-		"difficultyEnemyMult": 0.9,
+		"difficultyEnemyMult": 1.1,
 		"rndRangeMultiplier": 1.10,
 		"meanDeviationRatio": 0.20,
 
@@ -89,6 +111,17 @@
 
 		"choiceChanceCreature": 1.0,
 		"choiceChanceSingleDrop": 0.25,
-		"choiceChanceMultipleDrop": 0.10
+		"choiceChanceMultipleDrop": 0.10,
+
+		"dropDeviationMult": 0.5,
+		"dropValueMult": 0.29,
+
+		"multipleDropChance": 0.3,
+
+		"dropChanceIE": 0.5,
+		"dropChanceWeapon": 0.25,
+		"dropChanceArmor": 0.25,
+
+		"multipleIEChance": 0.3
 	}
 }

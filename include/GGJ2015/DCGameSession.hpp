@@ -6,6 +6,41 @@
 
 namespace ggj
 {
+	// TODO: test, cleanup, to ssvu, remove in gen?
+	template<typename TW = float> class WeightedChance
+	{
+		private:
+			TW weightTotal{0.f};
+			std::vector<TW> weights;
+
+		public:
+			inline void add(TW mWeight)
+			{
+				weights.emplace_back(mWeight);
+				weightTotal += mWeight;
+			}
+
+			inline auto get() const noexcept
+			{
+				auto r(ssvu::getRndR(0.f, weightTotal));
+
+				for(auto i(0u); i < weights.size(); ++i)
+				{
+					if(r < weights[i]) return i;
+					r -= weights[i];
+				}
+
+				SSVU_UNREACHABLE();
+			}
+	};
+
+	template<typename TW = float, typename... TArgs> inline auto makeWeightedChance(TArgs&&... mArgs)
+	{
+		WeightedChance<TW> result;
+		ssvu::forArgs([&result](auto&& mX){ result.add(SSVU_FWD(mX)); }, ssvu::fwd<TArgs>(mArgs)...);
+		return result;
+	}
+
 	struct GameSession
 	{
 		enum class State : int{Playing = 0, Dead = 1, Menu = 2};
@@ -14,8 +49,7 @@ namespace ggj
 		State state{State::Menu};
 		int roomNumber{0};
 		Creature player;
-		ssvu::UPtr<Choice> choices[Constants::maxChoices];
-		ssvu::UPtr<Choice> nextChoices[Constants::maxChoices];
+		std::array<ssvu::UPtr<Choice>, Constants::maxChoices> choices, nextChoices;
 		float timer;
 
 		GameData gd;
@@ -29,6 +63,8 @@ namespace ggj
 
 		Mode mode{Mode::Official};
 
+		WeightedChance<> wcDrop, wcChoice;
+
 		inline void restart()
 		{
 			music.stop();
@@ -39,6 +75,20 @@ namespace ggj
 			if(mode == Mode::Official) modeKey = "official";
 			else if(mode == Mode::Hardcore) modeKey = "hardcore";
 			gd = GameData{modeKey};
+
+			wcDrop = makeWeightedChance
+			(
+				gd.dropChanceIE,		// 0
+				gd.dropChanceWeapon,	// 1
+				gd.dropChanceArmor		// 2
+			);
+
+			wcChoice = makeWeightedChance
+			(
+				gd.choiceChanceCreature,		// 0
+				gd.choiceChanceSingleDrop,		// 1
+				gd.choiceChanceMultipleDrop		// 2
+			);
 
 			state = State::Playing;
 			roomNumber = 0;
@@ -113,16 +163,16 @@ namespace ggj
 			auto i(0u);
 			auto indices(mkShuffledVector<int>(0, 1, 2, 3));
 
-			if(ssvu::getRnd(0, 100) < 50) mX[indices[i++]] = true;
-
-			if(roomNumber < 20) return;
-			if(ssvu::getRnd(0, 100) < 45) mX[indices[i++]] = true;
-
-			if(roomNumber < 30) return;
 			if(ssvu::getRnd(0, 100) < 40) mX[indices[i++]] = true;
 
-			if(roomNumber < 40) return;
+			if(roomNumber < 20) return;
 			if(ssvu::getRnd(0, 100) < 35) mX[indices[i++]] = true;
+
+			if(roomNumber < 30) return;
+			if(ssvu::getRnd(0, 100) < 30) mX[indices[i++]] = true;
+
+			if(roomNumber < 40) return;
+			if(ssvu::getRnd(0, 100) < 25) mX[indices[i++]] = true;
 		}
 
 		inline InstantEffect generateInstantEffect(InstantEffect::Stat mStat, InstantEffect::Type mType, float mValue)
@@ -180,13 +230,7 @@ namespace ggj
 			auto dIE(ssvu::makeUPtr<DropIE>(*this));
 
 			addIEs(*dIE);
-
-			if(ssvu::getRnd(0, 100) < 35)
-			{
-				addIEs(*dIE);
-			}
-
-			// if(ssvu::getRnd(0, 100) < 25) dIE->addIE(generateInstantEffect(mL));
+			if(ssvu::getRndR(0.f, 1.f) < gd.multipleIEChance) addIEs(*dIE);
 
 			return dIE;
 		}
@@ -209,32 +253,25 @@ namespace ggj
 
 		inline ssvu::UPtr<Drop> generateRndDrop()
 		{
-			if(ssvu::getRnd(0, 50) > 21)
+			switch(wcDrop.get())
 			{
-				return std::move(generateDropIE());
+				case 0: return std::move(generateDropIE());
+				case 1: return std::move(generateDropWeapon());
+				case 2: return std::move(generateDropArmor());
 			}
-			else
-			{
-				if(ssvu::getRnd(0, 50) > 19)
-					return std::move(generateDropWeapon());
-				else
-					return std::move(generateDropArmor());
-			}
+
+			SSVU_UNREACHABLE();
 		}
 
 		inline ItemDrops generateDrops()
 		{
 			ItemDrops result;
 
-			auto i(0u);
-			result.drops[i] = std::move(generateRndDrop());
+			auto indices(mkShuffledVector<int>(0, 1, 2));
 
-			for(; i < Constants::maxDrops; ++i)
-			{
-				if(ssvu::getRnd(0, 50) > 20) continue;
-
-				result.drops[i] = std::move(generateRndDrop());
-			}
+			result.drops[indices[0]] = std::move(generateRndDrop());
+			if(ssvu::getRndR(0.f, 1.f) < gd.multipleDropChance) result.drops[indices[1]] = std::move(generateRndDrop());
+			if(ssvu::getRndR(0.f, 1.f) < gd.multipleDropChance) result.drops[indices[2]] = std::move(generateRndDrop());
 
 			return result;
 		}
@@ -257,7 +294,7 @@ namespace ggj
 			Armor result;
 
 			result.name = "TODO";
-			result.def = gd.getDEF(mValue) * 0.8f;
+			result.def = gd.getDEF(mValue);
 			generateRndElements(result.elementTypes);
 
 			return result;
@@ -309,42 +346,28 @@ namespace ggj
 			return result;
 		}
 
-		inline ssvu::UPtr<Choice> generateChoiceCreature(int mIdx)
+		inline auto generateChoiceCreature(int mIdx)
 		{
 			auto choice(ssvu::makeUPtr<ChoiceCreature>(*this, mIdx));
 			choice->creature = generateCreature(true);
 			return std::move(choice);
 		}
 
-		inline ssvu::UPtr<Choice> generateChoiceSingleDrop(int mIdx)
+		inline auto generateChoiceSingleDrop(int mIdx)
 		{
 			auto choice(ssvu::makeUPtr<ChoiceSingleDrop>(*this, mIdx));
 			choice->drop = generateRndDrop();
 			return std::move(choice);
 		}
 
-		inline ssvu::UPtr<Choice> generateChoiceMultipleDrop(int mIdx)
+		inline auto generateChoiceMultipleDrop(int mIdx)
 		{
 			auto choice(ssvu::makeUPtr<ChoiceItemDrop>(*this, mIdx));
-			choice->itemDrops = generateDrops();
 			return std::move(choice);
 		}
 
-		// TODO: test, cleanup, to ssvu, remove in gen?
-		template<typename T> inline auto& weightedChance(T& mC)
-		{
-			float weightTotal{0.f};
-			for(auto i(0u); i < mC.size(); ++i) weightTotal += mC[i].first;
 
-			auto r(ssvu::getRndR(0, weightTotal));
-			for(auto i(0u); i < mC.size(); ++i)
-			{
-				if(r < mC[i].first) return mC[i].second;
-				r -= mC[i].second;
-			}
 
-			SSVU_UNREACHABLE();
-		}
 
 		inline void generateChoices()
 		{
@@ -359,19 +382,11 @@ namespace ggj
 			auto indices(mkShuffledVector<int>(0, 1, 2, 3));
 			for(auto& c : choices) c.release();
 
-			std::vector<std::pair<float, int>> v
-			{
-				{gd.choiceChanceCreature, 0},
-				{gd.choiceChanceSingleDrop, 1},
-				{gd.choiceChanceMultipleDrop, 2}
-			};
-
 			for(int i{0}; i < choiceCount; ++i)
 			{
 				auto idx(indices[i]);
-				auto type(weightedChance(v));
 
-				switch(type)
+				switch(wcChoice.get())
 				{
 					case 0: choices[idx] = generateChoiceCreature(idx);		break;
 					case 1: choices[idx] = generateChoiceSingleDrop(idx);	break;

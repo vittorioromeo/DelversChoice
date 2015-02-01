@@ -32,7 +32,7 @@ namespace ggj
 		std::vector<TArg> result;
 		result.reserve(1 + sizeof...(TArgs));
 		result.emplace_back(ssvu::fwd<TArg>(mArg));
-		ssvu::forArgs([&result](auto&& mX){ result.emplace_back(ssvu::fwd<decltype(mX)>(mX)); }, ssvu::fwd<TArgs>(mArgs)...);
+		ssvu::forArgs([&result](auto&& mX){ result.emplace_back(SSVU_FWD(mX)); }, ssvu::fwd<TArgs>(mArgs)...);
 		ssvu::shuffle(result);
 		return result;
 	}
@@ -72,6 +72,17 @@ namespace ggj
 		float choiceChanceSingleDrop;
 		float choiceChanceMultipleDrop;
 
+		float dropDeviationMult;
+		float dropValueMult;
+
+		float multipleDropChance;
+
+		float dropChanceIE;
+		float dropChanceWeapon;
+		float dropChanceArmor;
+
+		float multipleIEChance;
+
 		inline GameData() { }
 		inline GameData(const std::string& mMode)
 		{
@@ -109,6 +120,17 @@ namespace ggj
 			GGJ_LFJ(float, choiceChanceCreature);
 			GGJ_LFJ(float, choiceChanceSingleDrop);
 			GGJ_LFJ(float, choiceChanceMultipleDrop);
+
+			GGJ_LFJ(float, dropDeviationMult);
+			GGJ_LFJ(float, dropValueMult);
+
+			GGJ_LFJ(float, multipleDropChance);
+
+			GGJ_LFJ(float, dropChanceIE);
+			GGJ_LFJ(float, dropChanceWeapon);
+			GGJ_LFJ(float, dropChanceArmor);
+
+			GGJ_LFJ(float, multipleIEChance);
 		}
 
 		inline float getRndR(float mMean, float mDeviation) noexcept
@@ -126,21 +148,12 @@ namespace ggj
 		inline float getRndDropValue()
 		{
 			auto mean(difficulty);
-			return getRndR(mean, mean * (meanDeviationRatio * 0.6f)) * 0.4f;
+			return getRndR(mean, mean * (meanDeviationRatio * dropDeviationMult)) * dropValueMult;
 		}
 
 		inline float getHPS(float mValue) { return mValue / valueHPS; }
 		inline float getATK(float mValue) { return mValue / valueATK; }
 		inline float getDEF(float mValue) { return mValue / valueDEF; }
-
-		/*inline float getRndStat(bool mEnemy, float mValue)
-		{
-			auto mean(difficulty);
-			if(mEnemy) mean *= difficultyEnemyMult;
-
-			return getRndR(mean, mean * meanDeviationRatio);
-		}*/
-
 	};
 }
 
