@@ -37,7 +37,7 @@ namespace ggj
 	template<typename TW = float, typename... TArgs> inline auto makeWeightedChance(TArgs&&... mArgs)
 	{
 		WeightedChance<TW> result;
-		ssvu::forArgs([&result](auto&& mX){ result.add(SSVU_FWD(mX)); }, ssvu::fwd<TArgs>(mArgs)...);
+		ssvu::forArgs([&result](auto&& mX){ result.add(SSVU_FWD(mX)); }, SSVU_FWD(mArgs)...);
 		return result;
 	}
 
@@ -404,7 +404,7 @@ namespace ggj
 
 		template<typename T> inline void resetChoiceAt(SizeT mIdx, T&& mX)
 		{
-			nextChoices[mIdx] = ssvu::fwd<T>(mX);
+			nextChoices[mIdx] = SSVU_FWD(mX);
 		}
 
 		inline void advance()

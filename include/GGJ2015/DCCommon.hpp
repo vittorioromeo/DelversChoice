@@ -31,8 +31,8 @@ namespace ggj
 	{
 		std::vector<TArg> result;
 		result.reserve(1 + sizeof...(TArgs));
-		result.emplace_back(ssvu::fwd<TArg>(mArg));
-		ssvu::forArgs([&result](auto&& mX){ result.emplace_back(SSVU_FWD(mX)); }, ssvu::fwd<TArgs>(mArgs)...);
+		result.emplace_back(SSVU_FWD(mArg));
+		ssvu::forArgs([&result](auto&& mX){ result.emplace_back(SSVU_FWD(mX)); }, SSVU_FWD(mArgs)...);
 		ssvu::shuffle(result);
 		return result;
 	}

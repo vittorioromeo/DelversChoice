@@ -24,7 +24,7 @@ namespace Boilerplate
 
 			template<typename... TArgs> inline void render(TArgs&&... mArgs)
 			{
-				gameWindow.draw(ssvu::fwd<TArgs>(mArgs)...);
+				gameWindow.draw(SSVU_FWD(mArgs)...);
 			}
 
 			inline auto& getGameState() noexcept				{ return gameState; }
