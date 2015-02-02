@@ -131,6 +131,8 @@ namespace ggj
 			GGJ_LFJ(float, dropChanceArmor);
 
 			GGJ_LFJ(float, multipleIEChance);
+
+			#undef GGJ_LFJ
 		}
 
 		inline float getRndR(float mMean, float mDeviation) noexcept
@@ -154,6 +156,73 @@ namespace ggj
 		inline float getHPS(float mValue) { return mValue / valueHPS; }
 		inline float getATK(float mValue) { return mValue / valueATK; }
 		inline float getDEF(float mValue) { return mValue / valueDEF; }
+	};
+
+	struct ProfileData
+	{
+		constexpr static const char* profilePath{"Data/profileData.json"};
+
+		std::string name;
+
+		int scoreBeginner;
+		int scoreOfficial;
+		int scoreHardcore;
+
+		int gamesPlayed;
+		int timePlayed;
+
+		inline ProfileData()
+		{
+			using namespace ssvj;
+
+			if(!ssvufs::Path{profilePath}.exists<ssvufs::Type::All>())
+			{
+				Val newProfile{Obj{}};
+				/*newProfile["scoreBeginner"] = 0;
+				newProfile["scoreOfficial"] = 0;
+				newProfile["scoreHardcore"] = 0;
+
+				newProfile["gamesPlayed"] = 0;
+				newProfile["timePlayed"] = 0;*/
+
+				newProfile.writeToFile(profilePath);
+			}
+
+			auto jv(Val::fromFile(profilePath));
+
+			#define GGJ_LFJ(mName, mDef) mName = jv.getIfHas<decltype(mName)>(SSVPP_TOSTR(mName), decltype(mName){mDef})
+
+			GGJ_LFJ(name, "unnamed");
+
+			GGJ_LFJ(scoreBeginner, 0);
+			GGJ_LFJ(scoreOfficial, 0);
+			GGJ_LFJ(scoreHardcore, 0);
+
+			GGJ_LFJ(gamesPlayed, 0);
+			GGJ_LFJ(timePlayed, 0);
+
+			#undef GGJ_LFJ
+		}
+
+		inline void saveToJson()
+		{
+			using namespace ssvj;
+
+			#define GGJ_LTJ(mName) jv[SSVPP_TOSTR(mName)] = mName;
+
+			auto jv(Val::fromFile(profilePath));
+
+			GGJ_LTJ(scoreBeginner);
+			GGJ_LTJ(scoreOfficial);
+			GGJ_LTJ(scoreHardcore);
+
+			GGJ_LTJ(gamesPlayed);
+			GGJ_LTJ(timePlayed);
+
+			jv.writeToFile(profilePath);
+
+			#undef GGJ_LTJ
+		}
 	};
 }
 

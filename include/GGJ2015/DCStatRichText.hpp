@@ -16,6 +16,8 @@ namespace ggj
 
 		inline StatRichText()
 		{
+			sfc gray{100, 100, 100, 255};
+
 			psTotal = &txt.mk<BP::Str>();
 			pssExtra = &txt.mk<BP::Group>();
 
@@ -25,7 +27,7 @@ namespace ggj
 			clfgBonus = &pssExtra->mk<BP::ClFG>(sfc::Green);
 			psBonus = &pssExtra->mk<BP::Str>();
 
-			(*pssExtra) << sfc::White << " (" << *psBase << sfc::White << "+" << *clfgBonus << *psBonus << sfc::White << ")";
+			(*pssExtra) << gray << " (" << sfc::White << *psBase << gray << "+" << *clfgBonus << *psBonus << gray << ")";
 
 			clfgBonus->setAnimPulse(0.05f, 100);
 		}

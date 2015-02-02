@@ -23,6 +23,13 @@ namespace ggj
 			CreatureStatsDraw csdPlayer;
 			Vec2f oldPos;
 
+			BP::Str* sScoreName;
+			BP::Str* sScoreBeginner;
+			BP::Str* sScoreOfficial;
+			BP::Str* sScoreHardcore;
+			BP::Str* sScorePlayedGames;
+			BP::Str* sScorePlayedTime;
+
 			inline void initInput()
 			{
 				auto& gState(gameState);
@@ -30,17 +37,33 @@ namespace ggj
 				// TODO: better input management, choose handling type
 				gState.addInput({{IK::Escape}}, [this](FT){ if(gs.state != GameSession::State::Menu) gs.gotoMenu(); }, IT::Once);
 
+				/*
 				gState.addInput({{IK::A}}, [this](FT){ gameCamera.pan(-4, 0); });
 				gState.addInput({{IK::D}}, [this](FT){ gameCamera.pan(4, 0); });
 				gState.addInput({{IK::W}}, [this](FT){ gameCamera.pan(0, -4); });
 				gState.addInput({{IK::S}}, [this](FT){ gameCamera.pan(0, 4); });
 				gState.addInput({{IK::Q}}, [this](FT){ gameCamera.zoomOut(1.1f); });
 				gState.addInput({{IK::E}}, [this](FT){ gameCamera.zoomIn(1.1f); });
+				*/
 
 				gState.addInput({{IK::Num1}}, [this](FT){ executeChoice(0); }, IT::Once);
 				gState.addInput({{IK::Num2}}, [this](FT){ executeChoice(1); }, IT::Once);
 				gState.addInput({{IK::Num3}}, [this](FT){ executeChoice(2); }, IT::Once);
 				gState.addInput({{IK::Num4}}, [this](FT){ executeChoice(3); }, IT::Once);
+			}
+
+			inline void gotoMenu()
+			{
+				gs.gotoMenu();
+
+				sScoreName->setStr(gs.pd.name);
+
+				sScoreBeginner->setStr(ssvu::toStr(gs.pd.scoreBeginner));
+				sScoreOfficial->setStr(ssvu::toStr(gs.pd.scoreOfficial));
+				sScoreHardcore->setStr(ssvu::toStr(gs.pd.scoreHardcore));
+
+				sScorePlayedGames->setStr(ssvu::toStr(gs.pd.gamesPlayed));
+				sScorePlayedTime->setStr(ssvu::toStr(gs.pd.timePlayed));
 			}
 
 			inline void executeChoice(int mI)
@@ -75,7 +98,7 @@ namespace ggj
 
 				if(gs.state == GameSession::State::Dead)
 				{
-					if(mI == 0) gs.gotoMenu();
+					if(mI == 0) gotoMenu();
 					else if(mI == 1) gs.restart();
 
 					return;
@@ -396,12 +419,15 @@ namespace ggj
 							<< sfc::White << "You reached room " << sfc::Green << *bpstrRoom << sfc::White << ".\n"
 							<< sfc::Cyan << "(" << *bpstrMode << ")";
 
-				auto sScoreName(&txtScores.mk<BP::Str>("Player"));
-				auto sScoreBeginner(&txtScores.mk<BP::Str>("X"));
-				auto sScoreOfficial(&txtScores.mk<BP::Str>("X"));
-				auto sScoreHardcore(&txtScores.mk<BP::Str>("X"));
-				auto sScorePlayedGames(&txtScores.mk<BP::Str>("X"));
-				auto sScorePlayedTime(&txtScores.mk<BP::Str>("X"));
+
+
+
+				sScoreName = &txtScores.mk<BP::Str>();
+				sScoreBeginner = &txtScores.mk<BP::Str>();
+				sScoreOfficial = &txtScores.mk<BP::Str>();
+				sScoreHardcore = &txtScores.mk<BP::Str>();
+				sScorePlayedGames = &txtScores.mk<BP::Str>();
+				sScorePlayedTime = &txtScores.mk<BP::Str>();
 
 				txtScores.setAlign(ssvs::TextAlign::Right);
 				txtScores	<< txtScores.mk<BP::Trk>(-3)
@@ -429,7 +455,7 @@ namespace ggj
 
 				oldPos = gameCamera.getCenter();
 
-				gs.gotoMenu();
+				gotoMenu();
 			}
 	};
 

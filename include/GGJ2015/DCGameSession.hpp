@@ -53,6 +53,7 @@ namespace ggj
 		float timer;
 
 		GameData gd;
+		ProfileData pd;
 
 		sf::SoundBuffer* currentMusic{nullptr};
 		sf::Sound music;
@@ -115,6 +116,8 @@ namespace ggj
 
 			currentMusic = getAssets().menu;
 			refreshMusic();
+
+			refreshProfileData();
 		}
 
 		inline GameSession()
@@ -136,6 +139,11 @@ namespace ggj
 		inline void endDrops()
 		{
 			currentDrops = nullptr;
+		}
+
+		inline void refreshProfileData()
+		{
+			pd = ProfileData{};
 		}
 
 
@@ -428,8 +436,26 @@ namespace ggj
 			endDrops();
 		}
 
+		inline void updateProfile()
+		{
+			++pd.gamesPlayed;
+
+			switch(mode)
+			{
+				case Mode::Beginner: ++pd.scoreBeginner; break;
+				case Mode::Official: ++pd.scoreOfficial; break;
+				case Mode::Hardcore: ++pd.scoreHardcore; break;
+			}
+
+			++pd.gamesPlayed;
+
+			pd.saveToJson();
+		}
+
 		inline void die()
 		{
+			updateProfile();
+
 			music.stop();
 			getAssets().soundPlayer.play(*getAssets().lose);
 			shake = 250;
