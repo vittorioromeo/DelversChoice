@@ -42,6 +42,7 @@
 // TODO: aspect ratio resizing
 // TODO: game state virtual funcs
 // TODO: save profile
+// TODO: better ssvj syntax?
 
 int main()
 {
