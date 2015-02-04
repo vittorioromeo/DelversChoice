@@ -5,8 +5,6 @@
 
 namespace ggj
 {
-
-
 	class GameApp : public Boilerplate::App
 	{
 		private:
