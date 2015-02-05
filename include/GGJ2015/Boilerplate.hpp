@@ -24,7 +24,7 @@ namespace Boilerplate
 
 			template<typename... TArgs> inline void render(TArgs&&... mArgs)
 			{
-				gameWindow.draw(SSVU_FWD(mArgs)...);
+				gameWindow.draw(FWD(mArgs)...);
 			}
 
 			inline auto& getGameState() noexcept				{ return gameState; }
@@ -39,7 +39,7 @@ namespace Boilerplate
 	{
 		private:
 			ssvs::GameWindow gameWindow;
-			ssvu::AlignedStorageFor<T> app;
+			ssvu::Maybe<T> app;
 
 		public:
 			inline AppRunner(const std::string& mTitle, ssvu::SizeT mWidth, ssvu::SizeT mHeight)
@@ -52,13 +52,13 @@ namespace Boilerplate
 				gameWindow.setMaxFPS(200);
 				gameWindow.setPixelMult(2);
 
-				new(&app) T{gameWindow};
+				app.init(gameWindow);
 
 				gameWindow.setGameState(reinterpret_cast<T&>(app).getGameState());
 				gameWindow.run();
 			}
 
-			inline ~AppRunner() { reinterpret_cast<T&>(app).~T(); }
+			inline ~AppRunner() { app.deinit(); }
 	};
 }
 
