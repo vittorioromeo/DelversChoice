@@ -43,10 +43,12 @@ namespace ggj
 
 	struct GameSession
 	{
-		enum class State : int{Playing = 0, Dead = 1, Menu = 2};
+		enum class State : int{Playing = 0, Dead = 1, Menu = 2, Settings = 3};
 		enum class Mode : int{Beginner = 0, Official = 1, Hardcore = 2};
+		enum class SubMenu : int{Main = 0, SelectMode = 1};
 
 		State state{State::Menu};
+		SubMenu subMenu{SubMenu::Main};
 		int roomNumber{0};
 		Creature player;
 		std::array<ssvu::UPtr<Choice>, Constants::maxChoices> choices, nextChoices;
@@ -185,11 +187,11 @@ namespace ggj
 
 		inline InstantEffect generateInstantEffect(InstantEffect::Stat mStat, InstantEffect::Type mType, float mValue)
 		{
-			float ieValue;
+			float ieValue(mValue / gd.valueHPS);
 
 			switch(mStat)
 			{
-				case InstantEffect::Stat::SHPS: ieValue = mValue / gd.valueHPS; break;
+				case InstantEffect::Stat::SHPS: /* as initialized */ break;
 				case InstantEffect::Stat::SATK: ieValue = mValue / gd.valueATK; break;
 				case InstantEffect::Stat::SDEF: ieValue = mValue / gd.valueDEF; break;
 			}

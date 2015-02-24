@@ -12,7 +12,8 @@ namespace ggj
 			ssvs::BitmapText txtTimer{mkTxtOBBig()}, txtRoom{mkTxtOBBig()}, txtDeath{mkTxtOBBig()},
 							txtLog{mkTxtOBSmall()}, txtMode{mkTxtOBSmall()};
 
-			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked}, txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked};
+			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked},
+				txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked}, txtSelectMode{*getAssets().fontObStroked};
 			BP::Str* bpstrRoom;
 			BP::Str* bpstrMode;
 
@@ -48,6 +49,7 @@ namespace ggj
 				gState.addInput({{IK::Num2}}, [this](FT){ executeChoice(1); }, IT::Once);
 				gState.addInput({{IK::Num3}}, [this](FT){ executeChoice(2); }, IT::Once);
 				gState.addInput({{IK::Num4}}, [this](FT){ executeChoice(3); }, IT::Once);
+				gState.addInput({{IK::Num5}}, [this](FT){ executeChoice(4); }, IT::Once);
 			}
 
 			inline void gotoMenu()
@@ -64,42 +66,42 @@ namespace ggj
 				sScorePlayedTime->setStr(ssvu::toStr(gs.pd.timePlayed));
 			}
 
-			inline void executeChoice(int mI)
+			inline void executeChoiceMenu(int mI)
 			{
-				if(gs.state == GameSession::State::Menu)
+				if(gs.subMenu == GameSession::SubMenu::Main)
 				{
-					if(mI == 0)
-					{
-						gs.mode = GameSession::Mode::Beginner;
-						gs.restart();
-					}
-
-					if(mI == 1)
-					{
-						gs.mode = GameSession::Mode::Official;
-						gs.restart();
-					}
-
-					if(mI == 2)
-					{
-						gs.mode = GameSession::Mode::Hardcore;
-						gs.restart();
-					}
-
-					if(mI == 3)
-					{
-						stop();
-					}
-
-					return;
+					if(mI == 0) gs.subMenu = GameSession::SubMenu::SelectMode;
+					else if(mI == 1) gs.state = GameSession::State::Settings;
+					else if(mI == 4) stop();
 				}
-
-				if(gs.state == GameSession::State::Dead)
+				else if(gs.subMenu == GameSession::SubMenu::SelectMode)
 				{
-					if(mI == 0) gotoMenu();
-					else if(mI == 1) gs.restart();
+					if(mI == 3) return;
+					if(mI == 4)
+					{
+						gs.subMenu = GameSession::SubMenu::Main;
+						return;
+					}
 
-					return;
+					if(mI == 0) gs.mode = GameSession::Mode::Beginner;
+					else if(mI == 1) gs.mode = GameSession::Mode::Official;
+					else if(mI == 2) gs.mode = GameSession::Mode::Hardcore;
+
+					gs.restart();
+				}
+			}
+
+			inline void executeChoiceDead(int mI)
+			{
+				if(mI == 0) gotoMenu();
+				else if(mI == 1) gs.restart();
+			}
+
+			inline void executeChoicePlaying(int mI)
+			{
+				if(mI == 4)
+				{
+					// TODO: return
 				}
 
 				if(gs.currentDrops == nullptr)
@@ -125,6 +127,16 @@ namespace ggj
 				}
 			}
 
+			inline void executeChoice(int mI)
+			{
+				if(gs.state == GameSession::State::Menu) executeChoiceMenu(mI);
+				else if(gs.state == GameSession::State::Dead) executeChoiceDead(mI);
+				else if(gs.state == GameSession::State::Playing) executeChoicePlaying(mI);
+
+
+
+			}
+
 			inline const auto& getModeStr()
 			{
 				static auto array(ssvu::makeArray
@@ -137,77 +149,81 @@ namespace ggj
 				return array[static_cast<int>(gs.mode)];
 			}
 
+			inline void updatePlaying(FT mFT)
+			{
+				if(gs.currentDrops != nullptr) gs.currentDrops->update(mFT);
+
+				csdPlayer.update(mFT);
+				for(auto& c : gs.choices) if(c != nullptr) c->update(mFT);
+
+				if(gs.gd.timerEnabled) gs.timer -= mFT;
+
+				if(!gs.player.isDead())
+				{
+					auto secs(ssvu::getFTToSeconds(gs.timer));
+					if(secs < 3) ssvu::clampMin(gs.shake, 4 - secs);
+				}
+
+				if(gs.timer <= 0 || gs.player.isDead())
+				{
+					gs.die();
+				}
+				else
+				{
+					auto intt(ssvu::getFTToSeconds(static_cast<int>(gs.timer)));
+					auto gts(intt >= 10 ? ssvu::toStr(intt) : "0" + ssvu::toStr(intt));
+
+					// auto third(gameWindow.getWidth() / 5.f);
+
+					txtTimer.setString(gs.gd.timerEnabled ? "00:" + gts : "XX:XX");
+					txtRoom.setString(ssvu::toStr(gs.roomNumber));
+
+					// TODO: wtf
+					auto els(getEventLogStream().str());
+					if(!els.empty())
+					{
+						std::string elsLog;
+
+						int foundNewLines{0};
+
+						for(auto itr(els.rbegin()); itr < els.rend(); ++itr)
+						{
+							if(*itr == '\n') ++foundNewLines;
+							if(foundNewLines == 6) break;
+							elsLog += *itr;
+						}
+
+						std::string final{elsLog.rbegin(), elsLog.rend()};
+						txtLog.setString(final);
+					}
+				}
+			}
+
+			inline void updateMenu(FT mFT)
+			{
+				txtMenu.update(mFT);
+				txtSelectMode.update(mFT);
+				txtScores.update(mFT);
+			}
+
+			inline void updateDead(FT mFT)
+			{
+				bpstrRoom->setStr(ssvu::toStr(gs.roomNumber));
+				bpstrMode->setStr(getModeStr());
+
+				txtRestart.update(mFT);
+			}
+
 			inline void update(FT mFT)
 			{
 				txtCredits.update(mFT);
-
-
-
 				gameCamera.update<float>(mFT);
 
 				if(gs.deathTextTime > 0) gs.deathTextTime -= mFT;
 
-				if(gs.state == GameSession::State::Playing)
-				{
-					if(gs.currentDrops != nullptr) gs.currentDrops->update(mFT);
-
-					csdPlayer.update(mFT);
-					for(auto& c : gs.choices) if(c != nullptr) c->update(mFT);
-
-					if(gs.gd.timerEnabled) gs.timer -= mFT;
-
-					if(!gs.player.isDead())
-					{
-						auto secs(ssvu::getFTToSeconds(gs.timer));
-						if(secs < 3) ssvu::clampMin(gs.shake, 4 - secs);
-					}
-
-					if(gs.timer <= 0 || gs.player.isDead())
-					{
-						gs.die();
-					}
-					else
-					{
-						auto intt(ssvu::getFTToSeconds(static_cast<int>(gs.timer)));
-						auto gts(intt >= 10 ? ssvu::toStr(intt) : "0" + ssvu::toStr(intt));
-
-						// auto third(gameWindow.getWidth() / 5.f);
-
-						txtTimer.setString(gs.gd.timerEnabled ? "00:" + gts : "XX:XX");
-						txtRoom.setString(ssvu::toStr(gs.roomNumber));
-
-						// TODO: wtf
-						auto els(getEventLogStream().str());
-						if(!els.empty())
-						{
-							std::string elsLog;
-
-							int foundNewLines{0};
-
-							for(auto itr(els.rbegin()); itr < els.rend(); ++itr)
-							{
-								if(*itr == '\n') ++foundNewLines;
-								if(foundNewLines == 6) break;
-								elsLog += *itr;
-							}
-
-							std::string final{elsLog.rbegin(), elsLog.rend()};
-							txtLog.setString(final);
-						}
-					}
-				}
-				else if(gs.state == GameSession::State::Menu)
-				{
-					txtMenu.update(mFT);
-					txtScores.update(mFT);
-				}
-				else if(gs.state == GameSession::State::Dead)
-				{
-					bpstrRoom->setStr(ssvu::toStr(gs.roomNumber));
-					bpstrMode->setStr(getModeStr());
-
-					txtRestart.update(mFT);
-				}
+				if(gs.state == GameSession::State::Playing) updatePlaying(mFT);
+				else if(gs.state == GameSession::State::Menu) updateMenu(mFT);
+				else if(gs.state == GameSession::State::Dead) updateDead(mFT);
 
 				if(gs.shake > 0)
 				{
@@ -332,6 +348,43 @@ namespace ggj
 				csdPlayer.draw(gs.player, gameWindow, Vec2f{10, 175}, Vec2f{0.f, 0.f});
 			}
 
+			inline void drawDead()
+			{
+				txtDeath.setString("You have perished.");
+
+				//txtRestart.clear();
+
+
+				txtDeath.setPosition(320 / 2.f, 80);
+				txtRestart.setPosition(320 / 2.f, 120);
+
+				render(txtDeath);
+				render(txtRestart);
+
+				txtDeath.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
+				//txtRestart.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
+			}
+
+			inline void drawMenu()
+			{
+				txtDeath.setString("DELVER'S CHOICE");
+				txtDeath.setColor(sf::Color(255, 255, 255, 255));
+
+				txtDeath.setPosition(320 / 2.f, 30);
+				txtMenu.setPosition(320 / 2.f, 70);
+				txtSelectMode.setPosition(320 / 2.f, 70);
+
+				txtScores.setPosition(320 - 5, 240 - 5);
+
+				render(txtDeath);
+
+				if(gs.subMenu == GameSession::SubMenu::Main) render(txtMenu);
+				else if(gs.subMenu == GameSession::SubMenu::SelectMode) render(txtSelectMode);
+
+				render(txtScores);
+				render(txtCredits);
+			}
+
 			inline void draw()
 			{
 				gameCamera.apply();
@@ -344,43 +397,14 @@ namespace ggj
 				ssvs::setOrigin(txtDeath, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtRestart, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtMenu, ssvs::getLocalCenter);
+				ssvs::setOrigin(txtSelectMode, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtScores, ssvs::getLocalSE);
 				ssvs::setOrigin(txtCredits, ssvs::getLocalSW);
 
 				txtCredits.setPosition(5, 240 - 5);
 
-				if(gs.state == GameSession::State::Dead)
-				{
-					txtDeath.setString("You have perished.");
-
-					//txtRestart.clear();
-
-
-					txtDeath.setPosition(320 / 2.f, 80);
-					txtRestart.setPosition(320 / 2.f, 120);
-
-					render(txtDeath);
-					render(txtRestart);
-
-					txtDeath.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
-					//txtRestart.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
-				}
-
-				if(gs.state == GameSession::State::Menu)
-				{
-					txtDeath.setString("DELVER'S CHOICE");
-					txtDeath.setColor(sf::Color(255, 255, 255, 255));
-
-					txtDeath.setPosition(320 / 2.f, 30);
-					txtMenu.setPosition(320 / 2.f, 70);
-
-					txtScores.setPosition(320 - 5, 240 - 5);
-
-					render(txtDeath);
-					render(txtMenu);
-					render(txtScores);
-					render(txtCredits);
-				}
+				if(gs.state == GameSession::State::Dead) drawDead();
+				if(gs.state == GameSession::State::Menu) drawMenu();
 			}
 
 			inline auto& mkTP(ssvs::BitmapTextRich& mTxt, const sf::Color& mC)
@@ -404,10 +428,16 @@ namespace ggj
 
 				txtMenu.setAlign(ssvs::TextAlign::Center);
 				txtMenu	<< txtMenu.mk<BP::Trk>(-3)
-						<< mkTP(txtMenu, sfc::Red) << "1. " << sfc::White << "Beginner mode\n"
-						<< mkTP(txtMenu, sfc::Red) << "2. " << sfc::White << "Official mode\n"
-						<< mkTP(txtMenu, sfc::Red) << "3. " << sfc::White << "Hardcore mode\n"
-						<< mkTP(txtMenu, sfc::Red) << "4. " << sfc::White << "Exit game\n";
+						<< mkTP(txtMenu, sfc::Red) << "1. " << sfc::White << "Play game\n"
+						<< mkTP(txtMenu, sfc::Red) << "2. " << sfc::White << "Settings\n\n\n"
+						<< mkTP(txtMenu, sfc::Red) << "5. " << sfc::White << "Exit game\n";
+
+				txtSelectMode.setAlign(ssvs::TextAlign::Center);
+				txtSelectMode << txtSelectMode.mk<BP::Trk>(-3)
+						<< mkTP(txtSelectMode, sfc::Red) << "1. " << sfc::White << "Beginner mode\n"
+						<< mkTP(txtSelectMode, sfc::Red) << "2. " << sfc::White << "Official mode\n"
+						<< mkTP(txtSelectMode, sfc::Red) << "3. " << sfc::White << "Hardcore mode\n\n"
+						<< mkTP(txtSelectMode, sfc::Red) << "5. " << sfc::White << "Go back\n";
 
 				bpstrRoom = &txtRestart.mk<BP::Str>();
 				bpstrMode = &txtRestart.mk<BP::Str>();
@@ -429,7 +459,7 @@ namespace ggj
 
 				txtScores.setAlign(ssvs::TextAlign::Right);
 				txtScores	<< txtScores.mk<BP::Trk>(-3)
-							<< sfc::White << "Welcome, " << mkTP(txtScores, sfc::Cyan) << *sScoreName << "!\n\n"
+							<< sfc::White << "Welcome, " << mkTP(txtScores, sfc::Cyan) << *sScoreName << sfc::White << "!\n\n"
 							<< mkTP(txtScores, sfc::Red) << "High scores:\n"
 							<< sfc::White << "Beginner: " << mkTP(txtScores, sfc::Green) << *sScoreBeginner << "\n"
 							<< sfc::White << "Official: " << mkTP(txtScores, sfc::Green) << *sScoreOfficial << "\n"

@@ -212,6 +212,8 @@ namespace ggj
 
 			auto jv(Val::fromFile(profilePath));
 
+			GGJ_LTJ(name);
+
 			GGJ_LTJ(scoreBeginner);
 			GGJ_LTJ(scoreOfficial);
 			GGJ_LTJ(scoreHardcore);

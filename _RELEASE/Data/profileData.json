@@ -1,7 +1,8 @@
 {
-    "gamesPlayed": 14, 
+	"name": "testName",
+    "gamesPlayed": 18, 
     "scoreBeginner": 1, 
     "scoreHardcore": 0, 
-    "scoreOfficial": 6, 
+    "scoreOfficial": 8, 
     "timePlayed": 0
 }
