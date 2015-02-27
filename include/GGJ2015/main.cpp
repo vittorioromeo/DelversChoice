@@ -36,7 +36,6 @@
 #include "../GGJ2015/DCSlotChoice.hpp"
 #include "../GGJ2015/DCGameApp.hpp"
 
-// TODO: ssvu::Maybe<T> / Uncertain<T>?
 // TODO: better resource caching system in SSVS
 // TODO: load resources from folder, not json?
 // TODO: aspect ratio resizing
@@ -48,32 +47,6 @@ int main()
 {
 	SSVUT_RUN();
 
-/*
-	int n = 0;
-
-	auto x = [&n](int xx){ n += xx * 1; ssvu::lo() << "0\n"; };
-	auto y = [&n](int xx){ n += xx * 2; ssvu::lo() << "1\n"; };
-	auto z = [&n](int xx){ n += xx * 3; ssvu::lo() << "2\n"; };
-
-	auto tpl = std::make_tuple(x, y, z);
-
-	using XType = void (decltype(x)::*)(int);
-
-	std::vector<XType> f;
-	f.emplace_back(x);
-	f.emplace_back(reinterpret_cast<XType&>(y));
-	f.emplace_back(reinterpret_cast<XType&>(z));
-
-	ssvu::tplForIdx([&f](auto i, auto& xx){ (xx.*(f[i]))(2); }, tpl);
-
-	// 0 + 2 * 1 + 2 * 2 * 2 * 3
-	// 0 + 2 + 4 + 6
-	// 12
-
-	ssvu::lo() << n << "\n";
-
-return 0;
-*/
 	Boilerplate::AppRunner<ggj::GameApp>{"Delver's Choice - v1.0", 320, 240};
 	return 0;
 }
