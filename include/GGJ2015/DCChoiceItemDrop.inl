@@ -14,7 +14,7 @@ namespace ggj
 	{
 		getAssets().soundPlayer.play(*getAssets().grab);
 		gameSession.startDrops(&itemDrops);
-		gameSession.resetChoiceAt(idx, ssvu::makeUPtr<ChoiceAdvance>(gameSession, idx));
+		gameSession.resetChoiceAt(idx, ssvu::mkUPtr<ChoiceAdvance>(gameSession, idx));
 	}
 	inline void ChoiceItemDrop::draw(ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f&)
 	{

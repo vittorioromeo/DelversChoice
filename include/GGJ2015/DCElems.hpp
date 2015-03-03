@@ -7,7 +7,7 @@ namespace ggj
 {
 	inline auto createElemSprite(int mEI)
 	{
-		static auto array(ssvu::makeArray
+		static auto array(ssvu::mkArray
 		(
 			getAssets().eFire,
 			getAssets().eWater,

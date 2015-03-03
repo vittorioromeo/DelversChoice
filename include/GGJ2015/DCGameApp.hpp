@@ -139,7 +139,7 @@ namespace ggj
 
 			inline const auto& getModeStr()
 			{
-				static auto array(ssvu::makeArray
+				static auto array(ssvu::mkArray
 				(
 					"Beginner mode",
 					"Official mode",

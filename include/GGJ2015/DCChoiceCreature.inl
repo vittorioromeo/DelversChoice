@@ -14,7 +14,7 @@ namespace ggj
 			gameSession.player.fight(creature);
 
 			getAssets().soundPlayer.play(*getAssets().drop);
-			gameSession.resetChoiceAt(idx, ssvu::makeUPtr<ChoiceItemDrop>(gameSession, idx));
+			gameSession.resetChoiceAt(idx, ssvu::mkUPtr<ChoiceItemDrop>(gameSession, idx));
 
 			gameSession.shake = 10;
 		}

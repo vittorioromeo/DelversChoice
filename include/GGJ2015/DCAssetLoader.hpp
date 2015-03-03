@@ -13,7 +13,7 @@ namespace ggj
 
 			inline AssetLoader()
 			{
-				ssvs::loadAssetsFromJson(assetManager, "Data/", ssvj::Val::fromFile("Data/assets.json"));
+				ssvs::loadAssetsFromJson(assetManager, "Data/", ssvj::fromFile("Data/assets.json"));
 			}
 		};
 	}

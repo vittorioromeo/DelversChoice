@@ -31,7 +31,7 @@ namespace ggj
 
 		inline const auto& getStrType()
 		{
-			static auto array(ssvu::makeArray
+			static auto array(ssvu::mkArray
 			(
 				"+",
 				"-",
@@ -44,7 +44,7 @@ namespace ggj
 
 		inline const auto& getStrStat()
 		{
-			static auto array(ssvu::makeArray
+			static auto array(ssvu::mkArray
 			(
 				"HPS",
 				"ATK",

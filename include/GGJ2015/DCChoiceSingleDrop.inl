@@ -14,7 +14,7 @@ namespace ggj
 		if(drop == nullptr) return;
 
 		drop->apply(gameSession.player);
-		gameSession.resetChoiceAt(idx, ssvu::makeUPtr<ChoiceAdvance>(gameSession, idx));
+		gameSession.resetChoiceAt(idx, ssvu::mkUPtr<ChoiceAdvance>(gameSession, idx));
 	}
 	inline void ChoiceSingleDrop::update(FT mFT)
 	{

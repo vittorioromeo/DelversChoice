@@ -17,7 +17,7 @@ namespace ggj
 
 		inline auto& getTypeTexture()
 		{
-			static auto array(ssvu::makeArray
+			static auto array(ssvu::mkArray
 			(
 				getAssets().wpnMace,
 				getAssets().wpnSword,
@@ -29,7 +29,7 @@ namespace ggj
 
 		inline auto& getTypeSoundBufferVec()
 		{
-			static auto array(ssvu::makeArray
+			static auto array(ssvu::mkArray
 			(
 				getAssets().maceSnds,
 				getAssets().swordSnds,

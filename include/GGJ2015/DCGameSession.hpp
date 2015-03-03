@@ -237,7 +237,7 @@ namespace ggj
 
 		inline auto generateDropIE()
 		{
-			auto dIE(ssvu::makeUPtr<DropIE>(*this));
+			auto dIE(ssvu::mkUPtr<DropIE>(*this));
 
 			addIEs(*dIE);
 			if(ssvu::getRndR(0.f, 1.f) < gd.multipleIEChance) addIEs(*dIE);
@@ -247,7 +247,7 @@ namespace ggj
 
 		inline auto generateDropWeapon()
 		{
-			auto dr(ssvu::makeUPtr<WeaponDrop>(*this));
+			auto dr(ssvu::mkUPtr<WeaponDrop>(*this));
 			dr->weapon = generateWeapon(gd.getRndDropValue());
 
 			return dr;
@@ -255,7 +255,7 @@ namespace ggj
 
 		inline auto generateDropArmor()
 		{
-			auto dr(ssvu::makeUPtr<ArmorDrop>(*this));
+			auto dr(ssvu::mkUPtr<ArmorDrop>(*this));
 			dr->armor = generateArmor(gd.getRndDropValue());
 
 			return dr;
@@ -358,21 +358,21 @@ namespace ggj
 
 		inline auto generateChoiceCreature(int mIdx)
 		{
-			auto choice(ssvu::makeUPtr<ChoiceCreature>(*this, mIdx));
+			auto choice(ssvu::mkUPtr<ChoiceCreature>(*this, mIdx));
 			choice->creature = generateCreature(true);
 			return std::move(choice);
 		}
 
 		inline auto generateChoiceSingleDrop(int mIdx)
 		{
-			auto choice(ssvu::makeUPtr<ChoiceSingleDrop>(*this, mIdx));
+			auto choice(ssvu::mkUPtr<ChoiceSingleDrop>(*this, mIdx));
 			choice->drop = generateRndDrop();
 			return std::move(choice);
 		}
 
 		inline auto generateChoiceMultipleDrop(int mIdx)
 		{
-			auto choice(ssvu::makeUPtr<ChoiceItemDrop>(*this, mIdx));
+			auto choice(ssvu::mkUPtr<ChoiceItemDrop>(*this, mIdx));
 			return std::move(choice);
 		}
 

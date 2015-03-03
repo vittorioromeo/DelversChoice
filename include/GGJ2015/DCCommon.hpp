@@ -88,7 +88,7 @@ namespace ggj
 		{
 			using namespace ssvj;
 
-			auto jv(Val::fromFile("Data/gameData.json"));
+			auto jv(fromFile("Data/gameData.json"));
 			const auto& jObj(jv[mMode]);
 
 			#define GGJ_LFJ(mType, mName) mName = jObj[SSVPP_TOSTR(mName)].as<mType>()
@@ -160,7 +160,7 @@ namespace ggj
 
 	struct ProfileData
 	{
-		constexpr static const char* profilePath{"Data/profileData.json"};
+		static constexpr const char* profilePath{"Data/profileData.json"};
 
 		std::string name;
 
@@ -177,7 +177,7 @@ namespace ggj
 
 			if(!ssvufs::Path{profilePath}.exists<ssvufs::Type::All>())
 			{
-				Val newProfile{Obj{}};
+				auto newProfile(ssvj::mkObj());
 				/*newProfile["scoreBeginner"] = 0;
 				newProfile["scoreOfficial"] = 0;
 				newProfile["scoreHardcore"] = 0;
@@ -188,7 +188,7 @@ namespace ggj
 				newProfile.writeToFile(profilePath);
 			}
 
-			auto jv(Val::fromFile(profilePath));
+			auto jv(fromFile(profilePath));
 
 			#define GGJ_LFJ(mName, mDef) mName = jv.getIfHas<decltype(mName)>(SSVPP_TOSTR(mName), decltype(mName){mDef})
 
@@ -210,7 +210,7 @@ namespace ggj
 
 			#define GGJ_LTJ(mName) jv[SSVPP_TOSTR(mName)] = mName;
 
-			auto jv(Val::fromFile(profilePath));
+			auto jv(fromFile(profilePath));
 
 			GGJ_LTJ(name);
 
