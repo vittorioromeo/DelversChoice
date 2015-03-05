@@ -83,57 +83,7 @@ namespace ggj
 
 		float multipleIEChance;
 
-		inline GameData() { }
-		inline GameData(const std::string& mMode)
-		{
-			using namespace ssvj;
-
-			auto jv(fromFile("Data/gameData.json"));
-			const auto& jObj(jv[mMode]);
-
-			#define GGJ_LFJ(mType, mName) mName = jObj[SSVPP_TOSTR(mName)].as<mType>()
-
-			GGJ_LFJ(bool, timerEnabled);
-			GGJ_LFJ(int, timerMax);
-
-			GGJ_LFJ(float, valueHPS);
-			GGJ_LFJ(float, valueATK);
-			GGJ_LFJ(float, valueDEF);
-
-			GGJ_LFJ(float, difficulty);
-			GGJ_LFJ(float, difficultyInc);
-			GGJ_LFJ(float, difficultyEnemyMult);
-			GGJ_LFJ(float, rndRangeMultiplier);
-			GGJ_LFJ(float, meanDeviationRatio);
-
-			GGJ_LFJ(int, section1);
-			GGJ_LFJ(int, section2);
-			GGJ_LFJ(int, section3);
-			GGJ_LFJ(int, section4);
-
-			GGJ_LFJ(int, section0ChoiceCount);
-			GGJ_LFJ(int, section1ChoiceCount);
-			GGJ_LFJ(int, section2ChoiceCount);
-			GGJ_LFJ(int, section3ChoiceCount);
-			GGJ_LFJ(int, section4ChoiceCount);
-
-			GGJ_LFJ(float, choiceChanceCreature);
-			GGJ_LFJ(float, choiceChanceSingleDrop);
-			GGJ_LFJ(float, choiceChanceMultipleDrop);
-
-			GGJ_LFJ(float, dropDeviationMult);
-			GGJ_LFJ(float, dropValueMult);
-
-			GGJ_LFJ(float, multipleDropChance);
-
-			GGJ_LFJ(float, dropChanceIE);
-			GGJ_LFJ(float, dropChanceWeapon);
-			GGJ_LFJ(float, dropChanceArmor);
-
-			GGJ_LFJ(float, multipleIEChance);
-
-			#undef GGJ_LFJ
-		}
+		static GameData fromFile(const std::string& mMode);
 
 		inline float getRndR(float mMean, float mDeviation) noexcept
 		{
@@ -162,70 +112,54 @@ namespace ggj
 	{
 		static constexpr const char* profilePath{"Data/profileData.json"};
 
-		std::string name;
+		std::string name{""};
 
-		int scoreBeginner;
-		int scoreOfficial;
-		int scoreHardcore;
+		int scoreBeginner{0};
+		int scoreOfficial{0};
+		int scoreHardcore{0};
 
-		int gamesPlayed;
-		int timePlayed;
+		int gamesPlayed{0};
+		int timePlayed{0};
 
-		inline ProfileData()
-		{
-			using namespace ssvj;
-
-			if(!ssvufs::Path{profilePath}.exists<ssvufs::Type::All>())
-			{
-				auto newProfile(ssvj::mkObj());
-				/*newProfile["scoreBeginner"] = 0;
-				newProfile["scoreOfficial"] = 0;
-				newProfile["scoreHardcore"] = 0;
-
-				newProfile["gamesPlayed"] = 0;
-				newProfile["timePlayed"] = 0;*/
-
-				newProfile.writeToFile(profilePath);
-			}
-
-			auto jv(fromFile(profilePath));
-
-			#define GGJ_LFJ(mName, mDef) mName = jv.getIfHas<decltype(mName)>(SSVPP_TOSTR(mName), decltype(mName){mDef})
-
-			GGJ_LFJ(name, "unnamed");
-
-			GGJ_LFJ(scoreBeginner, 0);
-			GGJ_LFJ(scoreOfficial, 0);
-			GGJ_LFJ(scoreHardcore, 0);
-
-			GGJ_LFJ(gamesPlayed, 0);
-			GGJ_LFJ(timePlayed, 0);
-
-			#undef GGJ_LFJ
-		}
-
-		inline void saveToJson()
-		{
-			using namespace ssvj;
-
-			#define GGJ_LTJ(mName) jv[SSVPP_TOSTR(mName)] = mName;
-
-			auto jv(fromFile(profilePath));
-
-			GGJ_LTJ(name);
-
-			GGJ_LTJ(scoreBeginner);
-			GGJ_LTJ(scoreOfficial);
-			GGJ_LTJ(scoreHardcore);
-
-			GGJ_LTJ(gamesPlayed);
-			GGJ_LTJ(timePlayed);
-
-			jv.writeToFile(profilePath);
-
-			#undef GGJ_LTJ
-		}
+		static ProfileData fromFile();
+		void saveToJson();
 	};
+}
+
+SSVJ_CNV_OBJ_AUTO(ggj::GameData,
+	timerEnabled, timerMax,
+	valueHPS, valueATK, valueDEF,
+	difficulty, difficultyInc, difficultyEnemyMult,
+	rndRangeMultiplier, meanDeviationRatio,
+	section1, section2, section3, section4,
+	section0ChoiceCount, section1ChoiceCount, section2ChoiceCount, section3ChoiceCount, section4ChoiceCount,
+	choiceChanceCreature, choiceChanceSingleDrop, choiceChanceMultipleDrop,
+	dropDeviationMult, dropValueMult,
+	multipleDropChance,
+	dropChanceIE, dropChanceWeapon, dropChanceArmor,
+	multipleIEChance)
+
+SSVJ_CNV_OBJ_AUTO(ggj::ProfileData,
+	name,
+	scoreBeginner, scoreOfficial, scoreHardcore,
+	gamesPlayed, timePlayed)
+
+inline ggj::GameData ggj::GameData::fromFile(const std::string& mMode)
+{
+	return ssvj::fromFile("Data/gameData.json")[mMode].as<GameData>();
+}
+
+inline ggj::ProfileData ggj::ProfileData::fromFile()
+{
+	if(ssvufs::Path{profilePath}.exists<ssvufs::Type::All>())
+		return ssvj::fromFile(profilePath).as<ProfileData>();
+
+	return ProfileData{};
+}
+
+inline void ggj::ProfileData::saveToJson()
+{
+	ssvj::Val{*this}.writeToFile(profilePath);
 }
 
 #endif

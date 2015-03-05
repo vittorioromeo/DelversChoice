@@ -77,7 +77,7 @@ namespace ggj
 			std::string modeKey{"beginner"};
 			if(mode == Mode::Official) modeKey = "official";
 			else if(mode == Mode::Hardcore) modeKey = "hardcore";
-			gd = GameData{modeKey};
+			gd = GameData::fromFile(modeKey);
 
 			wcDrop = makeWeightedChance
 			(
@@ -145,7 +145,7 @@ namespace ggj
 
 		inline void refreshProfileData()
 		{
-			pd = ProfileData{};
+			pd = ProfileData::fromFile();
 		}
 
 
