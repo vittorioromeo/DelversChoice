@@ -21,6 +21,7 @@ namespace ggj
 		static constexpr SizeT elementCount{4};
 		static constexpr SizeT maxChoices{4};
 		static constexpr SizeT maxDrops{3};
+		static constexpr SizeT maxMenuChoices{5};
 		static constexpr float bonusMultiplier{2.5f};
 		static constexpr float malusMultiplier{0.8f};
 	};

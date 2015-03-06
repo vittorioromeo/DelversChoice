@@ -43,12 +43,13 @@ namespace ggj
 
 	struct GameSession
 	{
-		enum class State : int{Playing = 0, Dead = 1, Menu = 2, Settings = 3};
+		//enum class State : int{Playing = 0, Dead = 1, Menu = 2, Settings = 3};
+		enum class State : int{Playing = 0, Dead = 1};
 		enum class Mode : int{Beginner = 0, Official = 1, Hardcore = 2};
-		enum class SubMenu : int{Main = 0, SelectMode = 1};
+		// enum class SubMenu : int{Main = 0, SelectMode = 1};
 
-		State state{State::Menu};
-		SubMenu subMenu{SubMenu::Main};
+		State state{State::Playing};
+		//SubMenu subMenu{SubMenu::Main};
 		int roomNumber{0};
 		Creature player;
 		std::array<ssvu::UPtr<Choice>, Constants::maxChoices> choices, nextChoices;
@@ -114,7 +115,7 @@ namespace ggj
 			getAssets().soundPlayer.stop();
 			shake = deathTextTime = 0.f;
 
-			state = State::Menu;
+			//state = State::Menu;
 
 			currentMusic = getAssets().menu;
 			refreshMusic();

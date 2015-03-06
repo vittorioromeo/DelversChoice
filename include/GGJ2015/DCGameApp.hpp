@@ -5,15 +5,112 @@
 
 namespace ggj
 {
-	class GameApp : public Boilerplate::App
+	class MenuChoice
 	{
 		private:
+			std::string str;
+			ssvu::Func<void()> fn;
+
+		public:
+			template<typename T> inline MenuChoice(std::string mStr, T&& mFn)
+				: str(std::move(mStr)), fn(FWD(mFn))
+			{
+
+			}
+
+			inline const auto& getStr() const noexcept { return str; }
+			inline void execFn() { fn(); }
+	};
+
+	class MenuState;
+
+	class Menu
+	{
+		friend class MenuState;
+
+		private:
+			ssvu::MonoRecycler<MenuChoice> rcyChoices;
+			ssvu::MonoRecycler<MenuState> rcyStates;
+			std::vector<MenuState*> stateStack;
+
+		public:
+			using RPtrChoice = decltype(rcyChoices)::PtrType;
+			using RPtrState = decltype(rcyStates)::PtrType;
+
+		private:
+
+
+		public:
+			inline void go(RPtrState& mX) { stateStack.emplace_back(mX.get()); }
+			inline RPtrState mkState() { return rcyStates.create(*this); }
+
+			void executeChoice(int mI);
+			template<typename TF> void forCurrentChoices(TF&& mFn);
+			inline void back() { stateStack.pop_back(); }
+	};
+
+	class MenuState
+	{
+		friend class Menu;
+
+		private:
+			Menu& menu;
+			std::array<Menu::RPtrChoice, Constants::maxMenuChoices> choices;
+
+		public:
+			inline MenuState(Menu& mMenu) : menu(mMenu) { }
+
+			template<typename... TArgs> inline void addChoice(SizeT mIdx, TArgs&&... mArgs)
+			{
+				choices[mIdx] = menu.rcyChoices.create(FWD(mArgs)...);
+			}
+
+			inline void executeChoice(int mI)
+			{
+				if(choices[mI] == nullptr) return;
+				choices[mI]->execFn();
+			}
+	};
+
+	inline void Menu::executeChoice(int mI)
+	{
+		stateStack.back()->executeChoice(mI);
+	}
+
+	template<typename TF> void Menu::forCurrentChoices(TF&& mFn)
+	{
+		// TODO: very generic iteration helper (auto mIdx, auto& mX) ??
+		auto& choices(stateStack.back()->choices);
+		for(auto i(0u); i < choices.size(); ++i)
+		{
+			auto& c(choices[i]);
+			FWD(mFn)(i, c);
+		}
+	}
+
+
+	class GameApp : public Boilerplate::App
+	{
+		enum class State{Menu, Game};
+
+		private:
+			State state{State::Menu};
+
+			Menu menu;
+
+			Menu::RPtrState stMain;
+			Menu::RPtrState stPlay;
+			Menu::RPtrState stSettings;
+
+
+
 			GameSession gs;
+
 			ssvs::BitmapText txtTimer{mkTxtOBBig()}, txtRoom{mkTxtOBBig()}, txtDeath{mkTxtOBBig()},
 							txtLog{mkTxtOBSmall()}, txtMode{mkTxtOBSmall()};
 
 			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked},
-				txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked}, txtSelectMode{*getAssets().fontObStroked};
+				txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked};
 			BP::Str* bpstrRoom;
 			BP::Str* bpstrMode;
 
@@ -34,7 +131,7 @@ namespace ggj
 				auto& gState(gameState);
 
 				// TODO: better input management, choose handling type
-				gState.addInput({{IK::Escape}}, [this](FT){ if(gs.state != GameSession::State::Menu) gs.gotoMenu(); }, IT::Once);
+				gState.addInput({{IK::Escape}}, [this](FT){ if(state != State::Menu) gs.gotoMenu(); }, IT::Once);
 
 				/*
 				gState.addInput({{IK::A}}, [this](FT){ gameCamera.pan(-4, 0); });
@@ -52,9 +149,50 @@ namespace ggj
 				gState.addInput({{IK::Num5}}, [this](FT){ executeChoice(4); }, IT::Once);
 			}
 
+			inline void goMenuState(Menu::RPtrState& mX)
+			{
+				menu.go(mX);
+				recreateTxtMenu();
+			}
+
+			inline void goMenuBack()
+			{
+				menu.back();
+				recreateTxtMenu();
+			}
+
+			inline const auto& getModeStrArray()
+			{
+				static auto array(ssvu::mkArray
+				(
+					"Beginner mode",
+					"Official mode",
+					"Hardcore mode"
+				));
+
+				return array;
+			}
+
+			inline void initMenu()
+			{
+				stMain = menu.mkState();
+				stMain->addChoice(0, "Play game", [this]{ goMenuState(stPlay); });
+				stMain->addChoice(1, "Settings", [this]{ goMenuState(stSettings); });
+				stMain->addChoice(4, "Exit game", [this]{ stop(); });
+
+				stPlay = menu.mkState();
+				stPlay->addChoice(0, getModeStrArray()[0], [this]{ gotoGame(GameSession::Mode::Beginner); });
+				stPlay->addChoice(1, getModeStrArray()[1], [this]{ gotoGame(GameSession::Mode::Official); });
+				stPlay->addChoice(2, getModeStrArray()[2], [this]{ gotoGame(GameSession::Mode::Hardcore); });
+				stPlay->addChoice(4, "Go back", [this]{ goMenuBack(); });
+
+				goMenuState(stMain);
+			}
+
 			inline void gotoMenu()
 			{
 				gs.gotoMenu();
+				state = State::Menu;
 
 				sScoreName->setStr(gs.pd.name);
 
@@ -66,9 +204,18 @@ namespace ggj
 				sScorePlayedTime->setStr(ssvu::toStr(gs.pd.timePlayed));
 			}
 
+			inline void gotoGame(GameSession::Mode mMode)
+			{
+				state = State::Game;
+				gs.mode = mMode;
+				gs.restart();
+			}
+
 			inline void executeChoiceMenu(int mI)
 			{
-				if(gs.subMenu == GameSession::SubMenu::Main)
+				menu.executeChoice(mI);
+
+				/*if(gs.subMenu == GameSession::SubMenu::Main)
 				{
 					if(mI == 0) gs.subMenu = GameSession::SubMenu::SelectMode;
 					else if(mI == 1) gs.state = GameSession::State::Settings;
@@ -88,7 +235,7 @@ namespace ggj
 					else if(mI == 2) gs.mode = GameSession::Mode::Hardcore;
 
 					gs.restart();
-				}
+				}*/
 			}
 
 			inline void executeChoiceDead(int mI)
@@ -129,24 +276,16 @@ namespace ggj
 
 			inline void executeChoice(int mI)
 			{
-				if(gs.state == GameSession::State::Menu) executeChoiceMenu(mI);
-				else if(gs.state == GameSession::State::Dead) executeChoiceDead(mI);
+				if(state == State::Menu) executeChoiceMenu(mI);
 				else if(gs.state == GameSession::State::Playing) executeChoicePlaying(mI);
-
-
-
+				else if(gs.state == GameSession::State::Dead) executeChoiceDead(mI);
 			}
+
+
 
 			inline const auto& getModeStr()
 			{
-				static auto array(ssvu::mkArray
-				(
-					"Beginner mode",
-					"Official mode",
-					"Hardcore mode"
-				));
-
-				return array[static_cast<int>(gs.mode)];
+				return getModeStrArray()[static_cast<int>(gs.mode)];
 			}
 
 			inline void updatePlaying(FT mFT)
@@ -202,7 +341,7 @@ namespace ggj
 			inline void updateMenu(FT mFT)
 			{
 				txtMenu.update(mFT);
-				txtSelectMode.update(mFT);
+				//txtSelectMode.update(mFT);
 				txtScores.update(mFT);
 			}
 
@@ -221,8 +360,8 @@ namespace ggj
 
 				if(gs.deathTextTime > 0) gs.deathTextTime -= mFT;
 
-				if(gs.state == GameSession::State::Playing) updatePlaying(mFT);
-				else if(gs.state == GameSession::State::Menu) updateMenu(mFT);
+				if(state == State::Menu) updateMenu(mFT);
+				else if(gs.state == GameSession::State::Playing) updatePlaying(mFT);
 				else if(gs.state == GameSession::State::Dead) updateDead(mFT);
 
 				if(gs.shake > 0)
@@ -372,14 +511,18 @@ namespace ggj
 
 				txtDeath.setPosition(320 / 2.f, 30);
 				txtMenu.setPosition(320 / 2.f, 70);
-				txtSelectMode.setPosition(320 / 2.f, 70);
+//				txtSelectMode.setPosition(320 / 2.f, 70);
 
 				txtScores.setPosition(320 - 5, 240 - 5);
 
 				render(txtDeath);
 
+				render(txtMenu);
+
+				/*
 				if(gs.subMenu == GameSession::SubMenu::Main) render(txtMenu);
 				else if(gs.subMenu == GameSession::SubMenu::SelectMode) render(txtSelectMode);
+*/
 
 				render(txtScores);
 				render(txtCredits);
@@ -387,6 +530,19 @@ namespace ggj
 
 			inline void draw()
 			{
+				ssvs::setOrigin(txtDeath, ssvs::getLocalCenter);
+				ssvs::setOrigin(txtRestart, ssvs::getLocalCenter);
+				ssvs::setOrigin(txtMenu, ssvs::getLocalCenter);
+//				ssvs::setOrigin(txtSelectMode, ssvs::getLocalCenter);
+				ssvs::setOrigin(txtScores, ssvs::getLocalSE);
+				ssvs::setOrigin(txtCredits, ssvs::getLocalSW);
+
+				if(state == State::Menu)
+				{
+					drawMenu();
+					return;
+				}
+
 				gameCamera.apply();
 
 				if(gs.state == GameSession::State::Playing || gs.deathTextTime > 0)
@@ -394,17 +550,10 @@ namespace ggj
 
 				gameCamera.unapply();
 
-				ssvs::setOrigin(txtDeath, ssvs::getLocalCenter);
-				ssvs::setOrigin(txtRestart, ssvs::getLocalCenter);
-				ssvs::setOrigin(txtMenu, ssvs::getLocalCenter);
-				ssvs::setOrigin(txtSelectMode, ssvs::getLocalCenter);
-				ssvs::setOrigin(txtScores, ssvs::getLocalSE);
-				ssvs::setOrigin(txtCredits, ssvs::getLocalSW);
 
 				txtCredits.setPosition(5, 240 - 5);
 
 				if(gs.state == GameSession::State::Dead) drawDead();
-				if(gs.state == GameSession::State::Menu) drawMenu();
 			}
 
 			inline auto& mkTP(ssvs::BitmapTextRich& mTxt, const sf::Color& mC)
@@ -412,6 +561,25 @@ namespace ggj
 				auto& temp(mTxt.template mk<BP::ClFG>(mC));
 				temp.setAnimPulse(0.05f, 100);
 				return temp;
+			}
+
+			inline void recreateTxtMenu()
+			{
+				txtMenu.clear();
+				txtMenu.setAlign(ssvs::TextAlign::Center);
+				txtMenu	<< txtMenu.mk<BP::Trk>(-3);
+
+				menu.forCurrentChoices([this](auto mIdx, auto& mC)
+				{
+					if(mC == nullptr)
+					{
+						txtMenu << "\n";
+					}
+					else
+					{
+						txtMenu << mkTP(txtMenu, sfc::Red) << ssvu::toStr(mIdx + 1) << ". " << sfc::White << mC->getStr() << "\n";
+					}
+				});
 			}
 
 		public:
@@ -426,19 +594,19 @@ namespace ggj
 							<< sfc::White << "Additional help: " << sfc::Magenta << "Davide Iuffrida\n"
 							<< sfc::Cyan << "http://vittorioromeo.info\nhttp://nicolabombaci.com";
 
+				/*
 				txtMenu.setAlign(ssvs::TextAlign::Center);
 				txtMenu	<< txtMenu.mk<BP::Trk>(-3)
 						<< mkTP(txtMenu, sfc::Red) << "1. " << sfc::White << "Play game\n"
 						<< mkTP(txtMenu, sfc::Red) << "2. " << sfc::White << "Settings\n\n\n"
 						<< mkTP(txtMenu, sfc::Red) << "5. " << sfc::White << "Exit game\n";
-
 				txtSelectMode.setAlign(ssvs::TextAlign::Center);
 				txtSelectMode << txtSelectMode.mk<BP::Trk>(-3)
 						<< mkTP(txtSelectMode, sfc::Red) << "1. " << sfc::White << "Beginner mode\n"
 						<< mkTP(txtSelectMode, sfc::Red) << "2. " << sfc::White << "Official mode\n"
 						<< mkTP(txtSelectMode, sfc::Red) << "3. " << sfc::White << "Hardcore mode\n\n"
 						<< mkTP(txtSelectMode, sfc::Red) << "5. " << sfc::White << "Go back\n";
-
+*/
 				bpstrRoom = &txtRestart.mk<BP::Str>();
 				bpstrMode = &txtRestart.mk<BP::Str>();
 				txtRestart	<< txtRestart.mk<BP::Trk>(-3)
@@ -480,6 +648,7 @@ namespace ggj
 				txtLog.setPosition(Vec2f{75 + 12, 180});
 
 				initInput();
+				initMenu();
 
 				oldPos = gameCamera.getCenter();
 
