@@ -211,33 +211,6 @@ namespace ggj
 				gs.restart();
 			}
 
-			inline void executeChoiceMenu(int mI)
-			{
-				menu.executeChoice(mI);
-
-				/*if(gs.subMenu == GameSession::SubMenu::Main)
-				{
-					if(mI == 0) gs.subMenu = GameSession::SubMenu::SelectMode;
-					else if(mI == 1) gs.state = GameSession::State::Settings;
-					else if(mI == 4) stop();
-				}
-				else if(gs.subMenu == GameSession::SubMenu::SelectMode)
-				{
-					if(mI == 3) return;
-					if(mI == 4)
-					{
-						gs.subMenu = GameSession::SubMenu::Main;
-						return;
-					}
-
-					if(mI == 0) gs.mode = GameSession::Mode::Beginner;
-					else if(mI == 1) gs.mode = GameSession::Mode::Official;
-					else if(mI == 2) gs.mode = GameSession::Mode::Hardcore;
-
-					gs.restart();
-				}*/
-			}
-
 			inline void executeChoiceDead(int mI)
 			{
 				if(mI == 0) gotoMenu();
@@ -276,7 +249,7 @@ namespace ggj
 
 			inline void executeChoice(int mI)
 			{
-				if(state == State::Menu) executeChoiceMenu(mI);
+				if(state == State::Menu) menu.executeChoice(mI);
 				else if(gs.state == GameSession::State::Playing) executeChoicePlaying(mI);
 				else if(gs.state == GameSession::State::Dead) executeChoiceDead(mI);
 			}
@@ -491,9 +464,6 @@ namespace ggj
 			{
 				txtDeath.setString("You have perished.");
 
-				//txtRestart.clear();
-
-
 				txtDeath.setPosition(320 / 2.f, 80);
 				txtRestart.setPosition(320 / 2.f, 120);
 
@@ -501,7 +471,6 @@ namespace ggj
 				render(txtRestart);
 
 				txtDeath.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
-				//txtRestart.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
 			}
 
 			inline void drawMenu()
@@ -511,19 +480,10 @@ namespace ggj
 
 				txtDeath.setPosition(320 / 2.f, 30);
 				txtMenu.setPosition(320 / 2.f, 70);
-//				txtSelectMode.setPosition(320 / 2.f, 70);
-
 				txtScores.setPosition(320 - 5, 240 - 5);
 
 				render(txtDeath);
-
 				render(txtMenu);
-
-				/*
-				if(gs.subMenu == GameSession::SubMenu::Main) render(txtMenu);
-				else if(gs.subMenu == GameSession::SubMenu::SelectMode) render(txtSelectMode);
-*/
-
 				render(txtScores);
 				render(txtCredits);
 			}
@@ -533,7 +493,6 @@ namespace ggj
 				ssvs::setOrigin(txtDeath, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtRestart, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtMenu, ssvs::getLocalCenter);
-//				ssvs::setOrigin(txtSelectMode, ssvs::getLocalCenter);
 				ssvs::setOrigin(txtScores, ssvs::getLocalSE);
 				ssvs::setOrigin(txtCredits, ssvs::getLocalSW);
 
@@ -550,9 +509,7 @@ namespace ggj
 
 				gameCamera.unapply();
 
-
 				txtCredits.setPosition(5, 240 - 5);
-
 				if(gs.state == GameSession::State::Dead) drawDead();
 			}
 
@@ -594,19 +551,6 @@ namespace ggj
 							<< sfc::White << "Additional help: " << sfc::Magenta << "Davide Iuffrida\n"
 							<< sfc::Cyan << "http://vittorioromeo.info\nhttp://nicolabombaci.com";
 
-				/*
-				txtMenu.setAlign(ssvs::TextAlign::Center);
-				txtMenu	<< txtMenu.mk<BP::Trk>(-3)
-						<< mkTP(txtMenu, sfc::Red) << "1. " << sfc::White << "Play game\n"
-						<< mkTP(txtMenu, sfc::Red) << "2. " << sfc::White << "Settings\n\n\n"
-						<< mkTP(txtMenu, sfc::Red) << "5. " << sfc::White << "Exit game\n";
-				txtSelectMode.setAlign(ssvs::TextAlign::Center);
-				txtSelectMode << txtSelectMode.mk<BP::Trk>(-3)
-						<< mkTP(txtSelectMode, sfc::Red) << "1. " << sfc::White << "Beginner mode\n"
-						<< mkTP(txtSelectMode, sfc::Red) << "2. " << sfc::White << "Official mode\n"
-						<< mkTP(txtSelectMode, sfc::Red) << "3. " << sfc::White << "Hardcore mode\n\n"
-						<< mkTP(txtSelectMode, sfc::Red) << "5. " << sfc::White << "Go back\n";
-*/
 				bpstrRoom = &txtRestart.mk<BP::Str>();
 				bpstrMode = &txtRestart.mk<BP::Str>();
 				txtRestart	<< txtRestart.mk<BP::Trk>(-3)
@@ -614,9 +558,6 @@ namespace ggj
 							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "2 " << sfc::White << "to restart.\n"
 							<< sfc::White << "You reached room " << sfc::Green << *bpstrRoom << sfc::White << ".\n"
 							<< sfc::Cyan << "(" << *bpstrMode << ")";
-
-
-
 
 				sScoreName = &txtScores.mk<BP::Str>();
 				sScoreBeginner = &txtScores.mk<BP::Str>();
