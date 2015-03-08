@@ -3,6 +3,49 @@
 
 #include "../GGJ2015/DCCommon.hpp"
 
+namespace Exp
+{
+	/*using namespace ssvs;
+
+	class BTRCEffect
+	{
+
+	};
+
+	class BTRChunk
+	{
+		private:
+			const BitmapFont* bitmapFont{nullptr};
+			const sf::Texture* texture{nullptr};
+			mutable sf::FloatRect bounds;
+			std::string str;
+			std::vector<BTRCEffect> effects;
+			bool enabled{true};
+			mutable bool mustRefreshGeometry{true}, mustRefreshEffects{true};
+			mutable ssvs::VertexVector<sf::PrimitiveType::Quads> vertices;
+
+			inline void refreshIfNeeded() const
+			{
+				refreshGeometryIfNeeded();
+				refreshEffectsIfNeeded();
+			}
+
+			inline void refreshGeometryIfNeeded() const
+			{
+				if(!mustRefreshGeometry) return;
+				mustRefreshGeometry = false;
+			}
+
+			inline void refreshEffectsIfNeeded() const
+			{
+				if(!mustRefreshEffects) return;
+				mustRefreshEffects = false;
+			}
+	};*/
+}
+
+
+
 namespace ggj
 {
 	class MenuChoice
@@ -481,6 +524,7 @@ namespace ggj
 				txtDeath.setPosition(320 / 2.f, 30);
 				txtMenu.setPosition(320 / 2.f, 70);
 				txtScores.setPosition(320 - 5, 240 - 5);
+				txtCredits.setPosition(5, 240 - 5);
 
 				render(txtDeath);
 				render(txtMenu);
@@ -509,7 +553,7 @@ namespace ggj
 
 				gameCamera.unapply();
 
-				txtCredits.setPosition(5, 240 - 5);
+
 				if(gs.state == GameSession::State::Dead) drawDead();
 			}
 
