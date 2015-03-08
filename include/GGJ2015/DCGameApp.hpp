@@ -5,43 +5,403 @@
 
 namespace Exp
 {
-	/*using namespace ssvs;
+	using namespace ssvs;
 
-	class BTRCEffect
+	struct BSC_Tracking
 	{
+		float value;
+	};
 
+	class BTRRoot;
+	class BTRChunk;
+	template<typename T, typename... TArgs> struct BSC_Eff;
+
+	class BSC_StrRef
+	{
+		friend class BTRChunk;
+
+		private:
+			BTRChunk* chunk{nullptr};
+
+		public:
+			template<typename T> auto& operator=(T&& mX);
+			bool operator!=(const std::string& mX);
+	};
+
+	class BTREffect
+	{
+		friend class BTRRoot;
+
+		public:
+			inline virtual void update(FT) noexcept { }
+			inline virtual void apply(BTRChunk&) noexcept { }
 	};
 
 	class BTRChunk
 	{
+		friend class BTRRoot;
+
+		private:
+			BTRRoot& root;
+			BTRChunk* parent{nullptr};
+			std::string str;
+			std::vector<BTREffect*> childrenEffects;
+			std::vector<BTRChunk*> children;
+			SizeT idxVBegin, idxVEnd;
+
+			float trackingModifier{0.f};
+
+			template<typename... TArgs> BTRChunk& mkChild(TArgs&&... mArgs);
+			template<typename T, typename... TArgs> T& mkEffect(TArgs&&... mArgs);
+
+		public:
+			inline BTRChunk(BTRRoot& mRoot) noexcept : root{mRoot} { }
+
+			template<typename TF> void forVertices(TF mFn) noexcept;
+
+			void refreshGeometry() noexcept;
+			void refreshEffects() noexcept;
+
+			inline void update(FT mFT) noexcept
+			{
+				for(auto& e : childrenEffects) e->update(mFT);
+				for(auto& c : children) c->update(mFT);
+			}
+
+			inline float getTracking() noexcept
+			{
+				if(parent == nullptr) return 0;
+				return parent->getTracking() + parent->trackingModifier;
+			}
+
+			template<typename T> void setStr(T&& mX);
+			inline const auto& getStr() const noexcept { return str; }
+
+			auto& operator<<(const std::string& mX);
+			auto& operator<<(const BSC_Tracking& mX);
+			auto& operator<<(const sf::Color& mX);
+			auto& operator<<(BSC_StrRef& mX);
+			template<typename T, typename... TArgs> auto& operator<<(const BSC_Eff<T, TArgs...>& mX);
+	};
+
+	using BTRChunkRecycler = ssvu::MonoRecycler<BTRChunk>;
+	using BTRChunkPtr = typename BTRChunkRecycler::PtrType;
+
+	using BTREffectRecycler = ssvu::PolyRecycler<BTREffect>;
+	using BTREffectPtr = typename BTREffectRecycler::PtrType;
+
+	struct BTRDrawState
+	{
+		float xMin, xMax, yMin, yMax;
+		SizeT iX, iY, width, height;
+
+		inline void reset(const BitmapFont& mBF) noexcept
+		{
+			xMin = xMax = yMin = yMax = 0;
+			iX = iY = 0;
+			width = mBF.getCellWidth();
+			height = mBF.getCellHeight();
+		}
+	};
+
+	class BTREColorFG : public BTREffect
+	{
+		private:
+			sf::Color colorFG;
+
+		public:
+			inline BTREColorFG(const sf::Color& mColorFG) noexcept : colorFG{mColorFG} { }
+
+			inline void update(FT) noexcept override { }
+			inline void apply(BTRChunk& mX) noexcept override
+			{
+				mX.forVertices([this](auto mIdx, auto mCount, auto& mV, auto& mVO){ mV.color = colorFG; });
+			}
+	};
+
+	class BTREWave : public BTREffect
+	{
+		private:
+			float angle;
+			float amplitude;
+			float repeat;
+			float speedMult;
+
+		public:
+			inline BTREWave(float mAmplitude = 2.f, float mSpeedMult = 0.1f, float mRepeat = 4.f, float mAngleStart = 0.f)
+				: angle{mAngleStart}, amplitude{mAmplitude}, repeat{mRepeat}, speedMult{mSpeedMult} { }
+
+			inline void update(FT mFT) noexcept override { angle = ssvu::wrapRad(angle + mFT * speedMult); }
+			inline void apply(BTRChunk& mX) noexcept override
+			{
+				mX.forVertices([this](auto mIdx, auto mCount, auto& mV, auto& mVO)
+				{
+					mV.position.y = mVO.position.y + std::sin(angle + (mIdx / repeat)) * amplitude;
+				});
+			}
+	};
+
+	template<typename T, typename... TArgs> struct BSC_Eff
+	{
+		std::tuple<TArgs...> args;
+
+		inline BSC_Eff(TArgs... mArgs) : args{mArgs...} { }
+	};
+
+	template<typename T, typename... TArgs> auto mkEff(TArgs&&... mArgs)
+	{
+		return BSC_Eff<T, TArgs...>{FWD(mArgs)...};
+	}
+
+	class BTRRoot : public sf::Transformable, public sf::Drawable
+	{
+		friend class BTRChunk;
+
 		private:
 			const BitmapFont* bitmapFont{nullptr};
 			const sf::Texture* texture{nullptr};
-			mutable sf::FloatRect bounds;
-			std::string str;
-			std::vector<BTRCEffect> effects;
-			bool enabled{true};
-			mutable bool mustRefreshGeometry{true}, mustRefreshEffects{true};
-			mutable ssvs::VertexVector<sf::PrimitiveType::Quads> vertices;
+			mutable VertexVector<sf::PrimitiveType::Quads> vertices, verticesOriginal;
+			mutable sf::FloatRect bounds, globalBounds;
+			mutable bool mustRefreshGeometry{true};
+
+			BTRChunkRecycler chunkRecycler;
+			std::vector<BTRChunkPtr> chunkManager;
+
+			BTREffectRecycler effectRecycler;
+			std::vector<BTREffectPtr> effectManager;
+
+			BTRChunk* baseChunk{&mkChunk()};
+			float alignMult{0.f};
+
+			mutable BTRDrawState bdd;
+			mutable std::vector<SizeT> rowCells;
 
 			inline void refreshIfNeeded() const
 			{
 				refreshGeometryIfNeeded();
-				refreshEffectsIfNeeded();
+				baseChunk->refreshEffects();
 			}
 
 			inline void refreshGeometryIfNeeded() const
 			{
 				if(!mustRefreshGeometry) return;
 				mustRefreshGeometry = false;
+
+				refreshGeometryStart();
+				baseChunk->refreshGeometry();
+				verticesOriginal = vertices;
+				refreshGeometryFinish();
 			}
 
-			inline void refreshEffectsIfNeeded() const
+			template<typename... TArgs> inline BTRChunk& mkChunk(TArgs&&... mArgs)
 			{
-				if(!mustRefreshEffects) return;
-				mustRefreshEffects = false;
+				return chunkRecycler.getCreateEmplace(chunkManager, *this, FWD(mArgs)...);
 			}
-	};*/
+
+			template<typename T, typename... TArgs> inline T& mkEffect(TArgs&&... mArgs)
+			{
+				return effectRecycler.getCreateEmplace<T>(effectManager, FWD(mArgs)...);
+			}
+
+			inline void refreshGeometryStart() const noexcept
+			{
+				SSVU_ASSERT(bitmapFont != nullptr);
+
+				rowCells.clear();
+				vertices.clear();
+				verticesOriginal.clear();
+				bdd.reset(*bitmapFont);
+			}
+
+			inline void refreshGeometryFinish() const
+			{
+				// Recalculate bounds
+				auto width(bdd.xMax - bdd.xMin);
+				bounds = {bdd.xMin, bdd.yMin, width, bdd.yMax - bdd.yMin};
+				globalBounds = getTransform().transformRect(bounds);
+
+				// Add current row to `rowCells`, return if its the only one
+				if(rowCells.empty()) return;
+				rowCells.emplace_back(bdd.iX);
+
+				SizeT lastVIdx{0};
+
+				for(auto rc : rowCells)
+				{
+					auto vIdx(lastVIdx);
+
+					// Find out the width of the current row
+					auto targetVIdx(lastVIdx + rc * 4);
+					float maxX{0.f};
+					for(; vIdx < targetVIdx; vIdx += 4) maxX = std::max({maxX, vertices[vIdx].position.x, vertices[vIdx + 1].position.x});
+
+					// Apply horizontal alignment
+					auto offset(width - maxX);
+					for(; lastVIdx < vIdx; ++lastVIdx) vertices[lastVIdx].position.x += offset * alignMult;
+				}
+			}
+
+			inline void mkVertices(BTRChunk& mChunk) const
+			{
+				const auto& str(mChunk.str);
+				//vertices.reserve(str.size() * 4);
+
+				mChunk.idxVBegin = vertices.size();
+
+				for(const auto& c : str)
+				{
+					switch(c)
+					{
+						case L'\t': bdd.iX += 4;											continue;
+						case L'\n': ++bdd.iY; rowCells.emplace_back(bdd.iX); bdd.iX = 0;	continue;
+						case L'\v': bdd.iY += 4;											continue;
+					}
+
+					const auto& rect(bitmapFont->getGlyphRect(c));
+					auto spacing(mChunk.getTracking() * bdd.iX);
+
+					auto gLeft(bdd.iX * bdd.width + spacing);			ssvu::clampMax(bdd.xMin, gLeft);
+					auto gRight((bdd.iX + 1) * bdd.width + spacing);	ssvu::clampMin(bdd.xMax, gRight);
+					auto gTop(bdd.iY * bdd.height);						ssvu::clampMax(bdd.yMin, gTop);
+					auto gBottom((bdd.iY + 1) * bdd.height);			ssvu::clampMin(bdd.yMax, gBottom);
+
+					vertices.emplace_back(Vec2f(gLeft, gTop),		sf::Color::White,	Vec2f(rect.left,				rect.top));
+					vertices.emplace_back(Vec2f(gRight, gTop),		sf::Color::White,	Vec2f(rect.left + rect.width,	rect.top));
+					vertices.emplace_back(Vec2f(gRight, gBottom),	sf::Color::White,	Vec2f(rect.left + rect.width,	rect.top + rect.height));
+					vertices.emplace_back(Vec2f(gLeft, gBottom),	sf::Color::White,	Vec2f(rect.left,				rect.top + rect.height));
+
+					++bdd.iX;
+				}
+
+				mChunk.idxVEnd = vertices.size();
+			}
+
+		public:
+			inline BTRRoot() noexcept { }
+			inline BTRRoot(const BitmapFont& mBF) noexcept : bitmapFont{&mBF}, texture{&bitmapFont->getTexture()} { }
+
+			inline void clear()
+			{
+				mustRefreshGeometry = true;
+				chunkManager.clear();
+				baseChunk = &mkChunk();
+			}
+			inline void update(FT mFT) noexcept
+			{
+				baseChunk->update(mFT);
+			}
+
+			template<typename T> inline auto& operator<<(T&& mX) { return (*baseChunk) << FWD(mX); }
+
+			inline void setAlign(TextAlign mX) noexcept
+			{
+				auto newAlignMult(static_cast<float>(static_cast<int>(mX)) * 0.5f);
+
+				if(alignMult == newAlignMult) return;
+
+				alignMult = newAlignMult;
+				mustRefreshGeometry = true;
+			}
+
+			inline void draw(sf::RenderTarget& mRenderTarget, sf::RenderStates mRenderStates) const override
+			{
+				SSVU_ASSERT(bitmapFont != nullptr && texture != nullptr);
+
+				refreshIfNeeded();
+
+				mRenderStates.texture = texture;
+				mRenderStates.transform *= getTransform();
+				mRenderTarget.draw(vertices, mRenderStates);
+			}
+
+			inline const auto& getBitmapFont() const noexcept	{ return bitmapFont; }
+			inline const auto& getLocalBounds() const			{ refreshGeometryIfNeeded(); return bounds; }
+			inline auto getGlobalBounds() const					{ refreshGeometryIfNeeded(); return globalBounds; }
+	};
+
+	template<typename TF> inline void BTRChunk::forVertices(TF mFn) noexcept
+	{
+		for(auto i(idxVBegin); i < idxVEnd; ++i) mFn(idxVEnd - i - 1, idxVEnd - idxVBegin, root.vertices[i], root.verticesOriginal[i]);
+	}
+
+	inline void BTRChunk::refreshGeometry() noexcept
+	{
+		root.mkVertices(*this);
+		for(auto& c : children) c->refreshGeometry();
+	}
+	inline void BTRChunk::refreshEffects() noexcept
+	{
+		if(parent != nullptr)
+			for(auto& e : parent->childrenEffects) e->apply(*this);
+
+		for(auto& c : children) c->refreshEffects();
+
+		/*for(auto& c : children)
+		{
+			for(auto& e : childrenEffects) e->apply(*c);
+			c->refreshEffects();
+		}*/
+	}
+	template<typename... TArgs> inline BTRChunk& BTRChunk::mkChild(TArgs&&... mArgs)
+	{
+		auto& result(root.mkChunk(FWD(mArgs)...));
+		result.parent = this;
+		children.emplace_back(&result);
+		return result;
+	}
+	template<typename T, typename... TArgs> inline T& BTRChunk::mkEffect(TArgs&&... mArgs)
+	{
+		auto& result(root.mkEffect<T>(FWD(mArgs)...));
+		childrenEffects.emplace_back(&result);
+		return result;
+	}
+
+	inline auto& BTRChunk::operator<<(const std::string& mX)
+	{
+		auto& result(mkChild());
+		result.str = mX;
+
+		root.mustRefreshGeometry = true;
+		return result;
+	}
+
+	inline auto& BTRChunk::operator<<(const BSC_Tracking& mX)
+	{
+		trackingModifier = mX.value;
+
+		root.mustRefreshGeometry = true;
+		return *this;
+	}
+
+	inline auto& BTRChunk::operator<<(const sf::Color& mX)
+	{
+		mkEffect<BTREColorFG>(mX);
+		return *this;
+	}
+
+	template<typename T, typename... TArgs> auto& BTRChunk::operator<<(const BSC_Eff<T, TArgs...>& mX)
+	{
+		ssvu::explode([this, &mX](TArgs... mXs){ mkEffect<T>(mXs...); }, mX.args);
+		return *this;
+	}
+
+	template<typename T> inline auto& BSC_StrRef::operator=(T&& mX) { chunk->setStr(FWD(mX)); return *this; }
+	inline bool BSC_StrRef::operator!=(const std::string& mX) { return chunk->getStr() != mX; }
+
+	template<typename T> inline void BTRChunk::setStr(T&& mX)
+	{
+		str = FWD(mX);
+		root.mustRefreshGeometry = true;
+	}
+
+	inline auto& BTRChunk::operator<<(BSC_StrRef& mX)
+	{
+		auto& result(mkChild());
+		mX.chunk = &result;
+
+		root.mustRefreshGeometry = true;
+		return result;
+	}
 }
 
 
@@ -359,6 +719,7 @@ namespace ggj
 				txtMenu.update(mFT);
 				//txtSelectMode.update(mFT);
 				txtScores.update(mFT);
+				tr.update(mFT);
 			}
 
 			inline void updateDead(FT mFT)
@@ -373,6 +734,22 @@ namespace ggj
 			{
 				txtCredits.update(mFT);
 				gameCamera.update<float>(mFT);
+				reftestC += mFT;
+
+				if(reftestC > 50)
+				{
+					if(reftest != "everyone!")
+					{
+						reftest = "everyone!";
+					}
+					else
+					{
+						reftest = "Hello";
+					}
+
+					reftestC = 0;
+				}
+
 
 				if(gs.deathTextTime > 0) gs.deathTextTime -= mFT;
 
@@ -540,6 +917,10 @@ namespace ggj
 				ssvs::setOrigin(txtScores, ssvs::getLocalSE);
 				ssvs::setOrigin(txtCredits, ssvs::getLocalSW);
 
+				ssvs::setOrigin(tr, ssvs::getLocalCenter);
+				tr.setPosition(100, 130);
+				render(tr);
+
 				if(state == State::Menu)
 				{
 					drawMenu();
@@ -584,8 +965,15 @@ namespace ggj
 			}
 
 		public:
+			Exp::BTRRoot tr{*getAssets().fontObStroked};
+			Exp::BSC_StrRef reftest;
+			float reftestC;
+
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}
 			{
+				tr.setAlign(ssvs::TextAlign::Center);
+				tr << Exp::mkEff<Exp::BTREWave>(1.5f, 0.03f) << "Testing rich text...\n" << Exp::BSC_Tracking{-3} << sfc::Red << "Here it goes: " << sfc::Cyan << reftest << Exp::BSC_Tracking{+1} << "\n:D";
+
 				txtCredits	<< txtCredits.mk<BP::Trk>(-3)
 							<< mkTP(txtCredits, sfc::White) << "Global Game Jam 2015\n"
 							<< sfc::White << "Developer: " << sfc::Red << "Vittorio Romeo\n"
@@ -644,3 +1032,5 @@ namespace ggj
 }
 
 #endif
+
+// TODO: btre effects grouping not working
