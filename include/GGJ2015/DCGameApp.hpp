@@ -7,6 +7,13 @@ namespace Exp
 {
 	using namespace ssvs;
 
+	namespace Impl
+	{
+
+	}
+
+
+
 	struct BSC_Tracking
 	{
 		float value;
@@ -47,7 +54,8 @@ namespace Exp
 			std::string str;
 			std::vector<BTREffect*> childrenEffects;
 			std::vector<BTRChunk*> children;
-			SizeT idxVBegin, idxVEnd;
+			//SizeT idxVBegin, idxVEnd;
+			SizeT idxHierarchyBegin, idxHierarchyEnd;
 
 			float trackingModifier{0.f};
 
@@ -246,7 +254,8 @@ namespace Exp
 				const auto& str(mChunk.str);
 				//vertices.reserve(str.size() * 4);
 
-				mChunk.idxVBegin = vertices.size();
+				//mChunk.idxVBegin =
+						mChunk.idxHierarchyBegin = vertices.size();
 
 				for(const auto& c : str)
 				{
@@ -273,7 +282,8 @@ namespace Exp
 					++bdd.iX;
 				}
 
-				mChunk.idxVEnd = vertices.size();
+				//mChunk.idxVEnd =
+						mChunk.idxHierarchyEnd = vertices.size();
 			}
 
 		public:
@@ -321,13 +331,22 @@ namespace Exp
 
 	template<typename TF> inline void BTRChunk::forVertices(TF mFn) noexcept
 	{
-		for(auto i(idxVBegin); i < idxVEnd; ++i) mFn(idxVEnd - i - 1, idxVEnd - idxVBegin, root.vertices[i], root.verticesOriginal[i]);
+		auto count(idxHierarchyEnd - idxHierarchyBegin);
+
+		for(auto i(0u); i < count; ++i)
+			mFn(i, count, root.vertices[idxHierarchyBegin + i], root.verticesOriginal[idxHierarchyBegin + i]);
 	}
 
 	inline void BTRChunk::refreshGeometry() noexcept
 	{
 		root.mkVertices(*this);
-		for(auto& c : children) c->refreshGeometry();
+		for(auto& c : children)
+		{
+			c->refreshGeometry();
+
+			ssvu::clampMax(idxHierarchyBegin, c->idxHierarchyBegin);
+			ssvu::clampMin(idxHierarchyEnd, c->idxHierarchyEnd);
+		}
 	}
 	inline void BTRChunk::refreshEffects() noexcept
 	{
@@ -972,7 +991,7 @@ namespace ggj
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}
 			{
 				tr.setAlign(ssvs::TextAlign::Center);
-				tr << Exp::mkEff<Exp::BTREWave>(1.5f, 0.03f) << "Testing rich text...\n" << Exp::BSC_Tracking{-3} << sfc::Red << "Here it goes: " << sfc::Cyan << reftest << Exp::BSC_Tracking{+1} << "\n:D";
+				tr << "Testing rich text...\n" << Exp::mkEff<Exp::BTREWave>(1.5f, 0.03f) << Exp::BSC_Tracking{-3} << sfc::Red << "Here it goes: " << sfc::Cyan << reftest << Exp::BSC_Tracking{+1} << "\n:D";
 
 				txtCredits	<< txtCredits.mk<BP::Trk>(-3)
 							<< mkTP(txtCredits, sfc::White) << "Global Game Jam 2015\n"
