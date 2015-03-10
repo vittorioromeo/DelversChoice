@@ -88,8 +88,8 @@ namespace Exp
 				auto& operator<<(const sf::Color& mX);
 				auto& operator<<(BSC_StrRef& mX);
 				auto& operator<<(BSC_Out);
-				template<typename T, typename... TArgs> auto& operator<<(const BSC_Defer<T, TArgs...>& mX);
 				auto& operator<<(MkFunc mX);
+				template<typename T, typename... TArgs> auto& operator<<(const BSC_Defer<T, TArgs...>& mX);
 		};
 
 		using BTRChunkRecycler = ssvu::MonoRecycler<BTRChunk>;
@@ -145,12 +145,12 @@ namespace Exp
 				}
 
 				inline void setAnimNone() noexcept { anim = Anim::None; }
-				inline void setAnimPulse(float mPulseSpeed, float mPulseMax, float mPulseStart = 0.f) noexcept
+				inline void setAnimPulse(float mSpeed, float mMax, float mStart = 0.f) noexcept
 				{
 					anim = Anim::Pulse;
-					pulse = mPulseStart;
-					pulseSpeed = mPulseSpeed;
-					pulseMax = mPulseMax;
+					pulse = mStart;
+					pulseSpeed = mSpeed;
+					pulseMax = mMax;
 				}
 		};
 
@@ -339,7 +339,19 @@ namespace Exp
 			return BSC_Defer<T, TArgs...>(FWD(mArgs)...);
 		}
 
-
+		template<typename T, typename... TArgs, typename TF> auto mkMkFunc(TF mFn, TArgs&&... mArgs)
+		{
+			return [mFn, &mArgs...](Impl::BTRChunk& mC) -> Impl::BTRChunk&
+			{
+				auto& eff(mC.mkEffect<T>(FWD(mArgs)...));
+				mFn(eff);
+				return mC;
+			};
+		}
+		template<typename T, typename... TArgs> auto mkMkFuncDef(TArgs&&... mArgs)
+		{
+			return mkMkFunc<T>([](auto&){ }, FWD(mArgs)...);
+		}
 	}
 
 	namespace BS
@@ -347,19 +359,23 @@ namespace Exp
 		using Out = Impl::BSC_Out;
 		using Tracking = Impl::BSC_Tracking;
 
-
-
 		auto out() noexcept { return Impl::BSC_Out{}; }
 		auto tracking(float mX) noexcept { return Impl::BSC_Tracking{mX}; }
-		template<typename... TArgs> auto wave(TArgs&&... mArgs)
+
+		template<typename... TArgs> auto wave(TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREWave>(FWD(mArgs)...); }
+		template<typename... TArgs> auto colorFG(TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREColorFG>(FWD(mArgs)...); }
+
+		template<typename... TArgs> auto waveIn(Impl::BTREWave* mX, TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREWave>(FWD(mArgs)...); }
+		template<typename... TArgs> auto colorFGIn(Impl::BTREColorFG* mX, TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREColorFG>(FWD(mArgs)...); }
+
+		template<typename... TArgs> auto pulse(float mSpeed, float mMax, float mStart, TArgs&&... mArgs)
 		{
-			return [&mArgs...](Impl::BTRChunk& mC) -> Impl::BTRChunk&
+			return Impl::mkMkFunc<Impl::BTREColorFG>([mSpeed, mMax, mStart](auto& mX)
 			{
-				mC.mkEffect<Impl::BTREWave>(FWD(mArgs)...);
-				return mC;
-			};
+				mX.setAnimPulse(mSpeed, mMax, mStart);
+			}, FWD(mArgs)...);
 		}
-		template<typename... TArgs> auto colorFG(TArgs&&... mArgs) { return Impl::mkDefer<Impl::BTREColorFG>(FWD(mArgs)...); }
+		auto pulseDef(const sf::Color& mX) { return pulse(0.05f, 110.f, 0.f, mX); }
 	}
 
 	using BTRStrRef = Impl::BSC_StrRef;
@@ -1054,7 +1070,7 @@ namespace ggj
 
 				tr.setAlign(ssvs::TextAlign::Center);
 				tr << "Testing rich text...\n" << BS::wave(1.5f, 0.03f) << BS::tracking(-3)
-				   << sfc::Red << "Here it goes: " << sfc::Cyan << reftest << BS::out() << BS::out() << BS::out()
+				   << BS::pulseDef(sfc::Red) << "Here it goes: " << sfc::Cyan << reftest << BS::out() << BS::out() << BS::out()
 				   << BS::tracking(+1) << "\n:D";
 
 				txtCredits	<< txtCredits.mk<BP::Trk>(-3)
