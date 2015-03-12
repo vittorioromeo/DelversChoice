@@ -9,7 +9,7 @@ namespace ggj
 	{
 		struct AssetLoader
 		{
-			ssvs::AssetManager assetManager;
+			ssvs::AssetManager<> assetManager;
 
 			inline AssetLoader()
 			{
