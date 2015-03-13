@@ -24,7 +24,7 @@ namespace ggj
 		inline void update(FT mFT) override
 		{
 			csd.update(mFT);
-			hoverRads = ssvu::wrapRad(hoverRads + 0.05f);
+			hoverRads = ssvu::getWrapRad(hoverRads + 0.05f);
 		}
 		inline void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
 

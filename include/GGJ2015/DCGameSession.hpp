@@ -174,16 +174,16 @@ namespace ggj
 			auto i(0u);
 			auto indices(mkShuffledVector<int>(0, 1, 2, 3));
 
-			if(ssvu::getRnd(0, 100) < 40) mX[indices[i++]] = true;
+			if(ssvu::getRndI(0, 100) < 40) mX[indices[i++]] = true;
 
 			if(roomNumber < 20) return;
-			if(ssvu::getRnd(0, 100) < 35) mX[indices[i++]] = true;
+			if(ssvu::getRndI(0, 100) < 35) mX[indices[i++]] = true;
 
 			if(roomNumber < 30) return;
-			if(ssvu::getRnd(0, 100) < 30) mX[indices[i++]] = true;
+			if(ssvu::getRndI(0, 100) < 30) mX[indices[i++]] = true;
 
 			if(roomNumber < 40) return;
-			if(ssvu::getRnd(0, 100) < 25) mX[indices[i++]] = true;
+			if(ssvu::getRndI(0, 100) < 25) mX[indices[i++]] = true;
 		}
 
 		inline InstantEffect generateInstantEffect(InstantEffect::Stat mStat, InstantEffect::Type mType, float mValue)
@@ -221,7 +221,7 @@ namespace ggj
 			float valueTotal(gd.getRndDropValue());
 			float splitPositive(ssvu::getRndRNormal(0.75f, 0.045f));
 			float splitNegative(1.f - splitPositive);
-			if(ssvu::getRnd(0, 50) > 25) std::swap(splitPositive, splitNegative);
+			if(ssvu::getRndI(0, 50) > 25) std::swap(splitPositive, splitNegative);
 
 			// ssvu::lo() << "valueTotal: " << valueTotal << "\n";
 					   // << "\nsplitPositive: " << valueTotal * splitPositive
@@ -295,7 +295,7 @@ namespace ggj
 			result.atk = gd.getATK(mValue);
 			generateRndElements(result.strongAgainst);
 			generateRndElements(result.weakAgainst);
-			result.type = static_cast<Weapon::Type>(ssvu::getRnd(0, 3));
+			result.type = static_cast<Weapon::Type>(ssvu::getRndI(0, 3));
 
 			return result;
 		}

@@ -107,12 +107,12 @@ namespace ggj
 					if(t > r) return x.str;
 				}
 
-				return mX[ssvu::getRnd(0ul, mX.size())].str;
+				return mX[ssvu::getRndI(0ul, mX.size())].str;
 			}
 
 			template<typename T> inline void whileChance(int mChance, const T& mFn)
 			{
-				while(ssvu::getRnd(0, 100) < mChance)
+				while(ssvu::getRndI(0, 100) < mChance)
 				{
 					mFn();
 					mChance /= 2;

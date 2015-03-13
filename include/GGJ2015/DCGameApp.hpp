@@ -107,7 +107,7 @@ namespace Exp
 				inline BTREWave(float mAmplitude = 2.f, float mSpeedMult = 0.1f, float mRepeat = 4.f, float mAngleStart = 0.f)
 					: angle{mAngleStart}, amplitude{mAmplitude}, repeat{mRepeat}, speedMult{mSpeedMult} { }
 
-				inline void update(FT mFT) noexcept override { angle = ssvu::wrapRad(angle + mFT * speedMult); }
+				inline void update(FT mFT) noexcept override { angle = ssvu::getWrapRad(angle + mFT * speedMult); }
 				inline void apply(BTRChunk& mX) noexcept override
 				{
 					mX.forVertices([this](auto mIdx, auto mCount, auto& mV, auto& mVO)
@@ -134,7 +134,7 @@ namespace Exp
 				{
 					if(anim == Anim::Pulse)
 					{
-						pulse = ssvu::wrapRad(pulse + (mFT * pulseSpeed));
+						pulse = ssvu::getWrapRad(pulse + (mFT * pulseSpeed));
 						colorFGComputed = colorFG;
 						colorFGComputed.a = static_cast<int>(255.f - std::abs((std::sin(pulse) * pulseMax)));
 					}
