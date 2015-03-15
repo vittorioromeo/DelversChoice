@@ -295,7 +295,7 @@ namespace ggj
 			result.atk = gd.getATK(mValue);
 			generateRndElements(result.strongAgainst);
 			generateRndElements(result.weakAgainst);
-			result.type = static_cast<Weapon::Type>(ssvu::getRndI(0, 3));
+			result.type = ssvu::toEnum<Weapon::Type>(ssvu::getRndI(0, 3));
 
 			return result;
 		}

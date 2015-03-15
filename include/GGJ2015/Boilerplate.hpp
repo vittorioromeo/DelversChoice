@@ -54,7 +54,7 @@ namespace Boilerplate
 
 				app.init(gameWindow);
 
-				gameWindow.setGameState(reinterpret_cast<T&>(app).getGameState());
+				gameWindow.setGameState(app.get().getGameState());
 				gameWindow.run();
 			}
 

@@ -39,7 +39,7 @@ namespace ggj
 				"/"
 			));
 
-			return array[static_cast<int>(type)];
+			return array[ssvu::castEnum(type)];
 		}
 
 		inline const auto& getStrStat()
@@ -51,7 +51,7 @@ namespace ggj
 				"DEF"
 			));
 
-			return array[static_cast<int>(stat)];
+			return array[ssvu::castEnum(stat)];
 		}
 	};
 }

@@ -9,30 +9,8 @@ namespace Exp
 
 	namespace Impl
 	{
-		struct BSC_Tracking { float value; };
-		struct BSC_Out { };
-
 		class BTRRoot;
 		class BTRChunk;
-		template<typename T, typename... TArgs> struct BSC_Defer
-		{
-			std::tuple<TArgs...> args;
-			inline BSC_Defer(TArgs... mArgs) : args{mArgs...} { }
-		};
-
-		using MkFunc = ssvu::Func<BTRChunk&(BTRChunk&)>;
-
-		class BSC_StrRef
-		{
-			friend class BTRChunk;
-
-			private:
-				BTRChunk* chunk{nullptr};
-
-			public:
-				template<typename T> auto& operator=(T&& mX);
-				bool operator!=(const std::string& mX);
-		};
 
 		class BTREffect
 		{
@@ -43,8 +21,11 @@ namespace Exp
 				inline virtual void apply(BTRChunk&) noexcept { }
 		};
 
+		template<typename T> struct MkHlpr;
+
 		class BTRChunk
 		{
+			template<typename> friend struct Impl::MkHlpr;
 			friend class BTRRoot;
 
 			private:
@@ -55,15 +36,10 @@ namespace Exp
 				std::vector<BTRChunk*> children;
 				SizeT idxHierarchyBegin, idxHierarchyEnd;
 
-				float trackingModifier{0.f};
+				float trackingModifier{0.f}, leadingModifier{0.f}, hChunkSpacingModifier{0.f};
 
-			public:
 				template<typename... TArgs> BTRChunk& mkChild(TArgs&&... mArgs);
 				template<typename T, typename... TArgs> T& mkEffect(TArgs&&... mArgs);
-
-				inline BTRChunk(BTRRoot& mRoot) noexcept : root{mRoot} { }
-
-				template<typename TF> void forVertices(TF mFn) noexcept;
 
 				void refreshGeometry() noexcept;
 				void refreshEffects() noexcept;
@@ -74,23 +50,37 @@ namespace Exp
 					for(auto& c : children) c->update(mFT);
 				}
 
-				inline float getTracking() noexcept
-				{
-					if(parent == nullptr) return 0.f;
-					return parent->getTracking() + parent->trackingModifier;
-				}
+			public:
+				inline BTRChunk(BTRRoot& mRoot) noexcept : root{mRoot} { }
+
+				inline float getTracking() const noexcept		{ return parent == nullptr ? 0.f : parent->getTracking() + parent->trackingModifier; }
+				inline float getLeading() const noexcept		{ return parent == nullptr ? 0.f : parent->getLeading() + parent->leadingModifier; }
+				inline float getHChunkSpacing() const noexcept	{ return parent == nullptr ? 0.f : parent->getHChunkSpacing() + parent->hChunkSpacingModifier; }
+
+				template<typename TF> void forVertices(TF mFn) noexcept;
 
 				template<typename T> void setStr(T&& mX);
 				inline const auto& getStr() const noexcept { return str; }
 
-				auto& operator<<(const std::string& mX);
-				auto& operator<<(const BSC_Tracking& mX);
-				auto& operator<<(const sf::Color& mX);
-				auto& operator<<(BSC_StrRef& mX);
-				auto& operator<<(BSC_Out);
-				auto& operator<<(MkFunc mX);
-				template<typename T, typename... TArgs> auto& operator<<(const BSC_Defer<T, TArgs...>& mX);
+				// Make children and go one level deeper
+				auto& in();
+				template<typename T> auto& in(T&& mStr);
+				template<typename T> auto& in(BTRChunk*&, T&& mStr);
+
+				// Make children and stay on the same level
+				template<typename T> auto& mk(T&& mStr);
+				template<typename T> auto& mk(BTRChunk*&, T&& mStr);
+
+				// Add effects
+				auto& eff(const sf::Color&);
+				template<typename T, typename... TArgs> auto& eff(TArgs&&...);
+				template<typename T, typename... TArgs> auto& eff(T*&, TArgs&&...);
+
+				// Go back one level
+				inline auto& out() const noexcept { SSVU_ASSERT(parent != nullptr); return *parent; }
 		};
+
+
 
 		using BTRChunkRecycler = ssvu::MonoRecycler<BTRChunk>;
 		using BTRChunkPtr = typename BTRChunkRecycler::PtrType;
@@ -136,7 +126,7 @@ namespace Exp
 					{
 						pulse = ssvu::getWrapRad(pulse + (mFT * pulseSpeed));
 						colorFGComputed = colorFG;
-						colorFGComputed.a = static_cast<int>(255.f - std::abs((std::sin(pulse) * pulseMax)));
+						colorFGComputed.a = ssvu::toInt(255.f - std::abs((std::sin(pulse) * pulseMax)));
 					}
 				}
 				inline void apply(BTRChunk& mX) noexcept override
@@ -156,21 +146,36 @@ namespace Exp
 
 		struct BTRDrawState
 		{
+			struct RowData
+			{
+				float width;
+				SizeT cells;
+
+				inline RowData(float mWidth, SizeT mCells) noexcept : width{mWidth}, cells{mCells} { }
+			};
+
 			float xMin, xMax, yMin, yMax;
-			SizeT iX, iY, width, height;
+			SizeT width, height, iX;
+			int nl, htab, vtab;
+			float nextHChunkSpacing;
+			std::vector<RowData> rDatas;
 
 			inline void reset(const BitmapFont& mBF) noexcept
 			{
 				xMin = xMax = yMin = yMax = 0;
-				iX = iY = 0;
 				width = mBF.getCellWidth();
 				height = mBF.getCellHeight();
+				nl = htab = vtab = 0;
+				iX = 0;
+				nextHChunkSpacing = 0.f;
+				rDatas.clear();
 			}
 		};
 
 		class BTRRoot : public sf::Transformable, public sf::Drawable
 		{
 			friend class BTRChunk;
+			template<typename> friend struct Impl::MkHlpr;
 
 			private:
 				const BitmapFont* bitmapFont{nullptr};
@@ -190,7 +195,6 @@ namespace Exp
 				float alignMult{0.f};
 
 				mutable BTRDrawState bdd;
-				mutable std::vector<SizeT> rowCells;
 
 				inline void refreshIfNeeded() const
 				{
@@ -209,21 +213,18 @@ namespace Exp
 					refreshGeometryFinish();
 				}
 
-				template<typename... TArgs> inline BTRChunk& mkChunk(TArgs&&... mArgs)
-				{
-					return chunkRecycler.getCreateEmplace(chunkManager, *this, FWD(mArgs)...);
-				}
+				template<typename... TArgs> inline BTRChunk& mkChunk(TArgs&&... mArgs)			{ return chunkRecycler.getCreateEmplace(chunkManager, *this, FWD(mArgs)...); }
+				template<typename T, typename... TArgs> inline T& mkEffect(TArgs&&... mArgs)	{ return effectRecycler.getCreateEmplace<T>(effectManager, FWD(mArgs)...); }
 
-				template<typename T, typename... TArgs> inline T& mkEffect(TArgs&&... mArgs)
+				inline void pushRowData() const
 				{
-					return effectRecycler.getCreateEmplace<T>(effectManager, FWD(mArgs)...);
+					bdd.rDatas.emplace_back(vertices.back().position.x, bdd.iX);
 				}
 
 				inline void refreshGeometryStart() const noexcept
 				{
 					SSVU_ASSERT(bitmapFont != nullptr);
 
-					rowCells.clear();
 					vertices.clear();
 					verticesOriginal.clear();
 					bdd.reset(*bitmapFont);
@@ -231,58 +232,77 @@ namespace Exp
 
 				inline void refreshGeometryFinish() const
 				{
+					// Push last row data
+					pushRowData();
+
 					// Recalculate bounds
 					auto width(bdd.xMax - bdd.xMin);
 					bounds = {bdd.xMin, bdd.yMin, width, bdd.yMax - bdd.yMin};
 					globalBounds = getTransform().transformRect(bounds);
 
-					// Add current row to `rowCells`, return if its the only one
-					if(rowCells.empty()) return;
-					rowCells.emplace_back(bdd.iX);
-
+					// Apply horizontal alignment
 					SizeT lastVIdx{0};
-
-					for(auto rc : rowCells)
+					for(const auto& rd : bdd.rDatas)
 					{
-						auto vIdx(lastVIdx);
+						auto targetVIdx(lastVIdx + rd.cells * 4);
+						auto offset(width - rd.width);
 
-						// Find out the width of the current row
-						auto targetVIdx(lastVIdx + rc * 4);
-						float maxX{0.f};
-						for(; vIdx < targetVIdx; vIdx += 4) maxX = std::max({maxX, vertices[vIdx].position.x, vertices[vIdx + 1].position.x});
-
-						// Apply horizontal alignment
-						auto offset(width - maxX);
-						for(; lastVIdx < vIdx; ++lastVIdx) vertices[lastVIdx].position.x += offset * alignMult;
+						for(; lastVIdx < targetVIdx; ++lastVIdx) vertices[lastVIdx].position.x += offset * alignMult;
 					}
 				}
 
 				inline void mkVertices(BTRChunk& mChunk) const
 				{
 					const auto& str(mChunk.str);
+					bdd.nextHChunkSpacing = mChunk.getHChunkSpacing();
 					mChunk.idxHierarchyBegin = vertices.size();
 
 					for(const auto& c : str)
 					{
 						switch(c)
 						{
-							case L'\t': bdd.iX += 4;											continue;
-							case L'\n': ++bdd.iY; rowCells.emplace_back(bdd.iX); bdd.iX = 0;	continue;
-							case L'\v': bdd.iY += 4;											continue;
+							case L'\n':  ++bdd.nl;		continue;
+							case L'\t':  ++bdd.htab;	continue;
+							case L'\v':  ++bdd.vtab;	continue;
 						}
 
+						const auto& tracking(mChunk.getTracking());
+						const auto& leading(mChunk.getLeading());
 						const auto& rect(bitmapFont->getGlyphRect(c));
-						auto spacing(mChunk.getTracking() * bdd.iX);
 
-						auto gLeft(bdd.iX * bdd.width + spacing);			ssvu::clampMax(bdd.xMin, gLeft);
-						auto gRight((bdd.iX + 1) * bdd.width + spacing);	ssvu::clampMin(bdd.xMax, gRight);
-						auto gTop(bdd.iY * bdd.height);						ssvu::clampMax(bdd.yMin, gTop);
-						auto gBottom((bdd.iY + 1) * bdd.height);			ssvu::clampMin(bdd.yMax, gBottom);
+						auto newPos(vertices.empty() ? Vec2f(0.f, bdd.height) : vertices.back().position);
 
-						vertices.emplace_back(Vec2f(gLeft, gTop),		Vec2f(rect.left,				rect.top));
+						newPos.x += bdd.nextHChunkSpacing;
+						bdd.nextHChunkSpacing = 0.f;
+
+						if(bdd.nl > 0)
+						{
+							pushRowData();
+
+							bdd.iX = 0;
+							newPos.x = 0;
+
+							for(; bdd.nl > 0; --bdd.nl) newPos.y += bdd.height + leading;
+						}
+
+						newPos.x += tracking;
+						for(; bdd.htab > 0; --bdd.htab) newPos.x += 4 * (bdd.width + tracking);
+						for(; bdd.vtab > 0; --bdd.vtab) newPos.y += 4 * (bdd.height + leading);
+
+						auto gLeft(newPos.x);
+						auto gBottom(newPos.y);
+						auto gRight(gLeft + bdd.width);
+						auto gTop(gBottom - bdd.height);
+
+						ssvu::clampMax(bdd.xMin, gLeft);
+						ssvu::clampMin(bdd.xMax, gRight);
+						ssvu::clampMax(bdd.yMin, gTop);
+						ssvu::clampMin(bdd.yMax, gBottom);
+
 						vertices.emplace_back(Vec2f(gRight, gTop),		Vec2f(rect.left + rect.width,	rect.top));
-						vertices.emplace_back(Vec2f(gRight, gBottom),	Vec2f(rect.left + rect.width,	rect.top + rect.height));
+						vertices.emplace_back(Vec2f(gLeft, gTop),		Vec2f(rect.left,				rect.top));
 						vertices.emplace_back(Vec2f(gLeft, gBottom),	Vec2f(rect.left,				rect.top + rect.height));
+						vertices.emplace_back(Vec2f(gRight, gBottom),	Vec2f(rect.left + rect.width,	rect.top + rect.height));
 
 						++bdd.iX;
 					}
@@ -306,11 +326,12 @@ namespace Exp
 					baseChunk->update(mFT);
 				}
 
-				template<typename T> inline auto& operator<<(T&& mX) { return (*baseChunk) << FWD(mX); }
+				template<typename... TArgs> inline decltype(auto) in(TArgs&&... mArgs) { return baseChunk->in(FWD(mArgs)...); }
+				template<typename T, typename... TArgs> inline decltype(auto) eff(TArgs&&... mArgs) { return baseChunk->eff<T>(FWD(mArgs)...); }
 
 				inline void setAlign(TextAlign mX) noexcept
 				{
-					auto newAlignMult(static_cast<float>(static_cast<int>(mX)) * 0.5f);
+					auto newAlignMult(ssvu::toFloat(ssvu::castEnum(mX)) * 0.5f);
 
 					if(alignMult == newAlignMult) return;
 
@@ -333,69 +354,21 @@ namespace Exp
 				inline const auto& getLocalBounds() const			{ refreshGeometryIfNeeded(); return bounds; }
 				inline auto getGlobalBounds() const					{ refreshGeometryIfNeeded(); return globalBounds; }
 		};
-
-		template<typename T, typename... TArgs> auto mkDefer(TArgs&&... mArgs)
-		{
-			return BSC_Defer<T, TArgs...>(FWD(mArgs)...);
-		}
-
-		template<typename T, typename... TArgs, typename TF> auto mkMkFunc(TF mFn, TArgs&&... mArgs)
-		{
-			return [mFn, &mArgs...](Impl::BTRChunk& mC) -> Impl::BTRChunk&
-			{
-				auto& eff(mC.mkEffect<T>(FWD(mArgs)...));
-				mFn(eff);
-				return mC;
-			};
-		}
-		template<typename T, typename... TArgs> auto mkMkFuncDef(TArgs&&... mArgs)
-		{
-			return mkMkFunc<T>([](auto&){ }, FWD(mArgs)...);
-		}
 	}
 
 	namespace BS
 	{
-		using Out = Impl::BSC_Out;
-		using Tracking = Impl::BSC_Tracking;
-
-		auto out() noexcept { return Impl::BSC_Out{}; }
-		auto tracking(float mX) noexcept { return Impl::BSC_Tracking{mX}; }
-
-		template<typename... TArgs> auto wave(TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREWave>(FWD(mArgs)...); }
-		template<typename... TArgs> auto colorFG(TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREColorFG>(FWD(mArgs)...); }
-
-		template<typename... TArgs> auto waveIn(Impl::BTREWave* mX, TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREWave>(FWD(mArgs)...); }
-		template<typename... TArgs> auto colorFGIn(Impl::BTREColorFG* mX, TArgs&&... mArgs) { return Impl::mkMkFuncDef<Impl::BTREColorFG>(FWD(mArgs)...); }
-
-		template<typename... TArgs> auto pulse(float mSpeed, float mMax, float mStart, TArgs&&... mArgs)
-		{
-			return Impl::mkMkFunc<Impl::BTREColorFG>([mSpeed, mMax, mStart](auto& mX)
-			{
-				mX.setAnimPulse(mSpeed, mMax, mStart);
-			}, FWD(mArgs)...);
-		}
-		auto pulseDef(const sf::Color& mX) { return pulse(0.05f, 110.f, 0.f, mX); }
+		struct Tracking { };
+		struct Leading { };
+		struct HChunkSpacing { };
+		struct Pulse { };
+		struct PulseDef { };
+		using ColorFG = Impl::BTREColorFG;
+		using Wave = Impl::BTREWave;
+		using Chunk = Impl::BTRChunk;
 	}
 
-	using BTRStrRef = Impl::BSC_StrRef;
 	using BitmapTextRich = Impl::BTRRoot;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	namespace Impl
 	{
@@ -425,6 +398,7 @@ namespace Exp
 
 			for(auto& c : children) c->refreshEffects();
 		}
+
 		template<typename... TArgs> inline BTRChunk& BTRChunk::mkChild(TArgs&&... mArgs)
 		{
 			auto& result(root.mkChunk(FWD(mArgs)...));
@@ -439,63 +413,78 @@ namespace Exp
 			return result;
 		}
 
-		inline auto& BTRChunk::operator<<(const std::string& mX)
+		template<typename T> inline auto& BTRChunk::in(T&& mStr)
 		{
 			auto& result(mkChild());
-			result.str = mX;
+			result.str = FWD(mStr);
 
 			root.mustRefreshGeometry = true;
 			return result;
 		}
-
-		inline auto& BTRChunk::operator<<(const BSC_Tracking& mX)
+		template<typename T> inline auto& BTRChunk::in(BTRChunk*& mPtr, T&& mStr)
 		{
-			trackingModifier = mX.value;
-
-			root.mustRefreshGeometry = true;
-			return *this;
-		}
-
-		inline auto& BTRChunk::operator<<(const sf::Color& mX)
-		{
-			mkEffect<BTREColorFG>(mX);
-			return *this;
-		}
-
-		template<typename T, typename... TArgs> auto& BTRChunk::operator<<(const BSC_Defer<T, TArgs...>& mX)
-		{
-			ssvu::explode([this, &mX](TArgs... mXs){ mkEffect<T>(mXs...); }, mX.args);
-			return *this;
-		}
-
-		template<typename T> inline auto& BSC_StrRef::operator=(T&& mX) { chunk->setStr(FWD(mX)); return *this; }
-		inline bool BSC_StrRef::operator!=(const std::string& mX) { return chunk->getStr() != mX; }
-
-		template<typename T> inline void BTRChunk::setStr(T&& mX)
-		{
-			str = FWD(mX);
-			root.mustRefreshGeometry = true;
-		}
-
-		inline auto& BTRChunk::operator<<(BSC_StrRef& mX)
-		{
-			auto& result(mkChild());
-			mX.chunk = &result;
-
-			root.mustRefreshGeometry = true;
+			auto& result(in(FWD(mStr)));
+			mPtr = &result;
 			return result;
 		}
+		inline auto& BTRChunk::in() { return in(""); }
 
-		inline auto& BTRChunk::operator<<(MkFunc mX)
-		{
-			return mX(*this);
-		}
+		template<typename T> inline auto& BTRChunk::mk(T&& mStr)					{ in(FWD(mStr)); return *this; }
+		template<typename T> inline auto& BTRChunk::mk(BTRChunk*& mPtr, T&& mStr)	{ in(mPtr, FWD(mStr)); return *this; }
 
-		inline auto& BTRChunk::operator<<(BSC_Out)
+		inline auto& BTRChunk::eff(const sf::Color& mX)													{ mkEffect<BTREColorFG>(mX); return *this; }
+		template<typename T, typename... TArgs> inline auto& BTRChunk::eff(TArgs&&... mArgs)			{ MkHlpr<T>::mk(*this, FWD(mArgs)...); return *this; }
+		template<typename T, typename... TArgs> inline auto& BTRChunk::eff(T*& mPtr, TArgs&&... mArgs)	{ mPtr = &MkHlpr<T>::mk(*this, FWD(mArgs)...); return *this; }
+
+		template<typename T> inline void BTRChunk::setStr(T&& mX) { str = FWD(mX); root.mustRefreshGeometry = true; }
+
+		template<typename T> struct MkHlpr
 		{
-			// TODO: asserts
-			return *parent;
-		}
+			template<typename... TArgs> inline static auto& mk(BTRChunk& mC, TArgs&&... mArgs)
+			{
+				return mC.mkEffect<T>(FWD(mArgs)...);
+			}
+		};
+		template<> struct MkHlpr<BS::Tracking>
+		{
+			inline static void mk(BTRChunk& mC, float mX)
+			{
+				mC.trackingModifier = mX;
+				mC.root.mustRefreshGeometry = true;
+			}
+		};
+		template<> struct MkHlpr<BS::Leading>
+		{
+			inline static void mk(BTRChunk& mC, float mX)
+			{
+				mC.leadingModifier = mX;
+				mC.root.mustRefreshGeometry = true;
+			}
+		};
+		template<> struct MkHlpr<BS::HChunkSpacing>
+		{
+			inline static void mk(BTRChunk& mC, float mX)
+			{
+				mC.hChunkSpacingModifier = mX;
+				mC.root.mustRefreshGeometry = true;
+			}
+		};
+		template<> struct MkHlpr<BS::Pulse>
+		{
+			inline static auto& mk(BTRChunk& mC, const sf::Color& mColor, float mSpeed, float mMax, float mStart)
+			{
+				auto& result(mC.mkEffect<BS::ColorFG>(mColor));
+				result.setAnimPulse(mSpeed, mMax, mStart);
+				return result;
+			}
+		};
+		template<> struct MkHlpr<BS::PulseDef>
+		{
+			inline static auto& mk(BTRChunk& mC, const sf::Color& mColor)
+			{
+				return mC.eff<BS::Pulse>(mColor, 0.05f, 110.f, 0.f);
+			}
+		};
 	}
 }
 
@@ -756,7 +745,7 @@ namespace ggj
 
 			inline const auto& getModeStr()
 			{
-				return getModeStrArray()[static_cast<int>(gs.mode)];
+				return getModeStrArray()[ssvu::castEnum(gs.mode)];
 			}
 
 			inline void updatePlaying(FT mFT)
@@ -780,7 +769,7 @@ namespace ggj
 				}
 				else
 				{
-					auto intt(ssvu::getFTToSeconds(static_cast<int>(gs.timer)));
+					auto intt(ssvu::getFTToSeconds(ssvu::toInt(gs.timer)));
 					auto gts(intt >= 10 ? ssvu::toStr(intt) : "0" + ssvu::toStr(intt));
 
 					// auto third(gameWindow.getWidth() / 5.f);
@@ -833,13 +822,13 @@ namespace ggj
 
 				if(reftestC > 50)
 				{
-					if(reftest != "everyone!")
+				//	if(reftest->getStr() != "everyone!")
 					{
-						reftest = "everyone!";
+					//	reftest->setStr("everyone!");
 					}
-					else
+					//else
 					{
-						reftest = "Hello";
+					//	reftest->setStr("Hello");
 					}
 
 					reftestC = 0;
@@ -985,7 +974,7 @@ namespace ggj
 				render(txtDeath);
 				render(txtRestart);
 
-				txtDeath.setColor(sf::Color(255, 255, 255, 255 - static_cast<unsigned char>(gs.deathTextTime)));
+				txtDeath.setColor(sf::Color(255, 255, 255, 255 - ssvu::toNum<unsigned char>(gs.deathTextTime)));
 			}
 
 			inline void drawMenu()
@@ -1061,7 +1050,7 @@ namespace ggj
 
 		public:
 			Exp::BitmapTextRich tr{*getAssets().fontObStroked};
-			Exp::BTRStrRef reftest;
+			Exp::BS::Chunk* reftest;
 			float reftestC;
 
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}
@@ -1069,9 +1058,28 @@ namespace ggj
 				using namespace Exp;
 
 				tr.setAlign(ssvs::TextAlign::Center);
-				tr << "Testing rich text...\n" << BS::wave(1.5f, 0.03f) << BS::tracking(-3)
+			/*	tr << "Testing rich text...\n" << BS::wave(1.5f, 0.03f) << BS::tracking(-3)
 				   << BS::pulseDef(sfc::Red) << "Here it goes: " << sfc::Cyan << reftest << BS::out() << BS::out() << BS::out()
-				   << BS::tracking(+1) << "\n:D";
+				   << BS::tracking(+1) << "\n:D";*/
+
+						//.in<Pulse>(sfc::Red)
+				//.eff<BS::Wave>(1.5f, 0.03f)
+				//.eff<BS::Tracking>(-3)
+				//.eff(sfc::Cyan)
+				//.eff<BS::Tracking>(+1)
+				tr.in("xd");
+					/*.in("Testing rich text...\n")
+						.eff<BS::Leading>(-4)
+						.in("Here it goes...")
+							.eff<BS::HChunkSpacing>(+10)
+							.eff<BS::Wave>(1.5f, 0.03f)
+							.eff<BS::PulseDef>(sfc::Red)
+							.eff<BS::Tracking>(-2)
+							.mk(reftest, "")
+						.out()
+						.in()
+							.eff<BS::Leading>(+4)
+							.mk("\n:D\tbananas");*/
 
 				txtCredits	<< txtCredits.mk<BP::Trk>(-3)
 							<< mkTP(txtCredits, sfc::White) << "Global Game Jam 2015\n"

@@ -24,7 +24,7 @@ namespace ggj
 				getAssets().wpnSpear
 			));
 
-			return *array[static_cast<int>(type)];
+			return *array[ssvu::castEnum(type)];
 		}
 
 		inline auto& getTypeSoundBufferVec()
@@ -36,7 +36,7 @@ namespace ggj
 				getAssets().spearSnds
 			));
 
-			return array[static_cast<int>(type)];
+			return array[ssvu::castEnum(type)];
 		}
 
 		inline void playAttackSounds()

@@ -16,17 +16,17 @@ namespace ggj
 			case Stat::SDEF: statPtr = &mX.bonusDEF; break;
 		}
 
-		float x(static_cast<float>(*statPtr));
+		float x(ssvu::toFloat(*statPtr));
 
 		switch(type)
 		{
 			case Type::Add: *statPtr += value; break;
 			case Type::Sub: *statPtr -= value; break;
-			case Type::Mul: *statPtr = static_cast<int>(x * value); break;
-			case Type::Div: *statPtr = static_cast<int>(x / value); break;
+			case Type::Mul: *statPtr = ssvu::toInt(x * value); break;
+			case Type::Div: *statPtr = ssvu::toInt(x / value); break;
 		}
 
-		eventLo() << "Got " << getStrType() << ssvu::toStr(static_cast<int>(value)) << " " << getStrStat() << "!\n";
+		eventLo() << "Got " << getStrType() << ssvu::toStr(ssvu::toInt(value)) << " " << getStrStat() << "!\n";
 
 		mX.checkBurns(mGameSession);
 	}

@@ -22,7 +22,7 @@ namespace ggj
 			if(mX.type == InstantEffect::Type::Sub) cl.setColor(sfc::Red);
 
 			btr << cl << mX.getStrType()
-				<< ssvu::toStr(static_cast<int>(mX.value)) << " "
+				<< ssvu::toStr(ssvu::toInt(mX.value)) << " "
 				<< sfc::White << mX.getStrStat() << "\n";
 		}
 
