@@ -822,13 +822,13 @@ namespace ggj
 
 				if(reftestC > 50)
 				{
-				//	if(reftest->getStr() != "everyone!")
+					if(reftest->getStr() != "everyone!")
 					{
-					//	reftest->setStr("everyone!");
+						reftest->setStr("everyone!");
 					}
-					//else
+					else
 					{
-					//	reftest->setStr("Hello");
+						reftest->setStr("Hello");
 					}
 
 					reftestC = 0;
@@ -1067,8 +1067,8 @@ namespace ggj
 				//.eff<BS::Tracking>(-3)
 				//.eff(sfc::Cyan)
 				//.eff<BS::Tracking>(+1)
-				tr.in("xd");
-					/*.in("Testing rich text...\n")
+				tr
+					.in("Testing rich text...\n")
 						.eff<BS::Leading>(-4)
 						.in("Here it goes...")
 							.eff<BS::HChunkSpacing>(+10)
@@ -1079,7 +1079,7 @@ namespace ggj
 						.out()
 						.in()
 							.eff<BS::Leading>(+4)
-							.mk("\n:D\tbananas");*/
+							.mk("\n:D\tbananas");
 
 				txtCredits	<< txtCredits.mk<BP::Trk>(-3)
 							<< mkTP(txtCredits, sfc::White) << "Global Game Jam 2015\n"
@@ -1139,5 +1139,3 @@ namespace ggj
 }
 
 #endif
-
-// TODO: btre effects grouping not working
