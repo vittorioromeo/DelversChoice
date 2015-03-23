@@ -26,7 +26,7 @@ namespace ggj
 			iconATK.setPosition(mPos + pos);
 			eST.setPosition(iconATK.getPosition() + Vec2f{0, 10 + 1});
 			eWK.setPosition(eST.getPosition() + Vec2f{0, 6 + 1});
-			srtATK.txt.setPosition(iconATK.getPosition() + Vec2f{12.f, 0});
+			srtATK.txt.setPosition(iconATK.getPosition() + Vec2f{15.f, 0});
 
 			appendElems(mGW, eST, mW.strongAgainst);
 			appendElems(mGW, eWK, mW.weakAgainst);

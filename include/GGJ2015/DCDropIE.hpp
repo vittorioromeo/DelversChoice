@@ -10,27 +10,21 @@ namespace ggj
 	struct DropIE : public Drop
 	{
 		std::vector<InstantEffect> ies;
-		ssvs::BitmapTextRich btr{*getAssets().fontObStroked};
+		Exp::BitmapTextRich btr{*getAssets().fontObStroked};
 
 		inline DropIE(GameSession& mGameSession) : Drop{mGameSession} { }
 
 		inline void ieToRichText(InstantEffect& mX)
 		{
-			auto& cl(btr.mk<BP::ClFG>(sfc::Green));
-			cl.setAnimPulse(0.05f, 110);
-
-			if(mX.type == InstantEffect::Type::Sub) cl.setColor(sfc::Red);
-
-			btr << cl << mX.getStrType()
-				<< ssvu::toStr(ssvu::toInt(mX.value)) << " "
-				<< sfc::White << mX.getStrStat() << "\n";
+			btr.eff<Exp::BS::PulseDef>(mX.type == InstantEffect::Type::Sub ? sfc::Red : sfc::Green)
+				.in(mX.getStrType()).in(ssvu::toStr(ssvu::toInt(mX.value))).in(" ").eff(sfc::White).in(mX.getStrStat()).in("\n");
 		}
 
 		inline void recalculateText()
 		{
 			btr.clear();
 			btr.setAlign(ssvs::TextAlign::Center);
-			btr << btr.mk<BP::Trk>(-3);
+			btr.eff<Exp::BS::Tracking>(-3);
 
 			for(auto& x : ies) ieToRichText(x);
 		}

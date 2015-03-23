@@ -24,7 +24,7 @@ namespace ggj
 		{
 			iconDEF.setPosition(pos + mPos);
 			eTY.setPosition(iconDEF.getPosition() + Vec2f{0, 10 + 1});
-			srtDEF.txt.setPosition(iconDEF.getPosition() + Vec2f{12.f, 0});
+			srtDEF.txt.setPosition(iconDEF.getPosition() + Vec2f{15.f, 0});
 			mGW.draw(iconDEF);
 			mGW.draw(srtDEF.txt);
 			mGW.draw(eTY);

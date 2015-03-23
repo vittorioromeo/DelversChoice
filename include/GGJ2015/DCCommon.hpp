@@ -36,9 +36,9 @@ namespace Exp
 				std::string str;
 				std::vector<BTREffect*> childrenEffects;
 				std::vector<BTRChunk*> children;
-				SizeT idxHierarchyBegin, idxHierarchyEnd;
-
 				float trackingModifier{0.f}, leadingModifier{0.f}, hChunkSpacingModifier{0.f};
+				SizeT idxHierarchyBegin, idxHierarchyEnd;
+				bool enabled{true};
 
 				template<typename... TArgs> BTRChunk& mkChild(TArgs&&... mArgs);
 				template<typename T, typename... TArgs> T& mkEffect(TArgs&&... mArgs);
@@ -46,18 +46,47 @@ namespace Exp
 				void refreshGeometry() noexcept;
 				void refreshEffects() noexcept;
 
+				template<bool TSelf = false, typename TF> inline void recurseParents(const TF& mFn) const
+				{
+					if(TSelf) mFn(*this);
+					if(parent != nullptr && parent->enabled) parent->recurseParents<true>(mFn);
+				}
+
+				template<bool TSelf = false, typename TF> inline void recurseChildren(const TF& mFn)
+				{
+					if(TSelf) mFn(*this);
+					for(auto& c : children) if(c->enabled) c->recurseChildren<true>(mFn);
+				}
+
 				inline void update(FT mFT) noexcept
 				{
 					for(auto& e : childrenEffects) e->update(mFT);
-					for(auto& c : children) c->update(mFT);
+					for(auto& c : children) if(c->enabled) c->update(mFT);
 				}
 
 			public:
 				inline BTRChunk(BTRRoot& mRoot) noexcept : root{mRoot} { }
 
-				inline float getTracking() const noexcept		{ return parent == nullptr ? 0.f : parent->getTracking() + parent->trackingModifier; }
-				inline float getLeading() const noexcept		{ return parent == nullptr ? 0.f : parent->getLeading() + parent->leadingModifier; }
-				inline float getHChunkSpacing() const noexcept	{ return parent == nullptr ? 0.f : parent->getHChunkSpacing() + parent->hChunkSpacingModifier; }
+				inline void setEnabled(bool mX) noexcept { enabled = mX; }
+
+				inline auto getTracking() const noexcept
+				{
+					float result{0.f};
+					recurseParents([&result](const auto& mP){ result += mP.trackingModifier; });
+					return result;
+				}
+				inline auto getLeading() const noexcept
+				{
+					float result{0.f};
+					recurseParents([&result](const auto& mP){ result += mP.leadingModifier; });
+					return result;
+				}
+				inline auto getHChunkSpacing() const noexcept
+				{
+					float result{0.f};
+					recurseParents([&result](const auto& mP){ result += mP.hChunkSpacingModifier; });
+					return result;
+				}
 
 				template<typename TF> void forVertices(TF mFn) noexcept;
 
@@ -146,6 +175,8 @@ namespace Exp
 					pulseSpeed = mSpeed;
 					pulseMax = mMax;
 				}
+
+				inline void setColorFG(const sf::Color& mX) noexcept { colorFG = mX; }
 		};
 
 		struct BTRDrawState
@@ -200,6 +231,8 @@ namespace Exp
 				std::vector<BTREffectPtr> effectManager;
 
 				BTRChunk* baseChunk{&mkChunk()};
+				BTRChunk* lastChunk{baseChunk};
+
 				float alignMult{0.f};
 
 				mutable BTRDrawState bdd;
@@ -221,8 +254,16 @@ namespace Exp
 					refreshGeometryFinish();
 				}
 
-				template<typename... TArgs> inline BTRChunk& mkChunk(TArgs&&... mArgs)			{ return chunkRecycler.getCreateEmplace(chunkManager, *this, FWD(mArgs)...); }
-				template<typename T, typename... TArgs> inline T& mkEffect(TArgs&&... mArgs)	{ return effectRecycler.getCreateEmplace<T>(effectManager, FWD(mArgs)...); }
+				template<typename... TArgs> inline BTRChunk& mkChunk(TArgs&&... mArgs)
+				{
+					auto& c(chunkRecycler.getCreateEmplace(chunkManager, *this, FWD(mArgs)...));
+					lastChunk = &c;
+					return c;
+				}
+				template<typename T, typename... TArgs> inline T& mkEffect(TArgs&&... mArgs)
+				{
+					return effectRecycler.getCreateEmplace<T>(effectManager, FWD(mArgs)...);
+				}
 
 				inline void pushRowData() const
 				{
@@ -328,14 +369,21 @@ namespace Exp
 					chunkManager.clear();
 					effectManager.clear();
 					baseChunk = &mkChunk();
+					lastChunk = baseChunk;
 				}
 				inline void update(FT mFT) noexcept
 				{
 					baseChunk->update(mFT);
 				}
 
-				template<typename... TArgs> inline decltype(auto) in(TArgs&&... mArgs) { return baseChunk->in(FWD(mArgs)...); }
-				template<typename T, typename... TArgs> inline decltype(auto) eff(TArgs&&... mArgs) { return baseChunk->eff<T>(FWD(mArgs)...); }
+				template<typename... TArgs> inline decltype(auto) in(TArgs&&... mArgs)
+				{
+					return lastChunk->in(FWD(mArgs)...);
+				}
+				template<typename T, typename... TArgs> inline decltype(auto) eff(TArgs&&... mArgs)
+				{
+					return lastChunk->eff<T>(FWD(mArgs)...);
+				}
 
 				inline void setAlign(TextAlign mX) noexcept
 				{
@@ -357,6 +405,8 @@ namespace Exp
 					mRenderStates.transform *= getTransform();
 					mRenderTarget.draw(vertices, mRenderStates);
 				}
+
+				inline auto& getRoot() noexcept { return *baseChunk; }
 
 				inline const auto& getBitmapFont() const noexcept	{ return bitmapFont; }
 				inline const auto& getLocalBounds() const			{ refreshGeometryIfNeeded(); return bounds; }
@@ -391,20 +441,22 @@ namespace Exp
 		inline void BTRChunk::refreshGeometry() noexcept
 		{
 			root.mkVertices(*this);
-			for(auto& c : children)
-			{
-				c->refreshGeometry();
 
-				ssvu::clampMax(idxHierarchyBegin, c->idxHierarchyBegin);
-				ssvu::clampMin(idxHierarchyEnd, c->idxHierarchyEnd);
-			}
+			for(auto& c : children)
+				if(c->enabled)
+				{
+					c->refreshGeometry();
+
+					ssvu::clampMax(idxHierarchyBegin, c->idxHierarchyBegin);
+					ssvu::clampMin(idxHierarchyEnd, c->idxHierarchyEnd);
+				}
 		}
 		inline void BTRChunk::refreshEffects() noexcept
 		{
-			if(parent != nullptr)
+			if(parent != nullptr && parent->enabled)
 				for(auto& e : parent->childrenEffects) e->apply(*this);
 
-			for(auto& c : children) c->refreshEffects();
+			for(auto& c : children) if(c->enabled) c->refreshEffects();
 		}
 
 		template<typename... TArgs> inline BTRChunk& BTRChunk::mkChild(TArgs&&... mArgs)

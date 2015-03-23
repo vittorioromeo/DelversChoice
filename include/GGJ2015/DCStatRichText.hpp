@@ -7,27 +7,22 @@ namespace ggj
 {
 	struct StatRichText
 	{
-		ssvs::BitmapTextRich txt{*getAssets().fontObStroked};
-		BP::Group* pssExtra;
-		BP::Str* psTotal;
-		BP::Str* psBase;
-		BP::Str* psBonus;
-		BP::ClFG* clfgBonus;
+		Exp::BitmapTextRich txt{*getAssets().fontObStroked};
+
+		Exp::BS::Chunk* pssExtra;
+		Exp::BS::Chunk* psTotal;
+		Exp::BS::Chunk* psBase;
+		Exp::BS::Chunk* psBonus;
+		Exp::BS::ColorFG* clfgBonus;
 
 		inline StatRichText()
 		{
 			sfc gray{100, 100, 100, 255};
 
-			psTotal = &txt.mk<BP::Str>();
-			pssExtra = &txt.mk<BP::Group>();
-
-			txt	<< txt.mk<BP::Trk>(-3) << sfc::White << *psTotal << *pssExtra;
-
-			psBase = &pssExtra->mk<BP::Str>();
-			clfgBonus = &pssExtra->mk<BP::ClFG>(sfc::Green);
-			psBonus = &pssExtra->mk<BP::Str>();
-
-			(*pssExtra) << gray << " (" << sfc::White << *psBase << gray << "+" << *clfgBonus << *psBonus << gray << ")";
+			txt.eff<Exp::BS::Tracking>(-3).eff(sfc::White).in(psTotal, "")
+				.in(pssExtra, "")
+					.eff(gray).in(" (").eff(sfc::White).in(psBase, "").eff(gray).in("+").eff<Exp::BS::ColorFG>(clfgBonus, sfc::Green)
+						.in(psBonus, "").eff(gray).in(")");
 
 			clfgBonus->setAnimPulse(0.05f, 100);
 		}

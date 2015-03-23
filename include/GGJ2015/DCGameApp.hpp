@@ -558,19 +558,11 @@ namespace ggj
 				if(gs.state == GameSession::State::Dead) drawDead();
 			}
 
-			inline auto& mkTP(ssvs::BitmapTextRich& mTxt, const sf::Color& mC)
-			{
-				auto& temp(mTxt.template mk<BP::ClFG>(mC));
-				temp.setAnimPulse(0.05f, 100);
-				return temp;
-			}
-
 			inline void recreateTxtMenu()
 			{
 				txtMenu.clear();
 				txtMenu.setAlign(ssvs::TextAlign::Center);
 				txtMenu.eff<Exp::BS::Tracking>(-3);
-				//txtMenu	<< txtMenu.mk<BP::Trk>(-3);
 
 				menu.forCurrentChoices([this](auto mIdx, auto& mC)
 				{
@@ -596,15 +588,6 @@ namespace ggj
 				using namespace Exp;
 
 				tr.setAlign(ssvs::TextAlign::Center);
-			/*	tr << "Testing rich text...\n" << BS::wave(1.5f, 0.03f) << BS::tracking(-3)
-				   << BS::pulseDef(sfc::Red) << "Here it goes: " << sfc::Cyan << reftest << BS::out() << BS::out() << BS::out()
-				   << BS::tracking(+1) << "\n:D";*/
-
-						//.in<Pulse>(sfc::Red)
-				//.eff<BS::Wave>(1.5f, 0.03f)
-				//.eff<BS::Tracking>(-3)
-				//.eff(sfc::Cyan)
-				//.eff<BS::Tracking>(+1)
 				tr
 					.in("Testing rich text...\n")
 						.eff<BS::Leading>(-4)
@@ -627,15 +610,7 @@ namespace ggj
 					.eff(sfc::White).in("Audio: ").eff(sfc::Green).in("Nicola Bombaci\n")
 					.eff(sfc::White).in("Additional help: ").eff(sfc::Yellow).in("Sergio Zavettieri\n")
 					.eff(sfc::Cyan).in("http://vittorioromeo.info\nhttp://nicolabombaci.com");
-/*
-				bpstrRoom = &txtRestart.mk<BP::Str>();
-				bpstrMode = &txtRestart.mk<BP::Str>();
-				txtRestart	<< txtRestart.mk<BP::Trk>(-3)
-							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "1 " << sfc::White << "for menu.\n"
-							<< sfc::White << "Press " << mkTP(txtRestart, sfc::Red) << "2 " << sfc::White << "to restart.\n"
-							<< sfc::White << "You reached room " << sfc::Green.in(bpstrRoom << sfc::White << ".\n"
-							<< sfc::Cyan << "(".in(bpstrMode << ")";
-*/
+
 				txtRestart
 					.eff<BS::Tracking>(-3)
 					.eff(sfc::White).in("Press ").eff<BS::PulseDef>(sfc::Red).in("1 ").eff(sfc::White).in("for menu.\n")
@@ -643,13 +618,6 @@ namespace ggj
 					.eff(sfc::White).in("You reached room ").eff<BS::PulseDef>(sfc::Green).in(bpstrRoom).eff(sfc::White).in(".\n")
 					.eff(sfc::Cyan).in("(").in(bpstrMode).in(")");
 
-				/*sScoreName = &txtScores.mk<BP::Str>();
-				sScoreBeginner = &txtScores.mk<BP::Str>();
-				sScoreOfficial = &txtScores.mk<BP::Str>();
-				sScoreHardcore = &txtScores.mk<BP::Str>();
-				sScorePlayedGames = &txtScores.mk<BP::Str>();
-				sScorePlayedTime = &txtScores.mk<BP::Str>();
-*/
 				txtScores.setAlign(ssvs::TextAlign::Right);
 
 				txtScores	.eff<BS::Tracking>(-3)
@@ -661,20 +629,6 @@ namespace ggj
 							.eff<BS::PulseDef>(sfc::Red).in("Statistics:\n")
 							.eff(sfc::White).in("Games played: ").eff<BS::PulseDef>(sfc::Green).in(sScorePlayedGames).in("\n")
 							.eff(sfc::White).in("Time played: ").eff<BS::PulseDef>(sfc::Green).in(sScorePlayedTime).in("\n");
-
-
-
-/*
-				txtScores	<< txtScores.mk<BP::Trk>(-3)
-							<< sfc::White << "Welcome, " << mkTP(txtScores, sfc::Cyan).in(sScoreName << sfc::White << "!\n\n"
-							<< mkTP(txtScores, sfc::Red) << "High scores:\n"
-							<< sfc::White << "Beginner: " << mkTP(txtScores, sfc::Green).in(sScoreBeginner << "\n"
-							<< sfc::White << "Official: " << mkTP(txtScores, sfc::Green).in(sScoreOfficial << "\n"
-							<< sfc::White << "Hardcore: " << mkTP(txtScores, sfc::Green).in(sScoreHardcore << "\n\n"
-							<< mkTP(txtScores, sfc::Red) << "Statistics:\n"
-							<< sfc::White << "Games played: " << mkTP(txtScores, sfc::Green).in(sScorePlayedGames << "\n"
-							<< sfc::White << "Time played: " << mkTP(txtScores, sfc::Green).in(sScorePlayedTime << "\n";
-*/
 
 				for(int i{0}; i < 4; ++i) slotChoices.emplace_back(i);
 
