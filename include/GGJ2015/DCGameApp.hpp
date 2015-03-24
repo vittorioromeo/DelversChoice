@@ -1,30 +1,7 @@
-// TODO
-/*template<typename T> class MonoRecycledVector
-{
-	public:
-		using RecyclerType = ssvu::MonoRecycler<T>;
-		using PtrType = typename RecyclerType::PtrType;
-
-	private:
-		RecyclerType recycler;
-		PtrType vector;
-
-	public:
-		template<typename... TArgs> inline auto& create(TArgs&&... mArgs)
-		{
-			return recycler.getCreateEmplace(vector, FWD(mArgs)...);
-		}
-
-		inline void clear() { vector.clear(); }
-};*/
-
 #ifndef GGJ2015_GAMEAPP
 #define GGJ2015_GAMEAPP
 
 #include "../GGJ2015/DCCommon.hpp"
-
-
-
 
 namespace ggj
 {

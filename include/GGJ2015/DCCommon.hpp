@@ -67,8 +67,6 @@ namespace Exp
 			public:
 				inline BTRChunk(BTRRoot& mRoot) noexcept : root{mRoot} { }
 
-				inline void setEnabled(bool mX) noexcept { enabled = mX; }
-
 				inline auto getTracking() const noexcept
 				{
 					float result{0.f};
@@ -93,6 +91,9 @@ namespace Exp
 				template<typename T> void setStr(T&& mX);
 				inline const auto& getStr() const noexcept { return str; }
 
+				inline void setEnabled(bool mX) noexcept { enabled = mX; }
+				inline bool isEnabled() const noexcept { return enabled; }
+
 				// Make children and go one level deeper
 				auto& in();
 				auto& in(BTRChunk*&);
@@ -113,13 +114,8 @@ namespace Exp
 				inline auto& out() const noexcept { SSVU_ASSERT(parent != nullptr); return *parent; }
 		};
 
-
-
-		using BTRChunkRecycler = ssvu::MonoRecycler<BTRChunk>;
-		using BTRChunkPtr = typename BTRChunkRecycler::PtrType;
-
-		using BTREffectRecycler = ssvu::PolyRecycler<BTREffect>;
-		using BTREffectPtr = typename BTREffectRecycler::PtrType;
+		using BTRChunkRecVector = ssvu::MonoRecVector<BTRChunk>;
+		using BTREffectRecVector = ssvu::PolyRecVector<BTREffect>;
 
 		class BTREWave : public BTREffect
 		{
@@ -222,13 +218,8 @@ namespace Exp
 				mutable sf::FloatRect bounds, globalBounds;
 				mutable bool mustRefreshGeometry{true};
 
-				// TODO: abstract
-				BTRChunkRecycler chunkRecycler;
-				std::vector<BTRChunkPtr> chunkManager;
-
-				// TODO: abstract
-				BTREffectRecycler effectRecycler;
-				std::vector<BTREffectPtr> effectManager;
+				BTRChunkRecVector chunks;
+				BTREffectRecVector effects;
 
 				BTRChunk* baseChunk{&mkChunk()};
 				BTRChunk* lastChunk{baseChunk};
@@ -256,13 +247,13 @@ namespace Exp
 
 				template<typename... TArgs> inline BTRChunk& mkChunk(TArgs&&... mArgs)
 				{
-					auto& c(chunkRecycler.getCreateEmplace(chunkManager, *this, FWD(mArgs)...));
+					auto& c(chunks.create(*this, FWD(mArgs)...));
 					lastChunk = &c;
 					return c;
 				}
 				template<typename T, typename... TArgs> inline T& mkEffect(TArgs&&... mArgs)
 				{
-					return effectRecycler.getCreateEmplace<T>(effectManager, FWD(mArgs)...);
+					return effects.create<T>(FWD(mArgs)...);
 				}
 
 				inline void pushRowData() const
@@ -366,8 +357,8 @@ namespace Exp
 				inline void clear()
 				{
 					mustRefreshGeometry = true;
-					chunkManager.clear();
-					effectManager.clear();
+					chunks.clear();
+					effects.clear();
 					baseChunk = &mkChunk();
 					lastChunk = baseChunk;
 				}
