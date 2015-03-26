@@ -16,7 +16,7 @@ namespace ggj
 
 		inline void ieToRichText(InstantEffect& mX)
 		{
-			btr.eff<Exp::BS::PulseDef>(mX.type == InstantEffect::Type::Sub ? sfc::Red : sfc::Green)
+			btr.getLast().eff<Exp::BS::PulseDef>(mX.type == InstantEffect::Type::Sub ? sfc::Red : sfc::Green)
 				.in(mX.getStrType()).in(ssvu::toStr(ssvu::toInt(mX.value))).in(" ").eff(sfc::White).in(mX.getStrStat()).in("\n");
 		}
 
@@ -52,7 +52,6 @@ namespace ggj
 			ssvs::setOrigin(btr, ssvs::getLocalCenter);
 			btr.setPosition(card.getPosition());
 			mGW.draw(btr);
-
 		}
 	};
 }

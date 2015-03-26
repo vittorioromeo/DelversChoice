@@ -369,11 +369,11 @@ namespace Exp
 
 				template<typename... TArgs> inline decltype(auto) in(TArgs&&... mArgs)
 				{
-					return lastChunk->in(FWD(mArgs)...);
+					return baseChunk->in(FWD(mArgs)...);
 				}
 				template<typename T, typename... TArgs> inline decltype(auto) eff(TArgs&&... mArgs)
 				{
-					return lastChunk->eff<T>(FWD(mArgs)...);
+					return baseChunk->eff<T>(FWD(mArgs)...);
 				}
 
 				inline void setAlign(TextAlign mX) noexcept
@@ -398,6 +398,7 @@ namespace Exp
 				}
 
 				inline auto& getRoot() noexcept { return *baseChunk; }
+				inline auto& getLast() noexcept { return *lastChunk; }
 
 				inline const auto& getBitmapFont() const noexcept	{ return bitmapFont; }
 				inline const auto& getLocalBounds() const			{ refreshGeometryIfNeeded(); return bounds; }
