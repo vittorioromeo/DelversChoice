@@ -1,12 +1,17 @@
 #ifndef GGJ2015_NEWBTR_IMPL_BTRDRAWSTATE
 #define GGJ2015_NEWBTR_IMPL_BTRDRAWSTATE
 
-#include "../../../GGJ2015/Common.hpp"
+#include <SSVUtils/MemoryManager/MemoryManager.hpp>
+#include "SSVStart/Global/Typedefs.hpp"
+#include "SSVStart/BitmapText/Impl/BitmapFont.hpp"
 
-namespace Exp
+#include "../../NewBTR/Impl/BTREffect.hpp"
+#include "../../NewBTR/Impl/BTRChunk.hpp"
+#include "../../NewBTR/Impl/BTREWave.hpp"
+#include "../../NewBTR/Impl/BTREColor.hpp"
+
+namespace ssvs
 {
-	using namespace ssvs;
-
 	namespace Impl
 	{
 		struct BTRDrawState

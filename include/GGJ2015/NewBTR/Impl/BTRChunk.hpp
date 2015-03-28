@@ -1,9 +1,14 @@
 #ifndef GGJ2015_NEWBTR_IMPL_BTRCHUNK
 #define GGJ2015_NEWBTR_IMPL_BTRCHUNK
 
-#include "../../../GGJ2015/Common.hpp"
+#include <SSVUtils/MemoryManager/MemoryManager.hpp>
+#include "SSVStart/Global/Typedefs.hpp"
+#include "SSVStart/BitmapText/Impl/BitmapFont.hpp"
 
-namespace Exp
+#include "../../NewBTR/Impl/Fwd.hpp"
+#include "../../NewBTR/Impl/BTREffect.hpp"
+
+namespace ssvs
 {
 	namespace Impl
 	{

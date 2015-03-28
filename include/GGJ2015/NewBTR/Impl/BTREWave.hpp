@@ -1,12 +1,15 @@
 #ifndef GGJ2015_NEWBTR_IMPL_BTREWAVE
 #define GGJ2015_NEWBTR_IMPL_BTREWAVE
 
-#include "../../../GGJ2015/Common.hpp"
+#include <SSVUtils/MemoryManager/MemoryManager.hpp>
+#include "SSVStart/Global/Typedefs.hpp"
+#include "SSVStart/BitmapText/Impl/BitmapFont.hpp"
 
-namespace Exp
+#include "../../NewBTR/Impl/BTREffect.hpp"
+#include "../../NewBTR/Impl/BTRChunk.hpp"
+
+namespace ssvs
 {
-	using namespace ssvs;
-
 	namespace Impl
 	{
 		class BTREWave : public BTREffect

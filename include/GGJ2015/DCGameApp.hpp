@@ -109,22 +109,22 @@ namespace ggj
 			ssvs::BitmapText txtTimer{mkTxtOBBig()}, txtRoom{mkTxtOBBig()}, txtDeath{mkTxtOBBig()},
 							txtLog{mkTxtOBSmall()}, txtMode{mkTxtOBSmall()};
 
-			Exp::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked},
+			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked},
 				txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked};
-			Exp::BS::Chunk* bpstrRoom;
-			Exp::BS::Chunk* bpstrMode;
+			BS::Chunk* bpstrRoom;
+			BS::Chunk* bpstrMode;
 
 			std::vector<SlotChoice> slotChoices;
 			sf::Sprite dropsModalSprite;
 			CreatureStatsDraw csdPlayer;
 			Vec2f oldPos;
 
-			Exp::BS::Chunk* sScoreName;
-			Exp::BS::Chunk* sScoreBeginner;
-			Exp::BS::Chunk* sScoreOfficial;
-			Exp::BS::Chunk* sScoreHardcore;
-			Exp::BS::Chunk* sScorePlayedGames;
-			Exp::BS::Chunk* sScorePlayedTime;
+			BS::Chunk* sScoreName;
+			BS::Chunk* sScoreBeginner;
+			BS::Chunk* sScoreOfficial;
+			BS::Chunk* sScoreHardcore;
+			BS::Chunk* sScorePlayedGames;
+			BS::Chunk* sScorePlayedTime;
 
 			inline void initInput()
 			{
@@ -539,7 +539,7 @@ namespace ggj
 			{
 				txtMenu.clear();
 				txtMenu.setAlign(ssvs::TextAlign::Center);
-				txtMenu.eff<Exp::BS::Tracking>(-3);
+				txtMenu.eff<BS::Tracking>(-3);
 
 				menu.forCurrentChoices([this](auto mIdx, auto& mC)
 				{
@@ -549,21 +549,19 @@ namespace ggj
 					}
 					else
 					{
-						txtMenu.eff<Exp::BS::PulseDef>(sfc::Red).in(ssvu::toStr(mIdx + 1)).in(". ").eff(sfc::White).in(mC->getStr()).in("\n");
+						txtMenu.eff<BS::PulseDef>(sfc::Red).in(ssvu::toStr(mIdx + 1)).in(". ").eff(sfc::White).in(mC->getStr()).in("\n");
 					}
 				});
 			}
 
 		public:
-			Exp::BitmapTextRich tr{*getAssets().fontObStroked};
+			ssvs::BitmapTextRich tr{*getAssets().fontObStroked};
 
-			Exp::BS::Chunk* reftest;
+			BS::Chunk* reftest;
 			float reftestC;
 
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}
 			{
-				using namespace Exp;
-
 				tr.setAlign(ssvs::TextAlign::Center);
 				tr
 					.in("Testing rich text...\n")
@@ -573,7 +571,7 @@ namespace ggj
 							.eff<BS::Wave>(1.5f, 0.03f)
 							.eff<BS::PulseDef>(sfc::Red)
 							.eff<BS::Tracking>(-2)
-							.mk(reftest, "")
+							.mk(reftest)
 						.out()
 						.in()
 							.eff<BS::Leading>(+4)

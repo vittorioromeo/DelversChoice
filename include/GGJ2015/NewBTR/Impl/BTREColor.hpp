@@ -1,15 +1,19 @@
 #ifndef GGJ2015_NEWBTR_IMPL_BTRECOLORFG
 #define GGJ2015_NEWBTR_IMPL_BTRECOLORFG
 
-#include "../../../GGJ2015/Common.hpp"
+#include <SSVUtils/MemoryManager/MemoryManager.hpp>
+#include "SSVStart/Global/Typedefs.hpp"
+#include "SSVStart/BitmapText/Impl/BitmapFont.hpp"
 
-namespace Exp
+#include "../../NewBTR/Impl/BTREffect.hpp"
+#include "../../NewBTR/Impl/BTRChunk.hpp"
+#include "../../NewBTR/Impl/BTREWave.hpp"
+
+namespace ssvs
 {
-	using namespace ssvs;
-
 	namespace Impl
 	{
-		class BTREColorFG : public BTREffect
+		class BTREColor : public BTREffect
 		{
 			public:
 				enum class Anim{None, Pulse};
@@ -20,7 +24,7 @@ namespace Exp
 				Anim anim{Anim::None};
 
 			public:
-				inline BTREColorFG(const sf::Color& mColorFG) noexcept : colorFG{mColorFG}, colorFGComputed{colorFG} { }
+				inline BTREColor(const sf::Color& mColorFG) noexcept : colorFG{mColorFG}, colorFGComputed{colorFG} { }
 
 				inline void update(FT mFT) noexcept override
 				{

@@ -1,13 +1,12 @@
 #ifndef GGJ2015_NEWBTR_IMPL_FWD
 #define GGJ2015_NEWBTR_IMPL_FWD
 
-#include "../../../GGJ2015/Common.hpp"
-#include "../../../GGJ2015/Boilerplate.hpp"
+#include <SSVUtils/MemoryManager/MemoryManager.hpp>
+#include "SSVStart/Global/Typedefs.hpp"
+#include "SSVStart/BitmapText/Impl/BitmapFont.hpp"
 
-namespace Exp
+namespace ssvs
 {
-	using namespace ssvs;
-
 	namespace Impl
 	{
 		class BTRRoot;

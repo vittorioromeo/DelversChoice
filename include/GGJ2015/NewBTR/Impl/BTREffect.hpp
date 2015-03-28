@@ -1,12 +1,12 @@
 #ifndef GGJ2015_NEWBTR_IMPL_BTREFFECT
 #define GGJ2015_NEWBTR_IMPL_BTREFFECT
 
-#include "../../../GGJ2015/Common.hpp"
+#include <SSVUtils/MemoryManager/MemoryManager.hpp>
+#include "SSVStart/Global/Typedefs.hpp"
+#include "SSVStart/BitmapText/Impl/BitmapFont.hpp"
 
-namespace Exp
+namespace ssvs
 {
-	using namespace ssvs;
-
 	namespace Impl
 	{
 		class BTREffect

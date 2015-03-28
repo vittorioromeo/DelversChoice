@@ -7,8 +7,8 @@
 
 namespace ggj
 {
-	namespace BP = ssvs::BTRP;
 	using sfc = sf::Color;
+	namespace BS = ssvs::BS;
 
 	struct GameSession;
 

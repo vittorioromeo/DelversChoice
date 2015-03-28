@@ -1,12 +1,21 @@
 #ifndef GGJ2015_NEWBTR_IMPL_BTRCHUNK_INL
 #define GGJ2015_NEWBTR_IMPL_BTRCHUNK_INL
 
-#include "../../../GGJ2015/Common.hpp"
+#include <SSVUtils/MemoryManager/MemoryManager.hpp>
+#include "SSVStart/Global/Typedefs.hpp"
+#include "SSVStart/BitmapText/Impl/BitmapFont.hpp"
 
-namespace Exp
+#include "../../NewBTR/Impl/Fwd.hpp"
+#include "../../NewBTR/Impl/BTREffect.hpp"
+#include "../../NewBTR/Impl/BTRChunk.hpp"
+#include "../../NewBTR/Impl/BTREWave.hpp"
+#include "../../NewBTR/Impl/BTREColor.hpp"
+#include "../../NewBTR/Impl/BTRDrawState.hpp"
+#include "../../NewBTR/Impl/BTRRoot.hpp"
+#include "../../NewBTR/Impl/BS.hpp"
+
+namespace ssvs
 {
-	using namespace ssvs;
-
 	namespace Impl
 	{
 		template<typename TF> inline void BTRChunk::forVertices(TF mFn) noexcept
@@ -78,7 +87,7 @@ namespace Exp
 		template<typename T> inline auto& BTRChunk::mk(BTRChunk*& mPtr, T&& mStr)	{ in(mPtr, FWD(mStr)); return *this; }
 		inline auto& BTRChunk::mk(BTRChunk*& mPtr)									{ in(mPtr, ""); return *this; }
 
-		inline auto& BTRChunk::eff(const sf::Color& mX)													{ mkEffect<BTREColorFG>(mX); return *this; }
+		inline auto& BTRChunk::eff(const sf::Color& mX)													{ mkEffect<BTREColor>(mX); return *this; }
 		template<typename T, typename... TArgs> inline auto& BTRChunk::eff(TArgs&&... mArgs)			{ EffectHelper<T>::mk(*this, FWD(mArgs)...); return *this; }
 		template<typename T, typename... TArgs> inline auto& BTRChunk::eff(T*& mPtr, TArgs&&... mArgs)	{ mPtr = &EffectHelper<T>::mk(*this, FWD(mArgs)...); return *this; }
 

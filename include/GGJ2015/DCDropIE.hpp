@@ -10,13 +10,13 @@ namespace ggj
 	struct DropIE : public Drop
 	{
 		std::vector<InstantEffect> ies;
-		Exp::BitmapTextRich btr{*getAssets().fontObStroked};
+		ssvs::BitmapTextRich btr{*getAssets().fontObStroked};
 
 		inline DropIE(GameSession& mGameSession) : Drop{mGameSession} { }
 
 		inline void ieToRichText(InstantEffect& mX)
 		{
-			btr.getLast().eff<Exp::BS::PulseDef>(mX.type == InstantEffect::Type::Sub ? sfc::Red : sfc::Green)
+			btr.getLast().eff<BS::PulseDef>(mX.type == InstantEffect::Type::Sub ? sfc::Red : sfc::Green)
 				.in(mX.getStrType()).in(ssvu::toStr(ssvu::toInt(mX.value))).in(" ").eff(sfc::White).in(mX.getStrStat()).in("\n");
 		}
 
@@ -24,7 +24,7 @@ namespace ggj
 		{
 			btr.clear();
 			btr.setAlign(ssvs::TextAlign::Center);
-			btr.eff<Exp::BS::Tracking>(-3);
+			btr.eff<BS::Tracking>(-3);
 
 			for(auto& x : ies) ieToRichText(x);
 		}
