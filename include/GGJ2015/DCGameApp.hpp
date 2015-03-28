@@ -111,7 +111,7 @@ namespace ggj
 
 			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked},
 				txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked};
-			BTR::Ptr<BTR::Chunk> bpstrRoom, bpstrMode, sScoreName, sScoreBeginner, sScoreOfficial, sScoreHardcore, sScorePlayedGames, sScorePlayedTime;
+			BTR::PtrChunk bpstrRoom, bpstrMode, sScoreName, sScoreBeginner, sScoreOfficial, sScoreHardcore, sScorePlayedGames, sScorePlayedTime;
 
 			std::vector<SlotChoice> slotChoices;
 			sf::Sprite dropsModalSprite;
@@ -551,7 +551,7 @@ namespace ggj
 		public:
 			ssvs::BitmapTextRich tr{*getAssets().fontObStroked};
 
-			BTR::Ptr<BTR::Chunk> reftest;
+			BTR::PtrChunk reftest;
 			float reftestC;
 
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}

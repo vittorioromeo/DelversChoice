@@ -9,7 +9,7 @@ namespace ggj
 	{
 		ssvs::BitmapTextRich txt{*getAssets().fontObStroked};
 
-		BTR::Ptr<BTR::Chunk> p1, p2, psTotal, psBase, psBonus;
+		BTR::PtrChunk p1, p2, psTotal, psBase, psBonus;
 
 		inline StatRichText()
 		{

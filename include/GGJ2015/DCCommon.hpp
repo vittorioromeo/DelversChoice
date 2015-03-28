@@ -3,7 +3,6 @@
 
 #include "../GGJ2015/Common.hpp"
 #include "../GGJ2015/Boilerplate.hpp"
-#include "../GGJ2015/NewBTR/NewBTR.hpp"
 
 namespace ggj
 {
