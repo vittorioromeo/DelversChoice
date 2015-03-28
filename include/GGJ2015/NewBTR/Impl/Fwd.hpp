@@ -7,11 +7,31 @@
 
 namespace ssvs
 {
-	namespace Impl
+	namespace BTR
 	{
-		class BTRRoot;
-		class BTRChunk;
-		template<typename> struct EffectHelper;
+		namespace Impl
+		{
+			class BTRRoot;
+			class BTRChunk;
+			template<typename> struct EffectHelper;
+		}
+
+		template<typename T> class Ptr
+		{
+			private:
+				T* ptr;
+
+			public:
+				inline Ptr() noexcept : ptr{nullptr} { }
+				inline Ptr(T* mX) noexcept : ptr{*mX} { }
+
+				inline auto& operator=(T* mX) noexcept { ptr = mX; return *this; }
+
+				inline auto& operator*() noexcept { SSVU_ASSERT(ptr != nullptr); return *ptr; }
+				inline const auto& operator*() const noexcept { SSVU_ASSERT(ptr != nullptr); return *ptr; }
+				inline T* operator->() noexcept { SSVU_ASSERT(ptr != nullptr); return ptr; }
+				inline T* operator->() const noexcept { SSVU_ASSERT(ptr != nullptr); return ptr; }
+		};
 	}
 }
 

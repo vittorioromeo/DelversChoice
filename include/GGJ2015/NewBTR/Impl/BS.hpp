@@ -1,5 +1,5 @@
-#ifndef GGJ2015_NEWBTR_IMPL_BS
-#define GGJ2015_NEWBTR_IMPL_BS
+#ifndef GGJ2015_NEWBTR_IMPL_BTR
+#define GGJ2015_NEWBTR_IMPL_BTR
 
 #include <SSVUtils/MemoryManager/MemoryManager.hpp>
 #include "SSVStart/Global/Typedefs.hpp"
@@ -14,7 +14,7 @@
 
 namespace ssvs
 {
-	namespace BS
+	namespace BTR
 	{
 		struct Tracking { };
 		struct Leading { };
@@ -26,7 +26,7 @@ namespace ssvs
 		using Chunk = Impl::BTRChunk;
 	}
 
-	using BitmapTextRich = Impl::BTRRoot;
+	using BitmapTextRich = BTR::Impl::BTRRoot;
 }
 
 #endif

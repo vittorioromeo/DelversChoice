@@ -10,26 +10,32 @@
 
 namespace ssvs
 {
-	namespace Impl
+	namespace BTR
 	{
-		class BTREWave : public BTREffect
+		namespace Impl
 		{
-			private:
-				float angle, amplitude, repeat, speedMult;
+			class BTREWave : public BTREffect
+			{
+				private:
+					float angle, amplitude, repeat, speedMult;
 
-			public:
-				inline BTREWave(float mAmplitude = 2.f, float mSpeedMult = 0.1f, float mRepeat = 4.f, float mAngleStart = 0.f)
-					: angle{mAngleStart}, amplitude{mAmplitude}, repeat{mRepeat}, speedMult{mSpeedMult} { }
+				public:
+					inline BTREWave(float mAmplitude = 2.f, float mSpeedMult = 0.1f, float mRepeat = 4.f, float mAngleStart = 0.f)
+						: angle{mAngleStart}, amplitude{mAmplitude}, repeat{mRepeat}, speedMult{mSpeedMult} { }
 
-				inline void update(FT mFT) noexcept override { angle = ssvu::getWrapRad(angle + mFT * speedMult); }
-				inline void apply(BTRChunk& mX) noexcept override
-				{
-					mX.forVertices([this](auto mIdx, auto, auto& mV, auto& mVO)
+					inline void update(FT mFT) noexcept override
 					{
-						mV.position.y = mVO.position.y + std::sin(angle + (mIdx / repeat)) * amplitude;
-					});
-				}
-		};
+						angle = ssvu::getWrapRad(angle + mFT * speedMult);
+					}
+					inline void apply(BTRChunk& mX) noexcept override
+					{
+						mX.forVertices([this](auto mIdx, auto, auto& mV, auto& mVO)
+						{
+							mV.position.y = mVO.position.y + std::sin(angle + (mIdx / repeat)) * amplitude;
+						});
+					}
+			};
+		}
 	}
 }
 

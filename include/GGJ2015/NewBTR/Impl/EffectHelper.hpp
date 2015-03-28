@@ -16,55 +16,58 @@
 
 namespace ssvs
 {
-	namespace Impl
+	namespace BTR
 	{
-		template<typename T> struct EffectHelper
+		namespace Impl
 		{
-			template<typename... TArgs> inline static auto& mk(BTRChunk& mC, TArgs&&... mArgs)
+			template<typename T> struct EffectHelper
 			{
-				return mC.mkEffect<T>(FWD(mArgs)...);
-			}
-		};
-		template<> struct EffectHelper<BS::Tracking>
-		{
-			inline static void mk(BTRChunk& mC, float mX)
+				template<typename... TArgs> inline static auto& mk(BTRChunk& mC, TArgs&&... mArgs)
+				{
+					return mC.mkEffect<T>(FWD(mArgs)...);
+				}
+			};
+			template<> struct EffectHelper<BTR::Tracking>
 			{
-				mC.trackingModifier = mX;
-				mC.root.mustRefreshGeometry = true;
-			}
-		};
-		template<> struct EffectHelper<BS::Leading>
-		{
-			inline static void mk(BTRChunk& mC, float mX)
+				inline static void mk(BTRChunk& mC, float mX)
+				{
+					mC.trackingModifier = mX;
+					mC.root.mustRefreshGeometry = true;
+				}
+			};
+			template<> struct EffectHelper<BTR::Leading>
 			{
-				mC.leadingModifier = mX;
-				mC.root.mustRefreshGeometry = true;
-			}
-		};
-		template<> struct EffectHelper<BS::HChunkSpacing>
-		{
-			inline static void mk(BTRChunk& mC, float mX)
+				inline static void mk(BTRChunk& mC, float mX)
+				{
+					mC.leadingModifier = mX;
+					mC.root.mustRefreshGeometry = true;
+				}
+			};
+			template<> struct EffectHelper<BTR::HChunkSpacing>
 			{
-				mC.hChunkSpacingModifier = mX;
-				mC.root.mustRefreshGeometry = true;
-			}
-		};
-		template<> struct EffectHelper<BS::Pulse>
-		{
-			inline static auto& mk(BTRChunk& mC, const sf::Color& mColor, float mSpeed, float mMax, float mStart)
+				inline static void mk(BTRChunk& mC, float mX)
+				{
+					mC.hChunkSpacingModifier = mX;
+					mC.root.mustRefreshGeometry = true;
+				}
+			};
+			template<> struct EffectHelper<BTR::Pulse>
 			{
-				auto& result(mC.mkEffect<BS::Color>(mColor));
-				result.setAnimPulse(mSpeed, mMax, mStart);
-				return result;
-			}
-		};
-		template<> struct EffectHelper<BS::PulseDef>
-		{
-			inline static auto& mk(BTRChunk& mC, const sf::Color& mColor)
+				inline static auto& mk(BTRChunk& mC, const sf::Color& mColor, float mSpeed, float mMax, float mStart)
+				{
+					auto& result(mC.mkEffect<BTR::Color>(mColor));
+					result.setAnimPulse(mSpeed, mMax, mStart);
+					return result;
+				}
+			};
+			template<> struct EffectHelper<BTR::PulseDef>
 			{
-				return mC.eff<BS::Pulse>(mColor, 0.05f, 110.f, 0.f);
-			}
-		};
+				inline static auto& mk(BTRChunk& mC, const sf::Color& mColor)
+				{
+					return mC.eff<BTR::Pulse>(mColor, 0.05f, 110.f, 0.f);
+				}
+			};
+		}
 	}
 }
 

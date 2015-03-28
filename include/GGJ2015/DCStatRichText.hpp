@@ -9,20 +9,15 @@ namespace ggj
 	{
 		ssvs::BitmapTextRich txt{*getAssets().fontObStroked};
 
-		BS::Chunk* p1;
-		BS::Chunk* p2;
-
-		BS::Chunk* psTotal;
-		BS::Chunk* psBase;
-		BS::Chunk* psBonus;
+		BTR::Ptr<BTR::Chunk> p1, p2, psTotal, psBase, psBonus;
 
 		inline StatRichText()
 		{
 			sfc gray{100, 100, 100, 255};
 
-			txt.eff<BS::Tracking>(-3).mk(p1).mk(p2);
+			txt.eff<BTR::Tracking>(-3).mk(p1).mk(p2);
 			p1->eff(sfc::White).in(psTotal);
-			p2->eff(gray).in(" (").eff(sfc::White).in(psBase).eff(gray).in("+").eff<BS::PulseDef>(sfc::Green).in(psBonus).eff(gray).in(")");
+			p2->eff(gray).in(" (").eff(sfc::White).in(psBase).eff(gray).in("+").eff<BTR::PulseDef>(sfc::Green).in(psBonus).eff(gray).in(")");
 		}
 
 		inline void update(FT mFT) { txt.update(mFT); }

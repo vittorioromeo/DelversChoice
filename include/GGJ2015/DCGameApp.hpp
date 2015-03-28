@@ -111,20 +111,14 @@ namespace ggj
 
 			ssvs::BitmapTextRich txtCredits{*getAssets().fontObStroked}, txtRestart{*getAssets().fontObStroked},
 				txtMenu{*getAssets().fontObStroked}, txtScores{*getAssets().fontObStroked};
-			BS::Chunk* bpstrRoom;
-			BS::Chunk* bpstrMode;
+			BTR::Ptr<BTR::Chunk> bpstrRoom, bpstrMode, sScoreName, sScoreBeginner, sScoreOfficial, sScoreHardcore, sScorePlayedGames, sScorePlayedTime;
 
 			std::vector<SlotChoice> slotChoices;
 			sf::Sprite dropsModalSprite;
 			CreatureStatsDraw csdPlayer;
 			Vec2f oldPos;
 
-			BS::Chunk* sScoreName;
-			BS::Chunk* sScoreBeginner;
-			BS::Chunk* sScoreOfficial;
-			BS::Chunk* sScoreHardcore;
-			BS::Chunk* sScorePlayedGames;
-			BS::Chunk* sScorePlayedTime;
+
 
 			inline void initInput()
 			{
@@ -539,7 +533,7 @@ namespace ggj
 			{
 				txtMenu.clear();
 				txtMenu.setAlign(ssvs::TextAlign::Center);
-				txtMenu.eff<BS::Tracking>(-3);
+				txtMenu.eff<BTR::Tracking>(-3);
 
 				menu.forCurrentChoices([this](auto mIdx, auto& mC)
 				{
@@ -549,7 +543,7 @@ namespace ggj
 					}
 					else
 					{
-						txtMenu.eff<BS::PulseDef>(sfc::Red).in(ssvu::toStr(mIdx + 1)).in(". ").eff(sfc::White).in(mC->getStr()).in("\n");
+						txtMenu.eff<BTR::PulseDef>(sfc::Red).in(ssvu::toStr(mIdx + 1)).in(". ").eff(sfc::White).in(mC->getStr()).in("\n");
 					}
 				});
 			}
@@ -557,7 +551,7 @@ namespace ggj
 		public:
 			ssvs::BitmapTextRich tr{*getAssets().fontObStroked};
 
-			BS::Chunk* reftest;
+			BTR::Ptr<BTR::Chunk> reftest;
 			float reftestC;
 
 			inline GameApp(ssvs::GameWindow& mGameWindow) : Boilerplate::App{mGameWindow}
@@ -565,21 +559,21 @@ namespace ggj
 				tr.setAlign(ssvs::TextAlign::Center);
 				tr
 					.in("Testing rich text...\n")
-						.eff<BS::Leading>(-4)
+						.eff<BTR::Leading>(-4)
 						.in("Here it goes...")
-							.eff<BS::HChunkSpacing>(+10)
-							.eff<BS::Wave>(1.5f, 0.03f)
-							.eff<BS::PulseDef>(sfc::Red)
-							.eff<BS::Tracking>(-2)
+							.eff<BTR::HChunkSpacing>(+10)
+							.eff<BTR::Wave>(1.5f, 0.03f)
+							.eff<BTR::PulseDef>(sfc::Red)
+							.eff<BTR::Tracking>(-2)
 							.mk(reftest)
 						.out()
 						.in()
-							.eff<BS::Leading>(+4)
+							.eff<BTR::Leading>(+4)
 							.mk("\n:D\tbananas");
 
 				txtCredits
-					.eff<BS::Tracking>(-3)
-					.eff<BS::PulseDef>(sfc::White).in("Global Game Jam 2015\n")
+					.eff<BTR::Tracking>(-3)
+					.eff<BTR::PulseDef>(sfc::White).in("Global Game Jam 2015\n")
 					.eff(sfc::White).in("Developer: ").eff(sfc::Red).in("Vittorio Romeo\n")
 					.eff(sfc::White).in("2D Artist: ").eff(sfc::Red).in("Vittorio Romeo\n")
 					.eff(sfc::White).in("Audio: ").eff(sfc::Green).in("Nicola Bombaci\n")
@@ -587,23 +581,23 @@ namespace ggj
 					.eff(sfc::Cyan).in("http://vittorioromeo.info\nhttp://nicolabombaci.com");
 
 				txtRestart
-					.eff<BS::Tracking>(-3)
-					.eff(sfc::White).in("Press ").eff<BS::PulseDef>(sfc::Red).in("1 ").eff(sfc::White).in("for menu.\n")
-					.eff(sfc::White).in("Press ").eff<BS::PulseDef>(sfc::Red).in("2 ").eff(sfc::White).in("for restart.\n")
-					.eff(sfc::White).in("You reached room ").eff<BS::PulseDef>(sfc::Green).in(bpstrRoom).eff(sfc::White).in(".\n")
+					.eff<BTR::Tracking>(-3)
+					.eff(sfc::White).in("Press ").eff<BTR::PulseDef>(sfc::Red).in("1 ").eff(sfc::White).in("for menu.\n")
+					.eff(sfc::White).in("Press ").eff<BTR::PulseDef>(sfc::Red).in("2 ").eff(sfc::White).in("for restart.\n")
+					.eff(sfc::White).in("You reached room ").eff<BTR::PulseDef>(sfc::Green).in(bpstrRoom).eff(sfc::White).in(".\n")
 					.eff(sfc::Cyan).in("(").in(bpstrMode).in(")");
 
 				txtScores.setAlign(ssvs::TextAlign::Right);
 
-				txtScores	.eff<BS::Tracking>(-3)
-							.eff(sfc::White).in("Welcome, ").eff<BS::PulseDef>(sfc::Cyan).in(sScoreName).eff(sfc::White).in("!\n\n")
-							.eff<BS::PulseDef>(sfc::Red).in("High scores:\n")
-							.eff(sfc::White).in("Beginner: ").eff<BS::PulseDef>(sfc::Green).in(sScoreBeginner).in("\n")
-							.eff(sfc::White).in("Official: ").eff<BS::PulseDef>(sfc::Green).in(sScoreOfficial).in("\n")
-							.eff(sfc::White).in("Hardcore: ").eff<BS::PulseDef>(sfc::Green).in(sScoreHardcore).in("\n\n")
-							.eff<BS::PulseDef>(sfc::Red).in("Statistics:\n")
-							.eff(sfc::White).in("Games played: ").eff<BS::PulseDef>(sfc::Green).in(sScorePlayedGames).in("\n")
-							.eff(sfc::White).in("Time played: ").eff<BS::PulseDef>(sfc::Green).in(sScorePlayedTime).in("\n");
+				txtScores	.eff<BTR::Tracking>(-3)
+							.eff(sfc::White).in("Welcome, ").eff<BTR::PulseDef>(sfc::Cyan).in(sScoreName).eff(sfc::White).in("!\n\n")
+							.eff<BTR::PulseDef>(sfc::Red).in("High scores:\n")
+							.eff(sfc::White).in("Beginner: ").eff<BTR::PulseDef>(sfc::Green).in(sScoreBeginner).in("\n")
+							.eff(sfc::White).in("Official: ").eff<BTR::PulseDef>(sfc::Green).in(sScoreOfficial).in("\n")
+							.eff(sfc::White).in("Hardcore: ").eff<BTR::PulseDef>(sfc::Green).in(sScoreHardcore).in("\n\n")
+							.eff<BTR::PulseDef>(sfc::Red).in("Statistics:\n")
+							.eff(sfc::White).in("Games played: ").eff<BTR::PulseDef>(sfc::Green).in(sScorePlayedGames).in("\n")
+							.eff(sfc::White).in("Time played: ").eff<BTR::PulseDef>(sfc::Green).in(sScorePlayedTime).in("\n");
 
 				for(int i{0}; i < 4; ++i) slotChoices.emplace_back(i);
 
