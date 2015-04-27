@@ -79,12 +79,10 @@ namespace ggj
 
 	template<typename TF> void Menu::forCurrentChoices(TF&& mFn)
 	{
-		// TODO: very generic iteration helper (auto mIdx, auto& mX) ??
 		auto& choices(stateStack.back()->choices);
 		for(auto i(0u); i < choices.size(); ++i)
 		{
-			auto& c(choices[i]);
-			FWD(mFn)(i, c);
+			FWD(mFn)(i, choices[i]);
 		}
 	}
 

@@ -10,12 +10,16 @@ namespace ggj
 		Creature creature;
 		CreatureStatsDraw csd;
 		sf::Sprite enemySprite;
+
 		float hoverRads;
 
 		inline ChoiceCreature(GameSession& mGameState, SizeT mIdx)
 			: Choice{mGameState, mIdx}
 		{
-			enemySprite.setTexture(*getAssets().enemy);
+			auto flavor(getRndCreatureFlavor());
+			enemySprite.setTexture(flavor.texture);
+			creature.name = flavor.name;
+
 			ssvs::setOrigin(enemySprite, ssvs::getLocalCenter);
 			hoverRads = ssvu::getRndR(0.f, ssvu::tau);
 		}

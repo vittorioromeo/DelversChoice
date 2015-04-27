@@ -6,41 +6,6 @@
 
 namespace ggj
 {
-	// TODO: test, cleanup, to ssvu, remove in gen?
-	template<typename TW = float> class WeightedChance
-	{
-		private:
-			TW weightTotal{0.f};
-			std::vector<TW> weights;
-
-		public:
-			inline void add(TW mWeight)
-			{
-				weights.emplace_back(mWeight);
-				weightTotal += mWeight;
-			}
-
-			inline auto get() const noexcept
-			{
-				auto r(ssvu::getRndR(0.f, weightTotal));
-
-				for(auto i(0u); i < weights.size(); ++i)
-				{
-					if(r < weights[i]) return i;
-					r -= weights[i];
-				}
-
-				SSVU_UNREACHABLE();
-			}
-	};
-
-	template<typename TW = float, typename... TArgs> inline auto makeWeightedChance(TArgs&&... mArgs)
-	{
-		WeightedChance<TW> result;
-		ssvu::forArgs([&result](auto&& mX){ result.add(FWD(mX)); }, FWD(mArgs)...);
-		return result;
-	}
-
 	struct GameSession
 	{
 		//enum class State : int{Playing = 0, Dead = 1, Menu = 2, Settings = 3};
@@ -349,7 +314,7 @@ namespace ggj
 			Creature result;
 
 			// result.name = getGen().generateCreatureName();
-			result.name = "TODO";
+			// result.name = "TODO";
 			result.armor = generateArmor(valueSplit1);
 			result.weapon = generateWeapon(valueSplit2);
 			result.hps = gd.getHPS(valueSplit3);

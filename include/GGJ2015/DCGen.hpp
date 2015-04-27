@@ -2,9 +2,46 @@
 #define GGJ2015_DCGEN
 
 #include "../GGJ2015/DCCommon.hpp"
+#include "../GGJ2015/DCAssets.hpp"
 
 namespace ggj
 {
+	struct CreatureFlavor
+	{
+		const sf::Texture& texture;
+		const std::string name;
+
+		template<typename T> inline CreatureFlavor(const sf::Texture& mTexture, T&& mName) : texture{mTexture}, name{FWD(mName)} { }
+	};
+
+	namespace Impl
+	{
+		inline const auto& getCreatureFlavors()
+		{
+			static std::vector<CreatureFlavor> result
+			{
+				{*getAssets().enemy, "Test enemy"}
+			};
+
+			return result;
+		}
+
+		inline const auto& getCreatureFlavorsChances()
+		{
+			static auto result(makeWeightedChance
+			(
+				1.f
+			));
+
+			return result;
+		}
+	}
+
+	inline const auto& getRndCreatureFlavor()
+	{
+		return Impl::getCreatureFlavors()[Impl::getCreatureFlavorsChances().get()];
+	}
+
 	namespace Impl
 	{
 		struct NameGenData
