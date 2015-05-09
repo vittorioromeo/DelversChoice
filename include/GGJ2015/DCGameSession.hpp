@@ -120,7 +120,7 @@ namespace ggj
 			for(auto i(0u); i < Constants::maxChoices; ++i)
 			{
 				if(nextChoices[i] == nullptr) continue;
-				choices[i] = std::move(nextChoices[i]);
+				choices[i] = ssvu::mv(nextChoices[i]);
 				nextChoices[i] = nullptr;
 			}
 		}
@@ -231,9 +231,9 @@ namespace ggj
 		{
 			switch(wcDrop.get())
 			{
-				case 0: return std::move(generateDropIE());
-				case 1: return std::move(generateDropWeapon());
-				case 2: return std::move(generateDropArmor());
+				case 0: return ssvu::mv(generateDropIE());
+				case 1: return ssvu::mv(generateDropWeapon());
+				case 2: return ssvu::mv(generateDropArmor());
 			}
 
 			SSVU_UNREACHABLE();
@@ -245,9 +245,9 @@ namespace ggj
 
 			auto indices(mkShuffledVector<int>(0, 1, 2));
 
-			result.drops[indices[0]] = std::move(generateRndDrop());
-			if(ssvu::getRndR(0.f, 1.f) < gd.multipleDropChance) result.drops[indices[1]] = std::move(generateRndDrop());
-			if(ssvu::getRndR(0.f, 1.f) < gd.multipleDropChance) result.drops[indices[2]] = std::move(generateRndDrop());
+			result.drops[indices[0]] = ssvu::mv(generateRndDrop());
+			if(ssvu::getRndR(0.f, 1.f) < gd.multipleDropChance) result.drops[indices[1]] = ssvu::mv(generateRndDrop());
+			if(ssvu::getRndR(0.f, 1.f) < gd.multipleDropChance) result.drops[indices[2]] = ssvu::mv(generateRndDrop());
 
 			return result;
 		}
@@ -326,20 +326,20 @@ namespace ggj
 		{
 			auto choice(ssvu::mkUPtr<ChoiceCreature>(*this, mIdx));
 			choice->creature = generateCreature(true);
-			return std::move(choice);
+			return ssvu::mv(choice);
 		}
 
 		inline auto generateChoiceSingleDrop(int mIdx)
 		{
 			auto choice(ssvu::mkUPtr<ChoiceSingleDrop>(*this, mIdx));
 			choice->drop = generateRndDrop();
-			return std::move(choice);
+			return ssvu::mv(choice);
 		}
 
 		inline auto generateChoiceMultipleDrop(int mIdx)
 		{
 			auto choice(ssvu::mkUPtr<ChoiceItemDrop>(*this, mIdx));
-			return std::move(choice);
+			return ssvu::mv(choice);
 		}
 
 

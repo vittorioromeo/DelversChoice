@@ -13,7 +13,7 @@ namespace ggj
 
 		public:
 			template<typename T> inline MenuChoice(std::string mStr, T&& mFn)
-				: str(std::move(mStr)), fn(FWD(mFn))
+				: str(ssvu::mv(mStr)), fn(FWD(mFn))
 			{
 
 			}
