@@ -45,14 +45,14 @@ namespace ggj
 			else if(mode == Mode::Hardcore) modeKey = "hardcore";
 			gd = GameData::fromFile(modeKey);
 
-			wcDrop = makeWeightedChance
+			wcDrop = mkWeightedChance
 			(
 				gd.dropChanceIE,		// 0
 				gd.dropChanceWeapon,	// 1
 				gd.dropChanceArmor		// 2
 			);
 
-			wcChoice = makeWeightedChance
+			wcChoice = mkWeightedChance
 			(
 				gd.choiceChanceCreature,		// 0
 				gd.choiceChanceSingleDrop,		// 1
@@ -280,13 +280,15 @@ namespace ggj
 		{
 			auto valueTotal(gd.getRndValue(mEnemy));
 
-
-
 			// TODO: cleanup, ssvu, etc
-			std::vector<float> bucket;
-			for(auto i(0u); i < 2; ++i) bucket.emplace_back(ssvu::getRndR(0, 3.f));
-			bucket.emplace_back(0.f);
-			bucket.emplace_back(3.f);
+			auto bucket(ssvu::mkArray
+			(
+				ssvu::getRndR(0, 3.f),
+				ssvu::getRndR(0, 3.f),
+				0.f,
+				3.f
+			));
+
 			ssvu::sort(bucket);
 			ssvu::lo() << bucket << "\n";
 

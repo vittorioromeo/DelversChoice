@@ -28,7 +28,7 @@ namespace ggj
 
 		inline const auto& getCreatureFlavorsChances()
 		{
-			static auto result(makeWeightedChance
+			static auto result(mkWeightedChance
 			(
 				1.f
 			));

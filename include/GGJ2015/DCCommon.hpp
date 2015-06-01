@@ -28,12 +28,9 @@ namespace ggj
 
 	using ElementBitset = std::bitset<Constants::elementCount>;
 
-	template<typename TArg, typename... TArgs> inline auto mkShuffledVector(TArg&& mArg, TArgs&&... mArgs)
+	template<typename... TArgs> inline auto mkShuffledVector(TArgs&&... mArgs)
 	{
-		std::vector<TArg> result;
-		result.reserve(1 + sizeof...(TArgs));
-		result.emplace_back(FWD(mArg));
-		ssvu::forArgs([&result](auto&& mX){ result.emplace_back(FWD(mX)); }, FWD(mArgs)...);
+		auto result(ssvu::mkVector(FWD(mArgs)...));
 		ssvu::shuffle(result);
 		return result;
 	}

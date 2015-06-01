@@ -48,7 +48,7 @@ namespace ggj
 			}
 	};
 
-	template<typename TW = float, typename... TArgs> inline auto makeWeightedChance(TArgs&&... mArgs)
+	template<typename TW = float, typename... TArgs> inline auto mkWeightedChance(TArgs&&... mArgs)
 	{
 		WeightedChance<TW> result;
 		result.reserve(sizeof...(TArgs));
