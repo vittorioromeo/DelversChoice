@@ -6,7 +6,7 @@
 
 #define CACHE_ASSET_IMPL(mType, mName, mExt)		mType* mName{&assetLoader.assetManager.get<mType>(SSVPP_TOSTR(mName) mExt)};
 #define CACHE_ASSETS_FOR_IMPL(mIdx, mData, mArg)	CACHE_ASSET_IMPL(SSVPP_TPL_ELEM(mData, 0), mArg, SSVPP_TPL_ELEM(mData, 1))
-#define CACHE_ASSETS(mType, mExt, ...)				SSVPP_FOREACH(CACHE_ASSETS_FOR_IMPL, SSVPP_TPL_MAKE(mType, mExt), __VA_ARGS__)
+#define CACHE_ASSETS(mType, mExt, ...)				SSVPP_FOREACH_REVERSE(CACHE_ASSETS_FOR_IMPL, SSVPP_TPL_MAKE(mType, mExt), __VA_ARGS__)
 
 namespace ggj
 {
