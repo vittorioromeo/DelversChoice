@@ -39,7 +39,7 @@ namespace Boilerplate
 	{
 		private:
 			ssvs::GameWindow gameWindow;
-			ssvu::Maybe<T> app;
+			ssvu::UPtr<T> app;
 
 		public:
 			inline AppRunner(const std::string& mTitle, ssvu::SizeT mWidth, ssvu::SizeT mHeight)
@@ -52,13 +52,11 @@ namespace Boilerplate
 				gameWindow.setMaxFPS(200);
 				gameWindow.setPixelMult(2);
 
-				app.init(gameWindow);
+				app = ssvu::mkUPtr<T>(gameWindow);
 
 				gameWindow.setGameState(app->getGameState());
 				gameWindow.run();
 			}
-
-			inline ~AppRunner() { app.deinit(); }
 	};
 }
 
