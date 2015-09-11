@@ -37,9 +37,9 @@ namespace nl
 
 			public:
 				template<typename... TArgs>
-				BoundedFutures(TArgs&&... mArgs) :
+				BoundedFutures(TArgs... mArgs) :
 					futs{std::async(std::launch::async, 
-						[this, &mArgs]{ while(busy.isBusy()) FWD(mArgs)(); })...},
+						[this, mArgs]{ while(busy.isBusy()) mArgs(); })...},
 					busy{true} { }
 
 				~BoundedFutures()
@@ -69,11 +69,16 @@ namespace nl
 			// Internet -> recv queue/buf -> local host
 			Impl::ManagedSendBuf mpbSend;
 			Impl::ManagedRecvBuf mpbRecv;
+			// TODO: 
+			std::future<void> fut0{std::async(std::launch::async, [this]{ while(isBusy()) mpbSend.sendLoop(sckt); })};
+			std::future<void> fut1{std::async(std::launch::async, [this]{ while(isBusy()) mpbRecv.recvLoop(sckt); })};
+			Impl::BusyFlag busy;
+			/*
 			Impl::BoundedFutures<void, void> futs
 			{
-				[this]{ mpbSend.sendLoop(sckt); }, 
-				[this]{ mpbRecv.recvLoop(sckt); }
-			};
+				[this]{ ssvu::lo() << "s"; mpbSend.sendLoop(sckt); }, 
+				[this]{ ssvu::lo() << "r"; mpbRecv.recvLoop(sckt); }
+			};*/
 
 			void tryBindSocket()
 			{
@@ -99,26 +104,27 @@ namespace nl
 
 		public:
 			ManagedHost(Port mPort)
-				: ip{IpAddr::getLocalAddress()}, port{mPort}				
+				: ip{IpAddr::getLocalAddress()}, port{mPort}, busy{true}				
 			{
-				sckt.setBlocking(true);
+				sckt.setBlocking(false);
 				tryBindSocket();
 			}
 
 			~ManagedHost()
 			{
 				sckt.unbind();
+				stop();
 				NL_DEBUGLO() << "Destroyed ManagedHost\n";
 			}
 
-			auto isBusy() const noexcept
+			bool isBusy() const noexcept
 			{	
-				return futs.isBusy();
+				return busy.isBusy();
 			}
 
 			void stop()
 			{
-				futs.stop();
+				busy.stop();
 			}
 
 			// TODO: use payload
