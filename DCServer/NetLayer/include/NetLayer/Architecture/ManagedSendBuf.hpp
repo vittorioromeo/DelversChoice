@@ -29,15 +29,12 @@ namespace nl
 				} 
 
 			public:
-				void sendLoop(ScktUdp& mSckt)
+				auto sendLoop(ScktUdp& mSckt)
 				{
 					auto toSend(tsq.dequeue());
 					NL_DEBUGLO() << "Dequeued packet\n";
 
-					if(send(mSckt, toSend.data, toSend.ip, toSend.port))
-					{
-
-					}
+					return send(mSckt, toSend.data, toSend.ip, toSend.port);
 				}
 		};
 	}

@@ -2,7 +2,7 @@
 #include "/home/vittorioromeo/OHWorkspace/private/cpp/cppcon2015/definitive_WIP/Other/Other.hpp"
 
 // TODO:
-// * decide abstraction layers 
+// * decide abstraction layers
 // * decide packet definition and settings definitionsyntax
 // * implement an additional layer that abstracts the Architecture module over PacketTypes
 // * test stuff.
@@ -75,15 +75,15 @@ namespace experiment
 	struct Settings;
 
 	namespace Impl
-	{		
+	{
 		namespace PcktIDMode
 		{
 			struct Automatic { };
 
-			template<typename TPcktIDType, TPcktIDType TID> 
+			template<typename TPcktIDType, TPcktIDType TID>
 			struct Manual : std::integral_constant<TPcktIDType, TID>
 			{
-			
+
 			};
 		}
 	}
@@ -100,7 +100,7 @@ namespace experiment
 		{
 			using Automatic = Impl::PcktIDMode::Automatic;
 
-			template<PcktIDType TID> 
+			template<PcktIDType TID>
 			using Manual = Impl::PcktIDMode::Manual<PcktIDType, TID>;
 		};
 	};
@@ -109,9 +109,9 @@ namespace experiment
 	<
 		typename TPcktType,
 		typename TPcktIDMode
-	> 
+	>
 	struct PcktBind { };
-	
+
 	template<typename... Ts>
 	using PcktBinds = MPL::TypeList<Ts...>;
 
@@ -134,8 +134,6 @@ namespace experiment
 
 namespace tests
 {
-
-
 	namespace nle = experiment;
 
 	using MySettings = nle::Settings
@@ -154,7 +152,7 @@ namespace tests
 		MySettings,
 		MyPcktBinds
 	>;
-}	
+}
 
 template<typename T> T getInput(const std::string& mTitle)
 {
@@ -165,16 +163,19 @@ template<typename T> T getInput(const std::string& mTitle)
 	return input;
 }
 
-void choiceServer() 
+void choiceServer()
 {
 	/*ssvu::lo() << "Insert port:\n";
 	auto port(getInput<nl::Port>("Port"));
 	nl::ManagedSocket server{port};*/
 
 	nl::ManagedHost server{27015};
+	int cycles{25};
 
 	while(server.isBusy())
 	{
+		if(cycles-- <= 0) server.stop();
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		// ssvu::lo() << "...\n";
 
@@ -194,6 +195,8 @@ void choiceServer()
 
 		ssvu::lo() << "Processed packets: " << processedCount << "\n\n";
 	}
+
+	NL_DEBUGLO() << "serverend\n";
 }
 
 void choiceClient()
@@ -214,13 +217,13 @@ void choiceClient()
 		client.send(data, nl::IpAddr::getLocalAddress(), 27015);
 
 		// ssvu::lo() << "...\n";
-	}	
+	}
 }
 
 int main()
 {
-	ssvu::lo("Choose") 
-		<< "\n" 
+	ssvu::lo("Choose")
+		<< "\n"
 		<< "0. Server\n"
 		<< "1. Client\n"
 		<< "_. Exit\n";

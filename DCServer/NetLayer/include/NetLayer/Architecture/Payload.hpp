@@ -14,6 +14,8 @@ namespace nl
 			IpAddr ip;
 			Port port;
 
+			Payload() = default;
+
 			template<typename TData>
 			Payload(TData&& mData, const IpAddr& mIp, Port mPort)
 				: data(FWD(mData)), ip{mIp}, port{mPort}

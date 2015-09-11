@@ -8,32 +8,40 @@ namespace nl
 {
 	namespace Impl
 	{
-		template<typename T> class ThreadSafeQueue
+		template<typename T> 
+		class ThreadSafeQueue
 		{
 			private:
-				std::vector<T> data;
+				std::deque<T> data;
 				std::mutex mtx;
 				std::condition_variable cv;
 
 			public:
 				template<typename... TArgs> 
 				void enqueue(TArgs&&... mArgs)
-				{
-					std::unique_lock<std::mutex> l(mtx);
-					data.emplace_back(FWD(mArgs)...);
-
-					l.unlock();
+				{	
+					{
+						std::unique_lock<std::mutex> l(mtx);
+						data.emplace_front(FWD(mArgs)...);
+					}
+					
 					cv.notify_one();
 				}
 
 				T dequeue()
 				{
 					std::unique_lock<std::mutex> l(mtx);
-					while(data.empty()) cv.wait(l);
+					cv.wait(l, [this]{ return !data.empty(); });
 
-					auto result(data.front());
-					data.erase(std::begin(data));
+					auto result(data.back());
+					data.pop_back();
 					return result;
+				}
+
+				auto size()
+				{
+					std::unique_lock<std::mutex> l(mtx);
+					return data.size();
 				}
 
 				auto empty()

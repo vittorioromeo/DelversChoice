@@ -12,40 +12,37 @@ namespace nl
 		class ManagedRecvBuf : public ManagedPcktBuf
 		{
 			private:
-				PcktBuf buf;
-				IpAddr senderIp;
-				Port senderPort;
+				// Buffer for the received payload.
+				Payload bp;
 
 				// Blocking function that enqueues received packets.
 				bool recv(ScktUdp& mSckt)
 				{
 					// Try receiving the next packet.
-					if(mSckt.receive(buf, senderIp, senderPort) != sf::Socket::Done)
+					if(mSckt.receive(bp.data, bp.ip, bp.port) != sf::Socket::Done)
 					{
 						NL_DEBUGLO() << "Error receiving packet\n";
 						return false;
 					}
 				
 					// If the packet was received, enqueue it.
-					tsq.enqueue(std::move(buf), senderIp, senderPort);
+					tsq.enqueue(std::move(bp.data), bp.ip, bp.port);
 
 					NL_DEBUGLO()
 						<< "Received packet from:\n"
-						<< "\t" << senderIp << ":" << senderPort << "\n";
+						<< "\t" << bp.ip << ":" << bp.port << "\n";
 					
 					return true;
 				}
 
 			public:
-				void recvLoop(ScktUdp& mSckt)
+				auto recvLoop(ScktUdp& mSckt)
 				{
-					buf.clear();
-					NL_DEBUGLO() << "Clearing recv buffer\n";
+					// NL_DEBUGLO() << "Clearing recv buffer\n";
+					// bp.data.clear();
+					// NL_DEBUGLO() << "Cleared recv buffer\n";
 
-					if(recv(mSckt))
-					{
-
-					}
+					return recv(mSckt);
 				}
 		};
 	}
