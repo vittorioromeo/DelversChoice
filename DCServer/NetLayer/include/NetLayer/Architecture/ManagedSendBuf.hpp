@@ -29,8 +29,15 @@ namespace nl
 				} 
 
 			public:
+				~ManagedSendBuf()
+				{
+					NL_DEBUGLO() << "~sendbuf";
+				}
+
 				auto sendLoop(ScktUdp& mSckt)
 				{
+					if(tsq.empty()) return false;
+
 					auto toSend(tsq.dequeue());
 					NL_DEBUGLO() << "Dequeued packet\n";
 

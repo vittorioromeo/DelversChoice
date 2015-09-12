@@ -21,7 +21,7 @@ namespace nl
 					// Try receiving the next packet.
 					if(mSckt.receive(bp.data, bp.ip, bp.port) != sf::Socket::Done)
 					{
-						NL_DEBUGLO() << "Error receiving packet\n";
+						// NL_DEBUGLO() << "Error receiving packet\n";
 						return false;
 					}
 				
@@ -36,6 +36,11 @@ namespace nl
 				}
 
 			public:
+				~ManagedRecvBuf()
+				{
+					NL_DEBUGLO() << "~recvbuf";
+				}
+
 				auto recvLoop(ScktUdp& mSckt)
 				{
 					// NL_DEBUGLO() << "Clearing recv buffer\n";

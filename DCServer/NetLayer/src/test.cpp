@@ -170,11 +170,16 @@ void choiceServer()
 	nl::ManagedSocket server{port};*/
 
 	nl::ManagedHost server{27015};
-	int cycles{25};
+	int cycles{2};
 
 	while(server.isBusy())
 	{
-		if(cycles-- <= 0) server.stop();
+		NL_DEBUGLO() << "bsy";
+		if(cycles-- <= 0)
+		{
+			ssvu::lo("PROCODIO") <<  "\n";
+			server.stop();
+		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		// ssvu::lo() << "...\n";
@@ -233,6 +238,7 @@ int main()
 	if(choice == 0)
 	{
 		choiceServer();
+		NL_DEBUGLO() << "end choiceserver";
 	}
 	else if(choice == 1)
 	{
@@ -243,5 +249,6 @@ int main()
 		std::terminate();
 	}
 
+	NL_DEBUGLO() << "return0 ";
 	return 0;
 }

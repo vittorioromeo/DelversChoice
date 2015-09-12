@@ -10,46 +10,43 @@ namespace nl
 {
 	namespace Impl
 	{
-		class BusyFlag
+		class BusyFut
 		{
 			private:
-				bool busy;
+				std::atomic<bool> wrapperAlive{true}; // construct flag first!
+				std::future<void> fut;
 
 			public:
-				BusyFlag(bool mX) noexcept : busy{mX} { }
-				
-				~BusyFlag() 
+				std::string xd;
+				template<typename TF>
+				BusyFut(const TF& mFn) :
+					fut{std::async(std::launch::async, [this, mFn]
+					{
+						while(wrapperAlive)
+						{
+							//NL_DEBUGLO() << xd << (wrapperAlive ? "alive" : "dead");
+							mFn();
+
+
+						}
+
+						NL_DEBUGLO() << xd << (wrapperAlive ? "alive" : "dead!!");
+					})}
 				{
-					NL_DEBUGLO() << "busy=false\n";
-					busy = false; 
+
 				}
 
-				void stop() noexcept { busy = false; }
-				auto isBusy() const noexcept { return busy; }
-		};
-
-		template<typename... Ts>
-		class BoundedFutures
-		{
-			private:
-				std::tuple<std::future<Ts>...> futs;
-				BusyFlag busy;
-
-			public:
-				template<typename... TArgs>
-				BoundedFutures(TArgs... mArgs) :
-					futs{std::async(std::launch::async, 
-						[this, mArgs]{ while(busy.isBusy()) mArgs(); })...},
-					busy{true} { }
-
-				~BoundedFutures()
+				~BusyFut() 
 				{
-					NL_DEBUGLO() << "~BoundedFutures\n";
+					wrapperAlive = false;
+					NL_DEBUGLO() << xd << "beforeget";
+					fut.get(); // block, so it sees wrapperAlive before it is destroyed.
+					NL_DEBUGLO() << xd << "aftgerget";
 				}
 
-				void stop() noexcept { busy.stop(); }
-				auto isBusy() const noexcept { return busy.isBusy(); }
-		};
+				void stop() { wrapperAlive = false; }
+				bool isBusy() const { return wrapperAlive; }
+			};
 	}
 
 	class ManagedHost
@@ -64,24 +61,23 @@ namespace nl
 			// This host's socket.
 			ScktUdp sckt;
 
-			// Threads:
+			
 			// Local host -> send queue/buf -> internet
-			// Internet -> recv queue/buf -> local host
 			Impl::ManagedSendBuf mpbSend;
+			
+			// Internet -> recv queue/buf -> local host
 			Impl::ManagedRecvBuf mpbRecv;
-			// TODO: 
-			std::future<void> fut0{std::async(std::launch::async, [this]{ while(isBusy()) mpbSend.sendLoop(sckt); })};
-			std::future<void> fut1{std::async(std::launch::async, [this]{ while(isBusy()) mpbRecv.recvLoop(sckt); })};
-			Impl::BusyFlag busy;
-			/*
-			Impl::BoundedFutures<void, void> futs
-			{
-				[this]{ ssvu::lo() << "s"; mpbSend.sendLoop(sckt); }, 
-				[this]{ ssvu::lo() << "r"; mpbRecv.recvLoop(sckt); }
-			};*/
 
+			// TODO:
+			// Threads:
+			Impl::BusyFut futSend{[this]{ mpbSend.sendLoop(sckt); }};
+			Impl::BusyFut futRecv{[this]{ mpbRecv.recvLoop(sckt); }};
+			
 			void tryBindSocket()
 			{
+				futSend.xd = "send ";
+				futRecv.xd = "recv ";
+
 				if(sckt.bind(port) != sf::Socket::Done)
 				{
 					throw std::runtime_error("Error binding socket");
@@ -104,7 +100,7 @@ namespace nl
 
 		public:
 			ManagedHost(Port mPort)
-				: ip{IpAddr::getLocalAddress()}, port{mPort}, busy{true}				
+				: ip{IpAddr::getLocalAddress()}, port{mPort}
 			{
 				sckt.setBlocking(false);
 				tryBindSocket();
@@ -118,13 +114,14 @@ namespace nl
 			}
 
 			bool isBusy() const noexcept
-			{	
-				return busy.isBusy();
+			{
+				return futSend.isBusy() || futRecv.isBusy();
 			}
 
 			void stop()
 			{
-				busy.stop();
+				futSend.stop();
+				futRecv.stop();
 			}
 
 			// TODO: use payload

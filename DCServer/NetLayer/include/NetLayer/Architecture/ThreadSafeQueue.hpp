@@ -17,6 +17,11 @@ namespace nl
 				std::condition_variable cv;
 
 			public:
+				~ThreadSafeQueue()
+				{
+					NL_DEBUGLO() << "~queue";
+				}
+
 				template<typename... TArgs> 
 				void enqueue(TArgs&&... mArgs)
 				{	

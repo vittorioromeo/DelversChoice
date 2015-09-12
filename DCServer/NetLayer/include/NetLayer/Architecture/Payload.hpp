@@ -11,6 +11,8 @@ namespace nl
 		struct Payload
 		{
 			PcktBuf data;
+
+			// TODO: Bundle together 
 			IpAddr ip;
 			Port port;
 
