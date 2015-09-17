@@ -13,9 +13,10 @@ namespace nl
 		{
 			private:
 				// Blocking function that sends enqueued packets.
-				bool send(ScktUdp& mSckt, PcktBuf& mData, const IpAddr& mDestIp, Port mDestPort)
+				bool send(ScktUdp& mSckt, Payload& mP)
 				{
-					if(mSckt.send(FWD(mData), mDestIp, mDestPort) != sf::Socket::Done)
+					// Try sending the payload.
+					if(mSckt.send(mP.data, mP.ip, mP.port) != sf::Socket::Done)
 					{
 						NL_DEBUGLO() << "Error sending packet\n";
 						return false;
@@ -23,10 +24,10 @@ namespace nl
 
 					NL_DEBUGLO()
 						<< "Sent packet to:\n"
-						<< "\t" << mDestIp << ":" << mDestPort << "\n";
+						<< "\t" << mP.ip << ":" << mP.port << "\n";
 
 					return true;
-				} 
+				}
 
 			public:
 				~ManagedSendBuf()
@@ -36,12 +37,13 @@ namespace nl
 
 				auto sendLoop(ScktUdp& mSckt)
 				{
+					// TODO: cv wait?
 					if(tsq.empty()) return false;
 
 					auto toSend(tsq.dequeue());
 					NL_DEBUGLO() << "Dequeued packet\n";
 
-					return send(mSckt, toSend.data, toSend.ip, toSend.port);
+					return send(mSckt, toSend);
 				}
 		};
 	}

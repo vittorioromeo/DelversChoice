@@ -6,19 +6,28 @@ namespace nl
 {
 	namespace Impl
 	{
-		template<typename TKey, typename TValue> 
+		template<typename TKey, typename TValue>
 		struct BMPair
 		{
 			using Key = TKey;
 			using Value = TValue;
 		};
 
-		template<typename... TPairs> 
+		template<typename TPair>
+		using BMPKey = typename TPair::Key;
+
+		template<typename TPair>
+		using BMPValue = typename TPair::Value;
+
+		template<typename... TPairs>
 		struct CTBimap
 		{
 			using PairList = ssvu::MPL::List<TPairs...>;
+			using KeyList = ssvu::MPL::Apply<BMPKey, TPairs...>;
+			using ValueList = ssvu::MPL::Apply<BMPKey, TPairs...>;
+
 			template<typename T> using Add = CTBimap<T, TPairs...>;
-			static constexpr bool unique{true}; // TODO
+			static constexpr bool unique{ssvu::MPL::L::isUnique<KeyList>() && ssvu::MPL::L::isUnique<ValueList>()};
 		};
 
 		template<typename, typename> struct BMByKeyHelper;

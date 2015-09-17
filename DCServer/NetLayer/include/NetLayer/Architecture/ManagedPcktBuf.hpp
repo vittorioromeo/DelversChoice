@@ -27,7 +27,7 @@ namespace nl
 					return tsq.dequeue();
 				}
 
-				auto empty()
+				auto empty() const
 				{
 					return tsq.empty();
 				}

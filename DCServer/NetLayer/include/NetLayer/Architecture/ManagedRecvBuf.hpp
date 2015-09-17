@@ -24,18 +24,19 @@ namespace nl
 						// NL_DEBUGLO() << "Error receiving packet\n";
 						return false;
 					}
-				
+
 					// If the packet was received, enqueue it.
 					tsq.enqueue(std::move(bp.data), bp.ip, bp.port);
 
 					NL_DEBUGLO()
 						<< "Received packet from:\n"
 						<< "\t" << bp.ip << ":" << bp.port << "\n";
-					
+
 					return true;
 				}
 
 			public:
+				// TODO: remove
 				~ManagedRecvBuf()
 				{
 					NL_DEBUGLO() << "~recvbuf";
@@ -43,6 +44,8 @@ namespace nl
 
 				auto recvLoop(ScktUdp& mSckt)
 				{
+					// TODO: cv wait?
+
 					// NL_DEBUGLO() << "Clearing recv buffer\n";
 					// bp.data.clear();
 					// NL_DEBUGLO() << "Cleared recv buffer\n";

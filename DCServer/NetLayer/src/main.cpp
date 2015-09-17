@@ -85,7 +85,7 @@ using ServerPackets = nl::PcktSet
 
 // using Test = nl::PcktManager<MyPackets>;
 
-int main()
+int main2()
 {
 	#define LOSIZE(x) ssvu::lo("sizeof("s + SSVPP_TOSTR(x) + ")") << sizeof(x) << "\n"
 

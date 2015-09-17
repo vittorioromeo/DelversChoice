@@ -16,32 +16,31 @@ namespace nl
 				std::atomic<bool> wrapperAlive{true}; // construct flag first!
 				std::future<void> fut;
 
+				template<typename TF>
+				void loop(const TF& mFn)
+				{
+					while(wrapperAlive)
+					{
+						mFn();
+					}
+
+					NL_DEBUGLO() << (wrapperAlive ? "alive" : "dead!!");
+				}
+
 			public:
-				std::string xd;
 				template<typename TF>
 				BusyFut(const TF& mFn) :
-					fut{std::async(std::launch::async, [this, mFn]
-					{
-						while(wrapperAlive)
-						{
-							//NL_DEBUGLO() << xd << (wrapperAlive ? "alive" : "dead");
-							mFn();
-
-
-						}
-
-						NL_DEBUGLO() << xd << (wrapperAlive ? "alive" : "dead!!");
-					})}
+					fut{std::async(std::launch::async, [this, mFn]{ loop(mFn); })}
 				{
 
 				}
 
-				~BusyFut() 
+				~BusyFut()
 				{
 					wrapperAlive = false;
-					NL_DEBUGLO() << xd << "beforeget";
+					NL_DEBUGLO() << "beforeget";
 					fut.get(); // block, so it sees wrapperAlive before it is destroyed.
-					NL_DEBUGLO() << xd << "aftgerget";
+					NL_DEBUGLO() << "aftgerget";
 				}
 
 				void stop() { wrapperAlive = false; }
@@ -61,10 +60,9 @@ namespace nl
 			// This host's socket.
 			ScktUdp sckt;
 
-			
 			// Local host -> send queue/buf -> internet
 			Impl::ManagedSendBuf mpbSend;
-			
+
 			// Internet -> recv queue/buf -> local host
 			Impl::ManagedRecvBuf mpbRecv;
 
@@ -72,12 +70,9 @@ namespace nl
 			// Threads:
 			Impl::BusyFut futSend{[this]{ mpbSend.sendLoop(sckt); }};
 			Impl::BusyFut futRecv{[this]{ mpbRecv.recvLoop(sckt); }};
-			
+
 			void tryBindSocket()
 			{
-				futSend.xd = "send ";
-				futRecv.xd = "recv ";
-
 				if(sckt.bind(port) != sf::Socket::Done)
 				{
 					throw std::runtime_error("Error binding socket");

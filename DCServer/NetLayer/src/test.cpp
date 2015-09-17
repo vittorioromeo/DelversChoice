@@ -170,15 +170,14 @@ void choiceServer()
 	nl::ManagedSocket server{port};*/
 
 	nl::ManagedHost server{27015};
-	int cycles{2};
+	int cycles{20};
 
 	while(server.isBusy())
 	{
 		NL_DEBUGLO() << "bsy";
 		if(cycles-- <= 0)
 		{
-			ssvu::lo("PROCODIO") <<  "\n";
-			server.stop();
+			// server.stop();
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
