@@ -123,7 +123,7 @@ namespace ggj
 				auto& gState(gameState);
 
 				// TODO: better input management, choose handling type
-				gState.addInput({{IK::Escape}}, [this](FT){ if(state != State::Menu) gs.gotoMenu(); }, IT::Once);
+				gState.addInput({{IK::Escape}}, [this](FT){ if(state != State::Menu) gotoMenu(); }, IT::Once);
 
 				/*
 				gState.addInput({{IK::A}}, [this](FT){ gameCamera.pan(-4, 0); });
@@ -183,8 +183,8 @@ namespace ggj
 
 			inline void gotoMenu()
 			{
-				gs.gotoMenu();
 				state = State::Menu;
+				gs.gotoMenu();
 
 				sScoreName->setStr(gs.pd.name);
 

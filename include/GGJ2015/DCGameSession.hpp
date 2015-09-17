@@ -80,7 +80,7 @@ namespace ggj
 			getAssets().soundPlayer.stop();
 			shake = deathTextTime = 0.f;
 
-			//state = State::Menu;
+			// die();
 
 			currentMusic = getAssets().menu;
 			refreshMusic();
