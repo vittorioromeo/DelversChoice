@@ -15,10 +15,10 @@ namespace nl
             // Blocking function that sends enqueued packets.
             bool send(ScktUdp& mSckt, Payload& mP)
             {
-                if(retry(7, [this, &mSckt, &mP]
-                         {
-                             return scktSend(mSckt, mP) != sf::Socket::Done;
-                         }))
+                if(!retry(9, [this, &mSckt, &mP]
+                          {
+                              return scktSend(mSckt, mP) == sf::Socket::Done;
+                          }))
                 {
                     NL_DEBUGLO() << "Error sending packet\n";
 
@@ -40,10 +40,18 @@ namespace nl
                 // TODO: cv wait?
                 // if(tsq.empty()) return false;
 
-                auto toSend(tsq.dequeue());
-                NL_DEBUGLO() << "Dequeued packet\n";
+                Payload p;
 
-                return send(mSckt, toSend);
+                NL_DEBUGLO() << "try dequeue...\n";
+                auto toSend(tsq.try_dequeue(p));
+
+                if(toSend) {
+                    NL_DEBUGLO() << "try dequeue... OK\n";
+                    return send(mSckt, p);
+                }
+
+                NL_DEBUGLO() << "try dequeue... fail\n";
+                return false;
             }
         };
     }

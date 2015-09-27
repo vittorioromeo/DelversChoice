@@ -109,8 +109,14 @@ namespace nl
 
         void processImpl()
         {
-            auto payload(mpbRecv.dequeue());
-            fnProcess(*this, payload.data, payload.target);
+            Impl::Payload p;
+
+            // TODO:
+            auto ok(mpbRecv.tsq.try_dequeue(p));
+
+            if(ok) {
+                fnProcess(*this, p.data, p.target);
+            }
         }
 
     public:
@@ -142,7 +148,11 @@ namespace nl
         }
 
 
-        void send(Impl::Payload& mPayload) { mpbSend.enqueue(mPayload); }
+        void send(Impl::Payload& mPayload)
+        {
+            // TODO:
+            mpbSend.tsq.try_enqueue(mPayload);
+        }
 
         template <typename... Ts>
         void send(const Impl::PayloadTarget& mTarget, Ts&&... mXs)

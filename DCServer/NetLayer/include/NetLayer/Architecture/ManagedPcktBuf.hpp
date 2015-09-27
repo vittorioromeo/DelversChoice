@@ -12,19 +12,19 @@ namespace nl
         // Can be used to receive and send queued packets.
         class ManagedPcktBuf
         {
-        protected:
+        public:
             PayloadTSQueue tsq;
 
         public:
-            template <typename... TArgs>
-            void enqueue(TArgs&&... mArgs)
-            {
-                tsq.enqueue(FWD(mArgs)...);
-            }
+            //  template <typename... TArgs>
+            //  void enqueue(TArgs&&... mArgs)
+            //  {
+            //      tsq.enqueue(FWD(mArgs)...);
+            // }
 
-            auto dequeue() { return tsq.dequeue(); }
+            // auto dequeue() { return tsq.dequeue(); }
 
-            auto empty() const { return tsq.empty(); }
+            // auto empty() const { return tsq.empty(); }
         };
     }
 }
