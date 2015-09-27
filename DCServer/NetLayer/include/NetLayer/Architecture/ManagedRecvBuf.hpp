@@ -8,7 +8,7 @@
 namespace nl
 {
     namespace Impl
-    {
+    {    
         class ManagedRecvBuf : public ManagedPcktBuf
         {
         private:
@@ -19,7 +19,11 @@ namespace nl
             bool recv(ScktUdp& mSckt)
             {
                 // Try receiving the next packet.
-                if(scktRecv(mSckt, bp) != sf::Socket::Done) {
+                if(retry(7, [this, &mSckt]
+                         {
+                             return scktRecv(mSckt, bp) != sf::Socket::Done;
+                         }))
+                {
                     // NL_DEBUGLO() << "Error receiving packet\n";
                     return false;
                 }

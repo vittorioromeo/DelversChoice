@@ -15,11 +15,16 @@ namespace nl
             // Blocking function that sends enqueued packets.
             bool send(ScktUdp& mSckt, Payload& mP)
             {
-                // Try sending the payload.
-                if(scktSend(mSckt, mP) != sf::Socket::Done) {
+                if(retry(7, [this, &mSckt, &mP]
+                         {
+                             return scktSend(mSckt, mP) != sf::Socket::Done;
+                         }))
+                {
                     NL_DEBUGLO() << "Error sending packet\n";
+
                     return false;
                 }
+
 
                 NL_DEBUGLO() << "Sent packet to:\n"
                              << "\t" << mP << "\n";

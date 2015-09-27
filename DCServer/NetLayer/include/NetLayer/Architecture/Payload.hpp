@@ -68,7 +68,7 @@ namespace nl
             return mS;
         }
 
-        template<typename... Ts>
+        template <typename... Ts>
         inline auto makePayload(const PayloadTarget& mTarget, Ts&&... mXs)
         {
             Payload p;
@@ -83,5 +83,24 @@ namespace nl
 
             return p;
         }
+    }
+
+    // TODO: move
+    template <typename TF>
+    bool retry(std::size_t mTimes, TF&& mFn)
+    {
+        for(auto i(0u); i < mTimes; ++i) {
+            if(mFn()) {
+                return true;
+            }
+
+            std::this_thread::sleep_for(100ms * i);
+
+            if(i > 4) {
+                NL_DEBUGLO() << i << "th retry...\n";
+            }
+        }
+
+        return false;
     }
 }

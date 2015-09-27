@@ -118,11 +118,8 @@ namespace nl
         ManagedHost(Port mPort, TF&& mFnProcess)
             : ip{IpAddr::getLocalAddress()}, port{mPort}, fnProcess{mFnProcess}
         {
-            // TODO: blocking is correct in terms of semantics, but fails to destroy
-            // the hosts.
-            // A possible solution is setting to non-blocking, with a number of retiries
-            // and timeouts.
-            sckt.setBlocking(true);
+
+            sckt.setBlocking(false);
             tryBindSocket();
         }
 
