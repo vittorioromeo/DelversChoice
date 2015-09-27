@@ -178,7 +178,7 @@ void choiceServer()
     while(server.isBusy()) {
         // NL_DEBUGLO() << "bsy";
         if(cycles-- <= 0) {
-            server.stop();
+            //server.stop();
         }
 
         // std::this_thread::sleep_for(std::chrono::milliseconds(100));
