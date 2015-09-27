@@ -37,6 +37,10 @@ namespace nl
             {
             }
 
+            BusyFut(BusyFut&& mX) : wrapperAlive(true), fut(std::move(mX.fut))
+            {
+            }
+
             ~BusyFut()
             {
                 wrapperAlive = false;
@@ -51,6 +55,9 @@ namespace nl
         };
     }
 
+    // TODO: dumber class than ManagedHost that is NOT async
+
+    template <typename TFProcess>
     class ManagedHost
     {
     private:
@@ -75,10 +82,18 @@ namespace nl
                               {
                                   mpbSend.sendLoop(sckt);
                               }};
+
         Impl::BusyFut futRecv{[this]
                               {
                                   mpbRecv.recvLoop(sckt);
                               }};
+
+        Impl::BusyFut futProc{[this]
+                              {
+                                  processImpl();
+                              }};
+
+        TFProcess fnProcess;
 
         void tryBindSocket()
         {
@@ -92,19 +107,21 @@ namespace nl
             }
         }
 
-        template <typename TF>
-        bool processImpl(TF&& mFn)
+        void processImpl()
         {
-            if(mpbRecv.empty()) return false;
-
             auto payload(mpbRecv.dequeue());
-            mFn(payload.data, payload.target);
-            return true;
+            fnProcess(*this, payload.data, payload.target);
         }
 
     public:
-        ManagedHost(Port mPort) : ip{IpAddr::getLocalAddress()}, port{mPort}
+        template <typename TF>
+        ManagedHost(Port mPort, TF&& mFnProcess)
+            : ip{IpAddr::getLocalAddress()}, port{mPort}, fnProcess{mFnProcess}
         {
+            // TODO: blocking is correct in terms of semantics, but fails to destroy
+            // the hosts.
+            // A possible solution is setting to non-blocking, with a number of retiries
+            // and timeouts.
             sckt.setBlocking(true);
             tryBindSocket();
         }
@@ -127,18 +144,22 @@ namespace nl
             futRecv.stop();
         }
 
-        // TODO: use payload
-        template <typename TData>
-        void send(TData&& mData, const IpAddr& mDestIp, Port mDestPort)
-        {
-            mpbSend.enqueue(FWD(mData), mDestIp, mDestPort);
-        }
 
-        template <typename TF>
-        void process(TF&& mFn)
+        void send(Impl::Payload& mPayload) { mpbSend.enqueue(mPayload); }
+
+        template <typename... Ts>
+        void send(const Impl::PayloadTarget& mTarget, Ts&&... mXs)
         {
-            while(processImpl(mFn)) {
-            }
+            auto p(Impl::makePayload(mTarget, FWD(mXs)...));
+            send(p);
         }
     };
+
+    // TODO: fix!
+    template <typename TFProcess>
+    inline auto makeManagedHost(Port mPort, TFProcess&& mFnProcess)
+    {
+        nl::ManagedHost<decltype(mFnProcess)> result{mPort, mFnProcess};
+        return result;
+    }
 }

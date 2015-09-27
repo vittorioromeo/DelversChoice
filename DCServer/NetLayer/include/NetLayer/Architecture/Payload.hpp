@@ -67,5 +67,21 @@ namespace nl
             mS << mX.target;
             return mS;
         }
+
+        template<typename... Ts>
+        inline auto makePayload(const PayloadTarget& mTarget, Ts&&... mXs)
+        {
+            Payload p;
+            p.target = mTarget;
+
+            ssvu::forArgs(
+                [&p](auto&& x)
+                {
+                    p.data << FWD(x);
+                },
+                FWD(mXs)...);
+
+            return p;
+        }
     }
 }

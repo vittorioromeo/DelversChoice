@@ -117,6 +117,10 @@ namespace experiment
         // static_assert validity of settings
         // static_assert validity of packet binds
     };
+
+    // structure(...) and (...)destructure methods
+    // payload -> packet
+    // packet -> payload
 }
 
 namespace tests
@@ -142,41 +146,46 @@ T getInput(const std::string& mTitle)
     return input;
 }
 
+
 void choiceServer()
 {
     /*ssvu::lo() << "Insert port:\n";
     auto port(getInput<nl::Port>("Port"));
     nl::ManagedSocket server{port};*/
 
-    nl::ManagedHost server{27015};
+    auto processedCount(0u);
+
+    auto fnProcess(
+        [&processedCount](auto& server, auto& data, const auto& sender)
+        {
+            ++processedCount;
+
+            ssvu::lo() << "Received some data from " << sender << "!\n";
+
+            std::string str;
+            data >> str;
+
+            ssvu::lo() << "Data: " << str << "\n";
+
+            server.send(sender, "I got your message!"s);
+        });
+
+    nl::ManagedHost<decltype(fnProcess)> server{27015, fnProcess};
+    // auto server(nl::makeManagedHost(27015, fnProcess));
+
     int cycles{20};
 
     while(server.isBusy()) {
         // NL_DEBUGLO() << "bsy";
         if(cycles-- <= 0) {
-            // server.stop();
+            server.stop();
         }
 
         // std::this_thread::sleep_for(std::chrono::milliseconds(100));
         // ssvu::lo() << "...\n";
 
-        auto processedCount(0u);
-
-        server.process([&processedCount](auto& data, const auto& sender)
-                       {
-                           ++processedCount;
-
-                           ssvu::lo() << "Received some data from " << sender
-                                      << "!\n";
-
-                           std::string str;
-                           data >> str;
-
-                           ssvu::lo() << "Data: " << str << "\n";
-                       });
-
-        if(processedCount > 0)
-            ssvu::lo() << "Processed packets: " << processedCount << "\n\n";
+        // if(processedCount > 0)
+        //    ssvu::lo() << "Processed packets: " << processedCount << "\n\n";
     }
 
     NL_DEBUGLO() << "serverend\n";
@@ -188,15 +197,25 @@ void choiceClient()
     auto port(getInput<nl::Port>("Port"));
     nl::ManagedSocket client{port};*/
 
-    nl::ManagedHost client{27016};
+    auto fnProcess([](auto&, auto& data, const auto&)
+                   {
+                       std::string str;
+                       data >> str;
+
+                       ssvu::lo() << "Reply: " << str << "\n";
+                   });
+
+    nl::ManagedHost<decltype(fnProcess)> client{27016, fnProcess};
 
     while(client.isBusy()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        nl::PcktBuf data;
-        data << "hello!"s;
 
-        client.send(data, nl::IpAddr::getLocalAddress(), 27015);
+
+        nl::Impl::PayloadTarget myself(nl::IpAddr::getLocalAddress(), 27015);
+        client.send(myself, "hello!"s);
+
+
 
         // ssvu::lo() << "...\n";
     }
