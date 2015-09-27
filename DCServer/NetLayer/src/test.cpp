@@ -1,5 +1,5 @@
 #include "../include/NetLayer/NetLayer.hpp"
-#include "/home/vittorioromeo/OHWorkspace/private/cpp/cppcon2015/definitive_WIP/Other/Other.hpp"
+#include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
 
 // TODO:
 // * decide abstraction layers
