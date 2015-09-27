@@ -7,6 +7,7 @@
 // * implement an additional layer that abstracts the Architecture module over
 // PacketTypes
 // * test stuff.
+// * acks/reliability stuff.
 
 // Defines getters and setters for a packet field.
 #define NL_DEFINE_PCKT_PROXY(mIdx, mName)                                     \
@@ -151,12 +152,12 @@ void choiceServer()
     int cycles{20};
 
     while(server.isBusy()) {
-        NL_DEBUGLO() << "bsy";
+        // NL_DEBUGLO() << "bsy";
         if(cycles-- <= 0) {
             // server.stop();
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
         // ssvu::lo() << "...\n";
 
         auto processedCount(0u);
@@ -165,7 +166,8 @@ void choiceServer()
                        {
                            ++processedCount;
 
-                           ssvu::lo() << "Received some data from " << sender << "!\n";
+                           ssvu::lo() << "Received some data from " << sender
+                                      << "!\n";
 
                            std::string str;
                            data >> str;
@@ -173,7 +175,8 @@ void choiceServer()
                            ssvu::lo() << "Data: " << str << "\n";
                        });
 
-        ssvu::lo() << "Processed packets: " << processedCount << "\n\n";
+        if(processedCount > 0)
+            ssvu::lo() << "Processed packets: " << processedCount << "\n\n";
     }
 
     NL_DEBUGLO() << "serverend\n";
@@ -197,7 +200,7 @@ void choiceClient()
 
         // ssvu::lo() << "...\n";
     }
-} 
+}
 
 int main()
 {

@@ -33,7 +33,7 @@ namespace nl
             auto sendLoop(ScktUdp& mSckt)
             {
                 // TODO: cv wait?
-                if(tsq.empty()) return false;
+                // if(tsq.empty()) return false;
 
                 auto toSend(tsq.dequeue());
                 NL_DEBUGLO() << "Dequeued packet\n";

@@ -20,6 +20,7 @@ namespace nl
             void loop(const TF& mFn)
             {
                 while(wrapperAlive) {
+                    NL_DEBUGLO() << "waiting\n";
                     mFn();
                 }
 
@@ -104,7 +105,7 @@ namespace nl
     public:
         ManagedHost(Port mPort) : ip{IpAddr::getLocalAddress()}, port{mPort}
         {
-            sckt.setBlocking(false);
+            sckt.setBlocking(true);
             tryBindSocket();
         }
 
