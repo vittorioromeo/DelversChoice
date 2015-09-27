@@ -4,14 +4,12 @@
 #include "./Deps.hpp"
 #include "./Typedefs.hpp"
 
-#if (1)
+#if(1)
 
-	#define NL_DEBUGLO() \
-		::ssvu::lo() << "\nDEBUG: "
+#define NL_DEBUGLO() ::ssvu::lo() << "\nDEBUG: "
 
 #else
 
-	#define NL_DEBUGLO() \
-		::ssvu::loNull()
+#define NL_DEBUGLO() ::ssvu::loNull()
 
 #endif

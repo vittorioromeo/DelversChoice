@@ -5,27 +5,67 @@
 
 namespace nl
 {
-	namespace Impl
-	{
-		// Combination of data, ip and port.
-		struct Payload
-		{
-			PcktBuf data;
+    namespace Impl
+    {
+        struct PayloadTarget
+        {
+            IpAddr ip;
+            Port port;
 
-			// TODO: Bundle together 
-			IpAddr ip;
-			Port port;
+            PayloadTarget() = default;
 
-			Payload() = default;
+            PayloadTarget(const IpAddr& mIp, Port mPort) : ip{mIp}, port{mPort}
+            {
+            }
+        };
 
-			template<typename TData>
-			Payload(TData&& mData, const IpAddr& mIp, Port mPort)
-				: data(FWD(mData)), ip{mIp}, port{mPort}
-			{
+        // Combination of data, ip and port.
+        struct Payload
+        {
+            PcktBuf data;
+            PayloadTarget target;
 
-			}
-		};
+            Payload() = default;
 
-		using PayloadTSQueue = ThreadSafeQueue<Payload>;
-	}
+            template <typename TData>
+            Payload(TData&& mData, const PayloadTarget& mTarget)
+                : data(FWD(mData)), target{mTarget}
+            {
+            }
+
+            template <typename TData>
+            Payload(TData&& mData, const IpAddr& mIp, Port mPort)
+                : data(FWD(mData)), target{mIp, mPort}
+            {
+            }
+        };
+
+        using PayloadTSQueue = ThreadSafeQueue<Payload>;
+
+        template <typename T>
+        inline auto scktRecv(T& mSckt, Payload& mBuffer) noexcept
+        {
+            return mSckt.receive(mBuffer.data, mBuffer.target.ip,
+                                 mBuffer.target.port);
+        }
+
+        template <typename T>
+        inline auto scktSend(T& mSckt, Payload& mBuffer) noexcept
+        {
+            return mSckt.send(mBuffer.data, mBuffer.target.ip,
+                              mBuffer.target.port);
+        }
+
+        inline auto& operator<<(std::ostream& mS, const PayloadTarget& mX)
+        {
+            mS << mX.ip << ":" << mX.port;
+            return mS;
+        }
+
+        inline auto& operator<<(std::ostream& mS, const Payload& mX)
+        {
+            mS << mX.target;
+            return mS;
+        }
+    }
 }

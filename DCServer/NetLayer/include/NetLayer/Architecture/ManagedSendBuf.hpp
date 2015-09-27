@@ -7,44 +7,39 @@
 
 namespace nl
 {
-	namespace Impl
-	{
-		class ManagedSendBuf : public ManagedPcktBuf
-		{
-			private:
-				// Blocking function that sends enqueued packets.
-				bool send(ScktUdp& mSckt, Payload& mP)
-				{
-					// Try sending the payload.
-					if(mSckt.send(mP.data, mP.ip, mP.port) != sf::Socket::Done)
-					{
-						NL_DEBUGLO() << "Error sending packet\n";
-						return false;
-					}
+    namespace Impl
+    {
+        class ManagedSendBuf : public ManagedPcktBuf
+        {
+        private:
+            // Blocking function that sends enqueued packets.
+            bool send(ScktUdp& mSckt, Payload& mP)
+            {
+                // Try sending the payload.
+                if(scktSend(mSckt, mP) != sf::Socket::Done) {
+                    NL_DEBUGLO() << "Error sending packet\n";
+                    return false;
+                }
 
-					NL_DEBUGLO()
-						<< "Sent packet to:\n"
-						<< "\t" << mP.ip << ":" << mP.port << "\n";
+                NL_DEBUGLO() << "Sent packet to:\n"
+                             << "\t" << mP << "\n";
 
-					return true;
-				}
+                return true;
+            }
 
-			public:
-				~ManagedSendBuf()
-				{
-					NL_DEBUGLO() << "~sendbuf";
-				}
+        public:
+            ~ManagedSendBuf() { NL_DEBUGLO() << "~sendbuf"; }
 
-				auto sendLoop(ScktUdp& mSckt)
-				{
-					// TODO: cv wait?
-					if(tsq.empty()) return false;
+            auto sendLoop(ScktUdp& mSckt)
+            {
+                // TODO: cv wait?
+                if(tsq.empty()) return false;
 
-					auto toSend(tsq.dequeue());
-					NL_DEBUGLO() << "Dequeued packet\n";
+                auto toSend(tsq.dequeue());
+                NL_DEBUGLO() << "Dequeued packet\n";
 
-					return send(mSckt, toSend);
-				}
-		};
-	}
+                return send(mSckt, toSend);
+            }
+        };
+    }
 }
