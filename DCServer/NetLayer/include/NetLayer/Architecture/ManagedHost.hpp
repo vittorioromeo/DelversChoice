@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../Common/Common.hpp"
+#include "../Utils/Retry.hpp"
+#include "../Architecture/BusyFut.hpp"
 #include "../Architecture/ThreadSafeQueue.hpp"
 #include "../Architecture/Payload.hpp"
 #include "../Architecture/ManagedSendBuf.hpp"
@@ -8,54 +10,6 @@
 
 namespace nl
 {
-    namespace Impl
-    {
-        class BusyFut
-        {
-        private:
-            std::atomic<bool> wrapperAlive{true}; // construct flag first!
-            std::future<void> fut;
-
-            template <typename TF>
-            void loop(const TF& mFn)
-            {
-                while(wrapperAlive) {
-                    NL_DEBUGLO() << "waiting\n";
-                    mFn();
-                }
-
-                NL_DEBUGLO() << (wrapperAlive ? "alive" : "dead!!");
-            }
-
-        public:
-            template <typename TF>
-            BusyFut(const TF& mFn)
-                : fut{std::async(std::launch::async, [this, mFn]
-                                 {
-                                     loop(mFn);
-                                 })}
-            {
-            }
-
-            BusyFut(BusyFut&& mX) : wrapperAlive(true), fut(std::move(mX.fut))
-            {
-            }
-
-            ~BusyFut()
-            {
-                wrapperAlive = false;
-                NL_DEBUGLO() << "beforeget";
-                fut.get(); // block, so it sees wrapperAlive before it is
-                           // destroyed.
-                NL_DEBUGLO() << "aftgerget";
-            }
-
-            void stop() { wrapperAlive = false; }
-            bool isBusy() const { return wrapperAlive; }
-        };
-    }
-
-    // TODO: dumber class than ManagedHost that is NOT async
 
     template <typename TFProcess>
     class ManagedHost
@@ -88,34 +42,34 @@ namespace nl
                                   mpbRecv.recvLoop(sckt);
                               }};
 
-        Impl::BusyFut futProc{[this]
-                              {
-                                  processImpl();
-                              }};
+        Impl::BusyFut futProc{
+            [this]
+            {
+                Impl::Payload p;
+
+                // TODO:
+                auto ok(mpbRecv.tsq.try_dequeue_for(100ms, p));
+
+                if(ok) {
+                    fnProcess(*this, p.data, p.target);
+                }
+            }};
 
         TFProcess fnProcess;
 
         void tryBindSocket()
         {
-            if(sckt.bind(port) != sf::Socket::Done) {
-                throw std::runtime_error("Error binding socket");
-            }
-            else
+            if(retry(5, [this]
+                     {
+                         return sckt.bind(port) == sf::Socket::Done;
+                     }))
             {
                 ssvu::lo() << "Socket successfully bound to port " << port
                            << "\n";
             }
-        }
-
-        void processImpl()
-        {
-            Impl::Payload p;
-
-            // TODO:
-            auto ok(mpbRecv.tsq.try_dequeue(p));
-
-            if(ok) {
-                fnProcess(*this, p.data, p.target);
+            else
+            {
+                throw std::runtime_error("Error binding socket");
             }
         }
 
@@ -145,28 +99,28 @@ namespace nl
         {
             futSend.stop();
             futRecv.stop();
+            futProc.stop();
         }
 
 
         void send(Impl::Payload& mPayload)
         {
             // TODO:
-            mpbSend.tsq.try_enqueue(mPayload);
+            mpbSend.tsq.try_enqueue_for(100ms, mPayload);
         }
 
         template <typename... Ts>
         void send(const Impl::PayloadTarget& mTarget, Ts&&... mXs)
         {
-            auto p(Impl::makePayload(mTarget, FWD(mXs)...));
+            auto p(Impl::mkPayload(mTarget, FWD(mXs)...));
             send(p);
         }
     };
 
     // TODO: fix!
     template <typename TFProcess>
-    inline auto makeManagedHost(Port mPort, TFProcess&& mFnProcess)
+    inline auto mkManagedHost(Port mPort, TFProcess&& mFnProcess)
     {
-        nl::ManagedHost<decltype(mFnProcess)> result{mPort, mFnProcess};
-        return result;
+        return nl::ManagedHost<decltype(mFnProcess)>(mPort, mFnProcess);
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Common/Common.hpp"
+#include "../Utils/Retry.hpp"
 #include "../Architecture/ThreadSafeQueue.hpp"
 #include "../Architecture/Payload.hpp"
 #include "../Architecture/ManagedPcktBuf.hpp"
@@ -15,33 +16,44 @@ namespace nl
             // Buffer for the received payload.
             Payload bp;
 
-            // Blocking function that enqueues received packets.
-            bool recv(ScktUdp& mSckt)
+            bool recv_sckt_impl(ScktUdp& mSckt)
+            {
+                return scktRecv(mSckt, bp) == sf::Socket::Done;
+            }
+
+            template <typename TFRecv, typename TFEnqueue>
+            bool recv_impl(ScktUdp& mSckt, TFRecv&& mFnRecv, TFEnqueue&& mFnEnqueue)
             {
                 // Try receiving the next packet.
-                if(!retry(7, [this, &mSckt]
-                          {
-                              return scktRecv(mSckt, bp) == sf::Socket::Done;
-                          }))
-                {
-                    // NL_DEBUGLO() << "Error receiving packet\n";
+                if(!mFnRecv(mSckt)) {
                     return false;
                 }
 
                 // If the packet was received, enqueue it.
-                // TODO: retry?
-
-                NL_DEBUGLO() << "try enqueue...\n";
-                if(tsq.try_enqueue(bp)) {
-                    NL_DEBUGLO() << "Received packet from:\n"
-                                 << "\t" << bp << "\n";
-
-                    NL_DEBUGLO() << "try enqueue OK...\n";
-                    return true;
+                if(!mFnEnqueue(bp)) {
+                    return false;
                 }
 
-                NL_DEBUGLO() << "try enqueue FAIL...\n";
-                return false;
+                return true;
+            }
+
+            // Blocking function that enqueues received packets.
+            template <typename TDuration>
+            bool try_recv_retry_for(ScktUdp& mSckt, std::size_t mTries,
+                              const TDuration& mDuration)
+            {
+                return recv_impl(mSckt,
+                                 [this, mTries](auto& s)
+                                 {
+                                     return retry(mTries, [this, &s]
+                                                  {
+                                                      return recv_sckt_impl(s);
+                                                  });
+                                 },
+                                 [this, mDuration](auto& p)
+                                 {
+                                     return tsq.try_enqueue_for(mDuration, p);
+                                 });
             }
 
         public:
@@ -56,8 +68,8 @@ namespace nl
                 // bp.data.clear();
                 // NL_DEBUGLO() << "Cleared  recv buffer\n";
 
-                NL_DEBUGLO() << "wait recv\n";
-                return recv(mSckt);
+                // NL_DEBUGLO() << "wait recv\n";
+                return try_recv_retry_for(mSckt, 5, 100ms);
             }
         };
     }

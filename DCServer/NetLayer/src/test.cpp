@@ -171,14 +171,19 @@ void choiceServer()
         });
 
     nl::ManagedHost<decltype(fnProcess)> server{27015, fnProcess};
+    // auto server(nl::mkManagedHost(27015, fnProcess));
     // auto server(nl::makeManagedHost(27015, fnProcess));
 
     int cycles{20};
 
     while(server.isBusy()) {
+
+        if(getInput<int>("Exit? (1)"))
+            break;
+
         // NL_DEBUGLO() << "bsy";
         if(cycles-- <= 0) {
-            //server.stop();
+            // server.stop();
         }
 
         // std::this_thread::sleep_for(std::chrono::milliseconds(100));

@@ -13,8 +13,8 @@ namespace nl
             Port port;
 
             PayloadTarget() = default;
-
-            PayloadTarget(const IpAddr& mIp, Port mPort) : ip{mIp}, port{mPort}
+            PayloadTarget(const IpAddr& mIp, Port mPort) noexcept : ip{mIp},
+                                                                    port{mPort}
             {
             }
         };
@@ -69,7 +69,7 @@ namespace nl
         }
 
         template <typename... Ts>
-        inline auto makePayload(const PayloadTarget& mTarget, Ts&&... mXs)
+        inline auto mkPayload(const PayloadTarget& mTarget, Ts&&... mXs)
         {
             Payload p;
             p.target = mTarget;
@@ -83,25 +83,5 @@ namespace nl
 
             return p;
         }
-    }
-
-    // TODO: move
-    template <typename TF>
-    bool retry(std::size_t mTimes, TF&& mFn)
-    {
-        for(auto i(0u); i < mTimes; ++i) {
-            if(mFn()) {
-                return true;
-            }
-
-            std::this_thread::sleep_for(100ms * i);
-
-            if(i > 4) {
-                NL_DEBUGLO() << i << "th retry...\n";
-            }
-        }
-
-        NL_DEBUGLO() << "failed!...\n";
-        return false;
     }
 }

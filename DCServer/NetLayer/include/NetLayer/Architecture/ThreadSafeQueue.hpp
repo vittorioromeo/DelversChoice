@@ -15,38 +15,39 @@ namespace nl
             std::deque<T> data;
             mutable std::timed_mutex mtx;
             std::condition_variable_any cv;
-            using UniqueLock = std::unique_lock<decltype(mtx)>;
-
-        public:
-            // TODO: remove
-            ~ThreadSafeQueue() { NL_DEBUGLO() << "~queue"; }
 
             template <typename... TArgs>
-            void enqueue(TArgs&&... mArgs)
+            void enqueue_impl(TArgs&&... mArgs)
             {
-                {
-                    // TODO: make_mutex?
-                    UniqueLock l(mtx);
-                    data.emplace_front(FWD(mArgs)...);
-                }
+                data.emplace_front(FWD(mArgs)...);
 
                 // Notify one thread waiting to `dequeue`.
                 cv.notify_one();
             }
 
-            // TODO:
-            template <typename... TArgs>
-            bool try_enqueue(TArgs&&... mArgs)
+            auto dequeue_impl()
             {
-                UniqueLock l(mtx, std::defer_lock_t{});
+                auto result(data.back());
+                data.pop_back();
+                return result;
+            }
 
-                if(l.try_lock_for(100ms)) {
-                    data.emplace_front(FWD(mArgs)...);
+        public:
+            template <typename... TArgs>
+            void enqueue(TArgs&&... mArgs)
+            {
+                auto l(mkUniqueLock(mtx));
+                enqueue_impl(FWD(mArgs)...);
+            }
 
-                    // TODO: ???
-                    // Notify one thread waiting to `dequeue`.
-                    cv.notify_one();
+            // TODO:
+            template <typename TDuration, typename... TArgs>
+            bool try_enqueue_for(const TDuration& mDuration, TArgs&&... mArgs)
+            {
+                auto l(mkUniqueLock(mtx, std::defer_lock));
 
+                if(l.try_lock_for(mDuration)) {
+                    enqueue_impl(FWD(mArgs)...);
                     return true;
                 }
 
@@ -55,7 +56,7 @@ namespace nl
 
             T dequeue()
             {
-                UniqueLock l(mtx);
+                auto l(mkUniqueLock(mtx));
 
                 // Release the lock and wait until `data` is not empty.
                 cv.wait(l, [this]
@@ -63,25 +64,21 @@ namespace nl
                             return !data.empty();
                         });
 
-                auto result(data.back());
-                data.pop_back();
-                return result;
+                return dequeue_impl();
             }
 
-            // TODO:
-            bool try_dequeue(T& mTarget)
+            template <typename TDuration>
+            bool try_dequeue_for(const TDuration& mDuration, T& mOut)
             {
-                UniqueLock l(mtx);
+                auto l(mkUniqueLock(mtx));
 
                 // Release the lock and wait until `data` is not empty.
-                if(cv.wait_for(l, 100ms, [this]
+                if(cv.wait_for(l, mDuration, [this]
                                {
                                    return !data.empty();
                                }))
                 {
-                    auto result(data.back());
-                    data.pop_back();
-                    mTarget = result;
+                    mOut = dequeue_impl();
                     return true;
                 }
 
@@ -90,13 +87,13 @@ namespace nl
 
             auto size() const
             {
-                UniqueLock l(mtx);
+                auto l(mkUniqueLock(mtx));
                 return data.size();
             }
 
             auto empty() const
             {
-                UniqueLock l(mtx);
+                auto l(mkUniqueLock(mtx));
                 return data.empty();
             }
         };

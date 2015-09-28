@@ -23,3 +23,14 @@ namespace nl
     using UInt32 = sf::Uint32;
     using UInt64 = sf::Uint64;
 }
+
+namespace nl
+{
+    // TODO:
+    template <typename Mutex, typename... Args>
+    auto mkUniqueLock(Mutex&& m, Args&&... args)
+    {
+        return std::unique_lock<std::remove_reference_t<Mutex>>(FWD(m),
+                                                                FWD(args)...);
+    }
+}
