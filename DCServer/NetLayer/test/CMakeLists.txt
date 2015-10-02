@@ -35,3 +35,5 @@ endforeach()
 
 # TODO: rewrite
 # TODO: add tests
+
+# TODO: simplify through vrm_cmake

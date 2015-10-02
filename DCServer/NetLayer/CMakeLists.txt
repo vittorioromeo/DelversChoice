@@ -43,3 +43,5 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 SSVCMake_linkSFML()
 vrm_cmake_link_pthread()
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/_RELEASE/)
+
+# TODO: simplify through vrm_cmake
