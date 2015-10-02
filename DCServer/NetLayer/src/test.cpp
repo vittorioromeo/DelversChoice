@@ -59,6 +59,13 @@ namespace Impl
 
 #define NL_DEFINE_PCKT(mName, mFieldTpls) NL_IMPL_DEFINE_PCKT(mName, mFieldTpls)
 
+#define NL_DEFINE_PCKT_1(mName, mTpl)                                \
+    struct mName                                                     \
+    : ::nl::Impl::Pckt<VRM_PP_TPL_ELEM(VRM_PP_TPL_ELEM(mTpl, 0), 0)> \
+    {                                                                \
+        NL_IMPL_DEFINE_PCKT_BODY_LIST_FOR_IMPL(0, ~, mTpl)           \
+    }
+
 /*
 struct AuthRequest : nl::Pckt
 <
@@ -86,55 +93,20 @@ namespace experiment
 template <typename>
 struct Settings;
 
-namespace Impl
-{
-    namespace PcktIDMode
-    {
-        struct Tag_Automatic
-        {
-        };
-
-        struct Tag_Manual
-        {
-        };
-
-        struct Automatic : Tag_Automatic
-        {
-        };
-
-        template <typename TPcktIDType, TPcktIDType TID>
-        struct Manual : Tag_Manual, std::integral_constant<TPcktIDType, TID>
-        {
-        };
-    }
-}
-
-template <typename TPcktIDType = std::size_t>
+template <typename TIDType = std::size_t>
 struct Settings
 {
-    using PcktIDType = TPcktIDType;
-
-    struct PcktIDMode
-    {
-        using Automatic = Impl::PcktIDMode::Automatic;
-
-        template <PcktIDType TID>
-        using Manual = Impl::PcktIDMode::Manual<PcktIDType, TID>;
-    };
+    using IDType = TIDType;
 };
 
-template <typename TPcktType, typename TPcktIDMode>
+template <typename TType>
 struct PcktBind
 {
-    using Type = TPcktType;
-    using IDMode = TPcktIDMode;
+    using Type = TType;
 };
 
 template <typename T>
 using PcktBindType = typename T::Type;
-
-template <typename T>
-using PcktBindIDMode = typename T::IDMode;
 
 template <typename... Ts>
 using PcktBinds = MPL::TypeList<Ts...>;
@@ -142,16 +114,12 @@ using PcktBinds = MPL::TypeList<Ts...>;
 template <typename TList>
 using PcktBindsTypes = MPL::Map<PcktBindType, TList>;
 
-template <typename TList>
-using PcktBindsIDModes = MPL::Map<PcktBindIDMode, TList>;
-
 template <typename TSettings, typename TPcktBinds>
 struct Config
 {
     using Settings = TSettings;
     using PcktBinds = TPcktBinds;
     using BindsTypes = PcktBindsTypes<PcktBinds>;
-    using BindsIDModes = PcktBindsIDModes<PcktBinds>;
 
     // static_assert validity of settings
     // static_assert validity of packet binds
@@ -163,28 +131,9 @@ struct Config
     }
 
     template <typename T>
-    using PcktBindIDModeFor =
-    MPL::Nth<MPL::IndexOf<T, BindsTypes>{}, BindsIDModes>;
-
-    template <typename T>
-    static constexpr auto getPcktBindIDImpl(
-    typename Impl::PcktIDMode::Tag_Manual) noexcept
-    {
-        return T{};
-    }
-
-    template <typename T>
-    static constexpr auto getPcktBindIDImpl(
-    typename Impl::PcktIDMode::Tag_Automatic) noexcept
-    {
-        return MPL::IndexOf<T, BindsTypes>{};
-    }
-
-    template <typename T>
     static constexpr auto getPcktBindID() noexcept
     {
-        using IDOfT = PcktBindIDModeFor<T>;
-        return getPcktBindIDImpl<T>(IDOfT{});
+        return MPL::IndexOf<T, BindsTypes>{};
     }
 
     template <typename T>
@@ -238,9 +187,7 @@ namespace nle = experiment;
 
 using MySettings = nle::Settings<std::size_t>;
 
-using MyPcktBinds =
-nle::PcktBinds<nle::PcktBind<int, MySettings::PcktIDMode::Manual<10>>,
-nle::PcktBind<float, MySettings::PcktIDMode::Automatic>>;
+using MyPcktBinds = nle::PcktBinds<nle::PcktBind<int>, nle::PcktBind<float>>;
 
 using MyConfig = nle::Config<MySettings, MyPcktBinds>;
 }
@@ -339,27 +286,25 @@ namespace example
 NL_DEFINE_PCKT(
 RegistrationRequest, (((std::string), user), ((std::string), pass)));
 
-NL_DEFINE_PCKT(RegistrationResponse, (((bool), valid)));
+NL_DEFINE_PCKT_1(RegistrationResponse, ((bool), valid));
 
 NL_DEFINE_PCKT(LoginRequest, (((std::string), user), ((std::string), pass)));
 
-NL_DEFINE_PCKT(LoginResponse, (((bool), valid)));
+NL_DEFINE_PCKT_1(LoginResponse, ((bool), valid));
 
 namespace nle = experiment;
 using MySettings = nle::Settings<std::size_t>;
-using MyPcktIDMode = MySettings::PcktIDMode;
 
-namespace CtoS
-{
-    using MyPcktBinds =
-    nle::PcktBinds<nle::PcktBind<RegistrationRequest, MyPcktIDMode::Automatic>,
-    nle::PcktBind<LoginRequest, MyPcktIDMode::Automatic>>;
+using MyPcktBinds =
+nle::PcktBinds<nle::PcktBind<RegistrationRequest>, nle::PcktBind<LoginRequest>,
+nle::PcktBind<RegistrationResponse>, nle::PcktBind<LoginResponse>>;
 
-    using MyConfig = nle::Config<MySettings, MyPcktBinds>;
+using MyConfig = nle::Config<MySettings, MyPcktBinds>;
 
-    static_assert(MyConfig::getPcktBindID<RegistrationRequest>() == 0, "");
-    static_assert(MyConfig::getPcktBindID<LoginRequest>() == 1, "");
-}
+static_assert(MyConfig::getPcktBindID<RegistrationRequest>() == 0, "");
+static_assert(MyConfig::getPcktBindID<LoginRequest>() == 1, "");
+static_assert(MyConfig::getPcktBindID<RegistrationResponse>() == 2, "");
+static_assert(MyConfig::getPcktBindID<LoginResponse>() == 3, "");
 
 // TODO:
 // * Both server and client need to know the packet types for
@@ -370,17 +315,6 @@ namespace CtoS
 // for client
 // * Or just use a single one? (could support peer to peer, or something)
 
-namespace StoC
-{
-    using MyPcktBinds =
-    nle::PcktBinds<nle::PcktBind<RegistrationResponse, MyPcktIDMode::Automatic>,
-    nle::PcktBind<LoginResponse, MyPcktIDMode::Automatic>>;
-
-    using MyConfig = nle::Config<MySettings, MyPcktBinds>;
-
-    static_assert(MyConfig::getPcktBindID<RegistrationResponse>() == 0, "");
-    static_assert(MyConfig::getPcktBindID<LoginResponse>() == 1, "");
-}
 }
 
 int main()
