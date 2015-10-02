@@ -10,7 +10,7 @@
 // * Metaprogramming facilities for packet definitions.
 // * Metaprogramming facilities for data serialization
 // * User-interface macros.
-#include "./PacketTypes/PacketTypes.hpp"
+//include "./PacketTypes/PacketTypes.hpp"
 
 // The `Architecture` module contains:
 // * Thread-safe data structures for packet queues.

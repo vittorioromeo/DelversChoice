@@ -22,7 +22,8 @@ namespace nl
             }
 
             template <typename TFRecv, typename TFEnqueue>
-            bool recv_impl(ScktUdp& mSckt, TFRecv&& mFnRecv, TFEnqueue&& mFnEnqueue)
+            bool recv_impl(ScktUdp& mSckt, TFRecv&& mFnRecv,
+                           TFEnqueue&& mFnEnqueue)
             {
                 // Try receiving the next packet.
                 if(!mFnRecv(mSckt)) {
@@ -40,7 +41,7 @@ namespace nl
             // Blocking function that enqueues received packets.
             template <typename TDuration>
             bool try_recv_retry_for(ScktUdp& mSckt, std::size_t mTries,
-                              const TDuration& mDuration)
+                                    const TDuration& mDuration)
             {
                 return recv_impl(mSckt,
                                  [this, mTries](auto& s)

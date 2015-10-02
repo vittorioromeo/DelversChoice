@@ -116,11 +116,4 @@ namespace nl
             send(p);
         }
     };
-
-    // TODO: fix!
-    template <typename TFProcess>
-    inline auto mkManagedHost(Port mPort, TFProcess&& mFnProcess)
-    {
-        return nl::ManagedHost<decltype(mFnProcess)>(mPort, mFnProcess);
-    }
 }

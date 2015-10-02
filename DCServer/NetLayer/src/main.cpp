@@ -1,3 +1,4 @@
+/*
 #include "../include/NetLayer/NetLayer.hpp"
 
 
@@ -34,12 +35,12 @@
 NL_DEFINE_PCKT(AuthRequest,
                ((int, requestID), (std::string, requestUser),
                 (float, requestPriority), (std::vector<int>, secondaryIDs)));
-/*
+
 NL_DEFINE_PCKT
 (
     TestPckt, (())
 );
-*/
+
 struct AuthSuccess : nl::Pckt<>
 {
 };
@@ -98,3 +99,4 @@ int main2()
 
     return 0;
 }
+*/
