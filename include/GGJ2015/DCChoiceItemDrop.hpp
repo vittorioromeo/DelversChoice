@@ -5,18 +5,18 @@
 
 namespace ggj
 {
-	struct ChoiceItemDrop : public Choice
-	{
-		sf::Sprite drops;
-		ItemDrops itemDrops;
+struct ChoiceItemDrop : public Choice
+{
+    sf::Sprite drops;
+    ItemDrops itemDrops;
 
-		ChoiceItemDrop(GameSession& mGS, SizeT mIdx);
+    ChoiceItemDrop(GameSession& mGS, SizeT mIdx);
 
-		inline void execute() override;
-		inline void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
+    inline void execute() override;
+    inline void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
 
-		inline std::string getChoiceStr() override { return "Collect"; }
-	};
+    inline std::string getChoiceStr() override { return "Collect"; }
+};
 }
 
 #endif

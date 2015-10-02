@@ -45,9 +45,8 @@
 
 int main()
 {
-	SSVUT_RUN();
+    SSVUT_RUN();
 
-	Boilerplate::AppRunner<ggj::GameApp>{"Delver's Choice - v1.0", 320, 240};
-	return 0;
+    Boilerplate::AppRunner<ggj::GameApp>{"Delver's Choice - v1.0", 320, 240};
+    return 0;
 }
-

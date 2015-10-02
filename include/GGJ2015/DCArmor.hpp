@@ -5,12 +5,12 @@
 
 namespace ggj
 {
-	struct Armor
-	{
-		std::string name{"Unarmored"};
-		ElementBitset elementTypes;
-		DEF def{-1};
-	};
+struct Armor
+{
+    std::string name{"Unarmored"};
+    ElementBitset elementTypes;
+    DEF def{-1};
+};
 }
 
 #endif

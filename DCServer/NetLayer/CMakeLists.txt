@@ -29,10 +29,10 @@ vrm_cmake_add_option_no_exceptions()
 vrm_cmake_add_option_werror()
 
 # The `check` target runs all tests and examples.
-# vrm_check_target()
+vrm_check_target()
 
 # Setup subdirectories.
-# add_subdirectory(test)
+add_subdirectory(test)
 
 # Create header-only install target (automatically glob)
 # vrm_cmake_header_only_install_glob("${NETLAYER_INC_DIR}" "include")

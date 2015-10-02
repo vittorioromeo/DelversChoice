@@ -5,19 +5,19 @@
 
 namespace ggj
 {
-	namespace Impl
-	{
-		struct AssetLoader
-		{
-			ssvs::AssetManager<> assetManager;
+namespace Impl
+{
+    struct AssetLoader
+    {
+        ssvs::AssetManager<> assetManager;
 
-			inline AssetLoader()
-			{
-				ssvs::loadAssetsFromJson(assetManager, "Data/", ssvj::fromFile("Data/assets.json"));
-			}
-		};
-	}
-
+        inline AssetLoader()
+        {
+            ssvs::loadAssetsFromJson(
+            assetManager, "Data/", ssvj::fromFile("Data/assets.json"));
+        }
+    };
+}
 }
 
 #endif

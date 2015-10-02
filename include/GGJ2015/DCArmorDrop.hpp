@@ -5,36 +5,37 @@
 
 namespace ggj
 {
-	struct ArmorDrop : public Drop
-	{
-		Armor armor;
-		ArmorStatsDraw asd;
-		sf::Sprite armorSprite;
+struct ArmorDrop : public Drop
+{
+    Armor armor;
+    ArmorStatsDraw asd;
+    sf::Sprite armorSprite;
 
-		inline ArmorDrop(GameSession& mGameSession) : Drop{mGameSession}
-		{
-			card.setTexture(*getAssets().equipCard);
-		}
+    inline ArmorDrop(GameSession& mGameSession) : Drop{mGameSession}
+    {
+        card.setTexture(*getAssets().equipCard);
+    }
 
-		inline void apply(Creature& mX) override
-		{
-			getAssets().soundPlayer.play(*getAssets().equipArmor);
-			mX.armor = armor;
-		}
+    inline void apply(Creature& mX) override
+    {
+        getAssets().soundPlayer.play(*getAssets().equipArmor);
+        mX.armor = armor;
+    }
 
-		inline void draw(ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f& mCenter) override
-		{
-			Drop::draw(mGW, mPos, mCenter);
+    inline void draw(
+    ssvs::GameWindow& mGW, const Vec2f& mPos, const Vec2f& mCenter) override
+    {
+        Drop::draw(mGW, mPos, mCenter);
 
-			armorSprite.setTexture(*getAssets().armDrop);
-			ssvs::setOrigin(armorSprite, ssvs::getLocalCenter);
-			armorSprite.setPosition(card.getPosition());
-			mGW.draw(armorSprite);
+        armorSprite.setTexture(*getAssets().armDrop);
+        ssvs::setOrigin(armorSprite, ssvs::getLocalCenter);
+        armorSprite.setPosition(card.getPosition());
+        mGW.draw(armorSprite);
 
-			asd.pos = Vec2f{30 - 16, 30 + 6};
-			asd.draw(armor, mGW, mPos, mCenter);
-		}
-	};
+        asd.pos = Vec2f{30 - 16, 30 + 6};
+        asd.draw(armor, mGW, mPos, mCenter);
+    }
+};
 }
 
 #endif

@@ -5,15 +5,13 @@
 
 namespace ggj
 {
-	inline void ChoiceAdvance::execute()
-	{
-		gameSession.advance();
-	}
-	inline void ChoiceAdvance::draw(ssvs::GameWindow& mGW, const Vec2f&, const Vec2f& mCenter)
-	{
-		advanceSprite.setPosition(mCenter);
-		mGW.draw(advanceSprite);
-	}
+inline void ChoiceAdvance::execute() { gameSession.advance(); }
+inline void ChoiceAdvance::draw(
+ssvs::GameWindow& mGW, const Vec2f&, const Vec2f& mCenter)
+{
+    advanceSprite.setPosition(mCenter);
+    mGW.draw(advanceSprite);
+}
 }
 
 #endif

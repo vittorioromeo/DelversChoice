@@ -5,55 +5,47 @@
 
 namespace ggj
 {
-	struct InstantEffect
-	{
-		enum class Type : int
-		{
-			Add = 0,
-			Sub = 1,
-			Mul = 2,
-			Div = 3
-		};
+struct InstantEffect
+{
+    enum class Type : int
+    {
+        Add = 0,
+        Sub = 1,
+        Mul = 2,
+        Div = 3
+    };
 
-		enum class Stat : int
-		{
-			SHPS = 0,
-			SATK = 1,
-			SDEF = 2
-		};
+    enum class Stat : int
+    {
+        SHPS = 0,
+        SATK = 1,
+        SDEF = 2
+    };
 
-		Type type;
-		Stat stat;
-		float value;
+    Type type;
+    Stat stat;
+    float value;
 
-		inline InstantEffect(Type mType, Stat mStat, float mValue) : type{mType}, stat{mStat}, value{mValue} { }
-		inline void apply(GameSession& mGameSession, Creature& mX);
+    inline InstantEffect(Type mType, Stat mStat, float mValue)
+        : type{mType}, stat{mStat}, value{mValue}
+    {
+    }
+    inline void apply(GameSession& mGameSession, Creature& mX);
 
-		inline const auto& getStrType()
-		{
-			static auto array(ssvu::mkArray
-			(
-				"+",
-				"-",
-				"*",
-				"/"
-			));
+    inline const auto& getStrType()
+    {
+        static auto array(ssvu::mkArray("+", "-", "*", "/"));
 
-			return array[ssvu::castEnum(type)];
-		}
+        return array[ssvu::castEnum(type)];
+    }
 
-		inline const auto& getStrStat()
-		{
-			static auto array(ssvu::mkArray
-			(
-				"HPS",
-				"ATK",
-				"DEF"
-			));
+    inline const auto& getStrStat()
+    {
+        static auto array(ssvu::mkArray("HPS", "ATK", "DEF"));
 
-			return array[ssvu::castEnum(stat)];
-		}
-	};
+        return array[ssvu::castEnum(stat)];
+    }
+};
 }
 
 #endif
