@@ -9,17 +9,6 @@
 // * test stuff.
 // * acks/reliability stuff.
 
-namespace tests
-{
-namespace nle = experiment;
-
-using MySettings = nle::Settings<std::size_t>;
-
-using MyPcktBinds = nle::PcktBinds<nle::PcktBind<int>, nle::PcktBind<float>>;
-
-using MyConfig = nle::Config<MySettings, MyPcktBinds>;
-}
- 
 template <typename T>
 T getInput(const std::string& mTitle)
 {
@@ -39,33 +28,41 @@ void choiceServer()
 
     auto processedCount(0u);
 
-    auto fnProcess(
-    [&processedCount](auto& server, auto& data, const auto& sender)
-    {
-        ++processedCount;
+    nl::ManagedHost server{27015};
 
-        ssvu::lo() << "Received some data from " << sender << "!\n";
+    auto fnProcess([&processedCount, &server](auto& data, const auto& sender)
+        {
+            ++processedCount;
 
-        std::string str;
-        data >> str;
+            ssvu::lo() << "Received some data from " << sender << "!\n";
 
-        ssvu::lo() << "Data: " << str << "\n";
+            std::string str;
+            data >> str;
 
-        server.send(sender, "I got your message!"s);
-    });
+            ssvu::lo() << "Data: " << str << "\n";
 
-    nl::ManagedHost<decltype(fnProcess)> server{27015, fnProcess};
+            server.send(sender, "I got your message!"s);
+        });
+
+    server.emplaceBusyFut([&server, &fnProcess]
+        {
+            server.try_process(fnProcess);
+        });
+
+
     // auto server(nl::mkManagedHost(27015, fnProcess));
     // auto server(nl::makeManagedHost(27015, fnProcess));
 
     int cycles{20};
 
-    while(server.isBusy()) {
+    while(server.isBusy())
+    {
 
         if(getInput<int>("Exit? (1)")) break;
 
         // NL_DEBUGLO() << "bsy";
-        if(cycles-- <= 0) {
+        if(cycles-- <= 0)
+        {
             // server.stop();
         }
 
@@ -85,17 +82,25 @@ void choiceClient()
     auto port(getInput<nl::Port>("Port"));
     nl::ManagedSocket client{port};*/
 
-    auto fnProcess([](auto&, auto& data, const auto&)
+    nl::ManagedHost client{27016};
+
+    auto fnProcess([](auto& data, const auto&)
+        {
+            std::string str;
+            data >> str;
+
+            ssvu::lo() << "Reply: " << str << "\n";
+        });
+
+    client.emplaceBusyFut([&client, &fnProcess]
+        {
+            client.try_process(fnProcess);
+        });
+
+
+    while(client.isBusy())
     {
-        std::string str;
-        data >> str;
 
-        ssvu::lo() << "Reply: " << str << "\n";
-    });
-
-    nl::ManagedHost<decltype(fnProcess)> client{27016, fnProcess};
-
-    while(client.isBusy()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 
@@ -111,29 +116,78 @@ void choiceClient()
 
 namespace example
 {
-NL_DEFINE_PCKT(
-RegistrationRequest, (((std::string), user), ((std::string), pass)));
+    NL_DEFINE_PCKT(
+        RegistrationRequest, (((std::string), user), ((std::string), pass)));
 
-NL_DEFINE_PCKT_1(RegistrationResponse, ((bool), valid));
+    NL_DEFINE_PCKT_1(RegistrationResponse, ((bool), valid));
 
-NL_DEFINE_PCKT(LoginRequest, (((std::string), user), ((std::string), pass)));
+    NL_DEFINE_PCKT(
+        LoginRequest, (((std::string), user), ((std::string), pass)));
 
-NL_DEFINE_PCKT_1(LoginResponse, ((bool), valid));
+    NL_DEFINE_PCKT_1(LoginResponse, ((bool), valid));
 
-namespace nle = experiment;
-using MySettings = nle::Settings<std::size_t>;
+    namespace nle = experiment;
 
-using MyPcktBinds =
-nle::PcktBinds<nle::PcktBind<RegistrationRequest>, nle::PcktBind<LoginRequest>,
-nle::PcktBind<RegistrationResponse>, nle::PcktBind<LoginResponse>>;
+    using MySettings = nle::Settings<nl::UInt32>;
 
-using MyConfig = nle::Config<MySettings, MyPcktBinds>;
+    using MyPcktBinds = nle::PcktBinds<nle::PcktBind<RegistrationRequest>,
+        nle::PcktBind<LoginRequest>, nle::PcktBind<RegistrationResponse>,
+        nle::PcktBind<LoginResponse>>;
 
-static_assert(MyConfig::getPcktBindID<RegistrationRequest>() == 0, "");
-static_assert(MyConfig::getPcktBindID<LoginRequest>() == 1, "");
-static_assert(MyConfig::getPcktBindID<RegistrationResponse>() == 2, "");
-static_assert(MyConfig::getPcktBindID<LoginResponse>() == 3, "");
+    using MyConfig = nle::Config<MySettings, MyPcktBinds>;
 
+    using MyContextHost = nle::ContextHost<MyConfig>;
+
+    static_assert(MyConfig::getPcktBindID<RegistrationRequest>() == 0, "");
+    static_assert(MyConfig::getPcktBindID<LoginRequest>() == 1, "");
+    static_assert(MyConfig::getPcktBindID<RegistrationResponse>() == 2, "");
+    static_assert(MyConfig::getPcktBindID<LoginResponse>() == 3, "");
+
+
+    void startServer()
+    {
+        MyContextHost h{27015};
+
+        h.on_in<RegistrationRequest>(
+            [](const auto&, const auto& user, const auto& pass)
+            {
+                ssvu::lo() << "registration request from " << user
+                           << ", pass: " << pass << "\n";
+            });
+
+        h.on_in<LoginRequest>(
+            [](const auto&, const auto& user, const auto& pass)
+            {
+                ssvu::lo() << "login request from " << user
+                           << ", pass: " << pass << "\n";
+            });
+
+        while(h.busy())
+        {
+            std::this_thread::sleep_for(100ms);
+        }
+    }
+
+    void startClient()
+    {
+        MyContextHost h{27016};
+
+
+        while(h.busy())
+        {
+            std::this_thread::sleep_for(200ms);
+
+            LoginRequest r;
+            r.user() = "username";
+            r.pass() = "passwrd";
+
+            nl::Impl::PayloadTarget myself(
+                nl::IpAddr::getLocalAddress(), 27015);
+
+
+            h.send<LoginRequest>(myself, r);
+        }
+    }
 }
 
 int main()
@@ -145,13 +199,16 @@ int main()
 
     auto choice(getInput<int>("Choice"));
 
-    if(choice == 0) {
-        choiceServer();
+    if(choice == 0)
+    {
+        // choiceServer();
+        example::startServer();
         NL_DEBUGLO() << "end choiceserver";
     }
     else if(choice == 1)
     {
-        choiceClient();
+        example::startClient();
+        // choiceClient();
     }
     else
     {

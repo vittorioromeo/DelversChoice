@@ -44,7 +44,7 @@ int main()
     {
         nl::PcktBuf pb;
         pb << std::vector<std::vector<float>>{
-        std::vector<float>{1.1f, 1.2f}, std::vector<float>{1.3f}};
+            std::vector<float>{1.1f, 1.2f}, std::vector<float>{1.3f}};
 
         std::vector<std::vector<float>> r;
         pb >> r;
@@ -69,8 +69,8 @@ int main()
     }
 
     {
-        auto o =
-        make_tuple(1, 2.f, make_tuple(1, 2, std::vector<int>{1, 2}), "ciao"s);
+        auto o = make_tuple(
+            1, 2.f, make_tuple(1, 2, std::vector<int>{1, 2}), "ciao"s);
 
         nl::PcktBuf pb;
         pb << o;

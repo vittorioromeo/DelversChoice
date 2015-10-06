@@ -8,69 +8,72 @@
 
 namespace nl
 {
-namespace Impl
-{
-    class ManagedRecvBuf : public ManagedPcktBuf
+    namespace Impl
     {
-    private:
-        // Buffer for the received payload.
-        Payload bp;
-
-        bool recv_sckt_impl(ScktUdp& mSckt)
+        class ManagedRecvBuf : public ManagedPcktBuf
         {
-            return scktRecv(mSckt, bp) == sf::Socket::Done;
-        }
+        private:
+            // Buffer for the received payload.
+            Payload bp;
 
-        template <typename TFRecv, typename TFEnqueue>
-        bool recv_impl(ScktUdp& mSckt, TFRecv&& mFnRecv, TFEnqueue&& mFnEnqueue)
-        {
-            // Try receiving the next packet.
-            if(!mFnRecv(mSckt)) {
-                return false;
-            }
-
-            // If the packet was received, enqueue it.
-            if(!mFnEnqueue(bp)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        // Blocking function that enqueues received packets.
-        template <typename TDuration>
-        bool try_recv_retry_for(
-        ScktUdp& mSckt, std::size_t mTries, const TDuration& mDuration)
-        {
-            return recv_impl(mSckt,
-            [this, mTries](auto& s)
+            bool recv_sckt_impl(ScktUdp& mSckt)
             {
-                return retry(mTries, [this, &s]
+                return scktRecv(mSckt, bp) == sf::Socket::Done;
+            }
+
+            template <typename TFRecv, typename TFEnqueue>
+            bool recv_impl(
+                ScktUdp& mSckt, TFRecv&& mFnRecv, TFEnqueue&& mFnEnqueue)
+            {
+                // Try receiving the next packet.
+                if(!mFnRecv(mSckt))
                 {
-                    return recv_sckt_impl(s);
-                });
-            },
-            [this, mDuration](auto& p)
+                    return false;
+                }
+
+                // If the packet was received, enqueue it.
+                if(!mFnEnqueue(bp))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Blocking function that enqueues received packets.
+            template <typename TDuration>
+            bool try_recv_retry_for(
+                ScktUdp& mSckt, std::size_t mTries, const TDuration& mDuration)
             {
-                return tsq.try_enqueue_for(mDuration, p);
-            });
-        }
+                return recv_impl(mSckt,
+                    [this, mTries](auto& s)
+                    {
+                        return retry(mTries, [this, &s]
+                            {
+                                return recv_sckt_impl(s);
+                            });
+                    },
+                    [this, mDuration](auto& p)
+                    {
+                        return tsq.try_enqueue_for(mDuration, p);
+                    });
+            }
 
-    public:
-        // TODO: remove
-        ~ManagedRecvBuf() { NL_DEBUGLO() << "~recvbuf"; }
+        public:
+            // TODO: remove
+            ~ManagedRecvBuf() { NL_DEBUGLO() << "~recvbuf"; }
 
-        auto recvLoop(ScktUdp& mSckt)
-        {
-            // TODO: cv wait?
+            auto recvLoop(ScktUdp& mSckt)
+            {
+                // TODO: cv wait?
 
-            // NL_DEBUGLO() << "Clearing recv buffer\n";
-            // bp.data.clear();
-            // NL_DEBUGLO() << "Cleared  recv buffer\n";
+                // NL_DEBUGLO() << "Clearing recv buffer\n";
+                // bp.data.clear();
+                // NL_DEBUGLO() << "Cleared  recv buffer\n";
 
-            // NL_DEBUGLO() << "wait recv\n";
-            return try_recv_retry_for(mSckt, 5, 100ms);
-        }
-    };
-}
+                // NL_DEBUGLO() << "wait recv\n";
+                return try_recv_retry_for(mSckt, 5, 100ms);
+            }
+        };
+    }
 }

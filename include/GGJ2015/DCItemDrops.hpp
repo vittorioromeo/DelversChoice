@@ -5,29 +5,29 @@
 
 namespace ggj
 {
-struct ItemDrops
-{
-    ssvu::UPtr<Drop> drops[Constants::maxDrops];
-
-    inline ItemDrops()
+    struct ItemDrops
     {
-        for(auto i(0u); i < Constants::maxDrops; ++i) drops[i] = nullptr;
-    }
+        ssvu::UPtr<Drop> drops[Constants::maxDrops];
 
-    inline bool has(int mIdx) { return drops[mIdx] != nullptr; }
+        inline ItemDrops()
+        {
+            for(auto i(0u); i < Constants::maxDrops; ++i) drops[i] = nullptr;
+        }
 
-    inline void give(int mIdx, Creature& mX)
-    {
-        drops[mIdx]->apply(mX);
-        drops[mIdx].release();
-    }
+        inline bool has(int mIdx) { return drops[mIdx] != nullptr; }
 
-    inline void update(FT mFT)
-    {
-        for(auto& p : drops)
-            if(p != nullptr) p->update(mFT);
-    }
-};
+        inline void give(int mIdx, Creature& mX)
+        {
+            drops[mIdx]->apply(mX);
+            drops[mIdx].release();
+        }
+
+        inline void update(FT mFT)
+        {
+            for(auto& p : drops)
+                if(p != nullptr) p->update(mFT);
+        }
+    };
 }
 
 #endif

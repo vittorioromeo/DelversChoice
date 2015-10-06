@@ -6,25 +6,25 @@
 
 namespace nl
 {
-namespace Impl
-{
-    // Class that represents a packet buffer and a thread safe queue.
-    // Can be used to receive and send queued packets.
-    class ManagedPcktBuf
+    namespace Impl
     {
-    public:
-        PayloadTSQueue tsq;
+        // Class that represents a packet buffer and a thread safe queue.
+        // Can be used to receive and send queued packets.
+        class ManagedPcktBuf
+        {
+        public:
+            PayloadTSQueue tsq;
 
-    public:
-        //  template <typename... TArgs>
-        //  void enqueue(TArgs&&... mArgs)
-        //  {
-        //      tsq.enqueue(FWD(mArgs)...);
-        // }
+        public:
+            //  template <typename... TArgs>
+            //  void enqueue(TArgs&&... mArgs)
+            //  {
+            //      tsq.enqueue(FWD(mArgs)...);
+            // }
 
-        // auto dequeue() { return tsq.dequeue(); }
+            // auto dequeue() { return tsq.dequeue(); }
 
-        // auto empty() const { return tsq.empty(); }
-    };
-}
+            // auto empty() const { return tsq.empty(); }
+        };
+    }
 }

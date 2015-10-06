@@ -29,22 +29,22 @@ template <typename... Ts>
 inline auto& operator<<(nl::PcktBuf& mP, const ssvu::Tpl<Ts...>& mX)
 {
     ssvu::tplFor(
-    [&mP, &mX](const auto& mV)
-    {
-        mP << mV;
-    },
-    mX);
+        [&mP, &mX](const auto& mV)
+        {
+            mP << mV;
+        },
+        mX);
     return mP;
 }
 template <typename... Ts>
 inline auto& operator>>(nl::PcktBuf& mP, ssvu::Tpl<Ts...>& mX)
 {
     ssvu::tplFor(
-    [&mP, &mX](auto& mV)
-    {
-        mP >> mV;
-    },
-    mX);
+        [&mP, &mX](auto& mV)
+        {
+            mP >> mV;
+        },
+        mX);
     return mP;
 }
 

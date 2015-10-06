@@ -2,11 +2,11 @@
 #include "./utils/test_utils.hpp"
 #include <string>
 
-struct TestPckt : nl::Impl::Pckt<int, // 0
-                  std::string,        // 1
-                  float,              // 2
-                  std::vector<int>    // 3
-                  >
+struct TestPckt : nl::Impl::Pckt<int,  // 0
+                      std::string,     // 1
+                      float,           // 2
+                      std::vector<int> // 3
+                      >
 {
     using BaseType = nl::Impl::Pckt<int, std::string, float, std::vector<int>>;
     using BaseType::BaseType;
@@ -23,7 +23,7 @@ int main()
 
     using MySettings = nle::Settings<nl::UInt32>;
     using MyPcktBinds = nle::PcktBinds<nle::PcktBind<int>, nle::PcktBind<float>,
-    nle::PcktBind<TestPckt>>;
+        nle::PcktBind<TestPckt>>;
     using MyConfig = nle::Config<MySettings, MyPcktBinds>;
 
     using MyDispatchTable = nle::DispatchTable<MyConfig>;
@@ -35,23 +35,23 @@ int main()
 
     MyDispatchTable dt;
     dt.add<int>([&outInt](const auto&, auto& x)
-    {
-        outInt = x;
-    });
+        {
+            outInt = x;
+        });
 
     dt.add<float>([&outFloat](const auto&, auto& x)
-    {
-        outFloat = x;
-    });
+        {
+            outFloat = x;
+        });
 
     dt.addDestructured<TestPckt>(
-    [&](const auto&, auto& id, auto& user, auto& prio, auto& secids)
-    {
-        outTestPckt.requestID() = id;
-        outTestPckt.requestUser() = user;
-        outTestPckt.requestPriority() = prio;
-        outTestPckt.secondaryIDs() = secids;
-    });
+        [&](const auto&, auto& id, auto& user, auto& prio, auto& secids)
+        {
+            outTestPckt.requestID() = id;
+            outTestPckt.requestUser() = user;
+            outTestPckt.requestPriority() = prio;
+            outTestPckt.secondaryIDs() = secids;
+        });
 
     auto mkpckt = [](auto x)
     {
@@ -65,7 +65,8 @@ int main()
         return b;
     };
 
-    for(auto j = 0; j < 100; ++j) {
+    for(auto j = 0; j < 100; ++j)
+    {
         auto v = ssvu::getRndI(0, 1000);
         auto p = mkpckt((int)v);
 
@@ -73,7 +74,8 @@ int main()
         TEST_ASSERT_OP(v, ==, outInt);
     }
 
-    for(auto j = 0; j < 100; ++j) {
+    for(auto j = 0; j < 100; ++j)
+    {
         auto v = ssvu::getRndR(0.f, 1000.f);
         auto p = mkpckt((float)v);
 
@@ -81,9 +83,10 @@ int main()
         TEST_ASSERT_OP(v, ==, outFloat);
     }
 
-    for(auto j = 0; j < 100; ++j) {
+    for(auto j = 0; j < 100; ++j)
+    {
         TestPckt v(nl::init_fields{}, ssvu::getRndR(0.f, 1000.f), "hi",
-        ssvu::getRndR(0.f, 1000.f), std::vector<int>{1, 2, 3, 4, 5});
+            ssvu::getRndR(0.f, 1000.f), std::vector<int>{1, 2, 3, 4, 5});
         auto p = mkpckt((TestPckt)v);
 
         dt.process(nl::Impl::PayloadTarget{}, p);

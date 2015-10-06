@@ -5,42 +5,42 @@
 
 namespace ggj
 {
-struct CreatureStatsDraw
-{
-    sf::Sprite iconHPS;
-    ssvs::BitmapText txtHPS;
-
-    WeaponStatsDraw wsd;
-    ArmorStatsDraw asd;
-
-    inline CreatureStatsDraw() : txtHPS{mkTxtOBSmall()}
+    struct CreatureStatsDraw
     {
-        iconHPS.setTexture(*getAssets().iconHPS);
-    }
+        sf::Sprite iconHPS;
+        ssvs::BitmapText txtHPS;
 
-    inline void update(FT mFT)
-    {
-        wsd.update(mFT);
-        asd.update(mFT);
-    }
+        WeaponStatsDraw wsd;
+        ArmorStatsDraw asd;
 
-    inline void draw(Creature& mC, ssvs::GameWindow& mGW, const Vec2f& mPos,
-    const Vec2f& mCenter)
-    {
-        txtHPS.setString(ssvu::toStr(mC.hps));
-        iconHPS.setPosition(mPos + Vec2f{0.f, 12.f * 0.f});
-        txtHPS.setPosition(iconHPS.getPosition() + Vec2f{12.f, 0});
+        inline CreatureStatsDraw() : txtHPS{mkTxtOBSmall()}
+        {
+            iconHPS.setTexture(*getAssets().iconHPS);
+        }
 
-        wsd.pos = Vec2f{0, 12.f};
-        wsd.draw(mC, mGW, mPos, mCenter);
+        inline void update(FT mFT)
+        {
+            wsd.update(mFT);
+            asd.update(mFT);
+        }
 
-        asd.pos = Vec2f{0, wsd.eWK.getPosition().y - mPos.y + 12.f};
-        asd.draw(mC, mGW, mPos, mCenter);
+        inline void draw(Creature& mC, ssvs::GameWindow& mGW, const Vec2f& mPos,
+            const Vec2f& mCenter)
+        {
+            txtHPS.setString(ssvu::toStr(mC.hps));
+            iconHPS.setPosition(mPos + Vec2f{0.f, 12.f * 0.f});
+            txtHPS.setPosition(iconHPS.getPosition() + Vec2f{12.f, 0});
 
-        mGW.draw(iconHPS);
-        mGW.draw(txtHPS);
-    }
-};
+            wsd.pos = Vec2f{0, 12.f};
+            wsd.draw(mC, mGW, mPos, mCenter);
+
+            asd.pos = Vec2f{0, wsd.eWK.getPosition().y - mPos.y + 12.f};
+            asd.draw(mC, mGW, mPos, mCenter);
+
+            mGW.draw(iconHPS);
+            mGW.draw(txtHPS);
+        }
+    };
 }
 
 #endif

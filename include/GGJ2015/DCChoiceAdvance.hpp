@@ -5,22 +5,23 @@
 
 namespace ggj
 {
-struct ChoiceAdvance : public Choice
-{
-    sf::Sprite advanceSprite;
-
-    inline ChoiceAdvance(GameSession& mGameState, SizeT mIdx)
-        : Choice{mGameState, mIdx}
+    struct ChoiceAdvance : public Choice
     {
-        advanceSprite.setTexture(*getAssets().advance);
-        ssvs::setOrigin(advanceSprite, ssvs::getLocalCenter);
-    }
+        sf::Sprite advanceSprite;
 
-    inline void execute() override;
-    inline void draw(ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
+        inline ChoiceAdvance(GameSession& mGameState, SizeT mIdx)
+            : Choice{mGameState, mIdx}
+        {
+            advanceSprite.setTexture(*getAssets().advance);
+            ssvs::setOrigin(advanceSprite, ssvs::getLocalCenter);
+        }
 
-    inline std::string getChoiceStr() override { return "Forward"; }
-};
+        inline void execute() override;
+        inline void draw(
+            ssvs::GameWindow&, const Vec2f&, const Vec2f&) override;
+
+        inline std::string getChoiceStr() override { return "Forward"; }
+    };
 }
 
 #endif

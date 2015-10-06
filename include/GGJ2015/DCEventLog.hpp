@@ -5,27 +5,27 @@
 
 namespace ggj
 {
-inline auto& getEventLogStream() noexcept
-{
-    static std::stringstream result;
-    return result;
-}
-
-namespace Impl
-{
-    struct EventLog
+    inline auto& getEventLogStream() noexcept
     {
-        template <typename T>
-        inline auto operator<<(const T& mX)
-        {
-            getEventLogStream() << mX;
-            ssvu::lo() << mX;
-            return EventLog{};
-        }
-    };
-}
+        static std::stringstream result;
+        return result;
+    }
 
-inline auto eventLo() noexcept { return Impl::EventLog{}; }
+    namespace Impl
+    {
+        struct EventLog
+        {
+            template <typename T>
+            inline auto operator<<(const T& mX)
+            {
+                getEventLogStream() << mX;
+                ssvu::lo() << mX;
+                return EventLog{};
+            }
+        };
+    }
+
+    inline auto eventLo() noexcept { return Impl::EventLog{}; }
 }
 
 #endif

@@ -6,96 +6,97 @@
 
 namespace nl
 {
-namespace Impl
-{
-    template <typename T>
-    class ThreadSafeQueue
+    namespace Impl
     {
-    private:
-        std::deque<T> data;
-        mutable std::timed_mutex mtx;
-        std::condition_variable_any cv;
-
-        template <typename... TArgs>
-        void enqueue_impl(TArgs&&... mArgs)
+        template <typename T>
+        class ThreadSafeQueue
         {
-            data.emplace_front(FWD(mArgs)...);
+        private:
+            std::deque<T> data;
+            mutable std::timed_mutex mtx;
+            std::condition_variable_any cv;
 
-            // Notify one thread waiting to `dequeue`.
-            cv.notify_one();
-        }
+            template <typename... TArgs>
+            void enqueue_impl(TArgs&&... mArgs)
+            {
+                data.emplace_front(FWD(mArgs)...);
 
-        auto dequeue_impl()
-        {
-            auto result(data.back());
-            data.pop_back();
-            return result;
-        }
+                // Notify one thread waiting to `dequeue`.
+                cv.notify_one();
+            }
 
-    public:
-        template <typename... TArgs>
-        void enqueue(TArgs&&... mArgs)
-        {
-            auto l(mkUniqueLock(mtx));
-            enqueue_impl(FWD(mArgs)...);
-        }
+            auto dequeue_impl()
+            {
+                auto result(data.back());
+                data.pop_back();
+                return result;
+            }
 
-        // TODO:
-        template <typename TDuration, typename... TArgs>
-        bool try_enqueue_for(const TDuration& mDuration, TArgs&&... mArgs)
-        {
-            auto l(mkUniqueLock(mtx, std::defer_lock));
-
-            if(l.try_lock_for(mDuration)) {
+        public:
+            template <typename... TArgs>
+            void enqueue(TArgs&&... mArgs)
+            {
+                auto l(mkUniqueLock(mtx));
                 enqueue_impl(FWD(mArgs)...);
-                return true;
             }
 
-            return false;
-        }
-
-        T dequeue()
-        {
-            auto l(mkUniqueLock(mtx));
-
-            // Release the lock and wait until `data` is not empty.
-            cv.wait(l, [this]
+            // TODO:
+            template <typename TDuration, typename... TArgs>
+            bool try_enqueue_for(const TDuration& mDuration, TArgs&&... mArgs)
             {
-                return !data.empty();
-            });
+                auto l(mkUniqueLock(mtx, std::defer_lock));
 
-            return dequeue_impl();
-        }
+                if(l.try_lock_for(mDuration))
+                {
+                    enqueue_impl(FWD(mArgs)...);
+                    return true;
+                }
 
-        template <typename TDuration>
-        bool try_dequeue_for(const TDuration& mDuration, T& mOut)
-        {
-            auto l(mkUniqueLock(mtx));
-
-            // Release the lock and wait until `data` is not empty.
-            if(cv.wait_for(l, mDuration, [this]
-               {
-                   return !data.empty();
-               }))
-            {
-                mOut = dequeue_impl();
-                return true;
+                return false;
             }
 
-            return false;
-        }
+            T dequeue()
+            {
+                auto l(mkUniqueLock(mtx));
 
-        auto size() const
-        {
-            auto l(mkUniqueLock(mtx));
-            return data.size();
-        }
+                // Release the lock and wait until `data` is not empty.
+                cv.wait(l, [this]
+                    {
+                        return !data.empty();
+                    });
 
-        auto empty() const
-        {
-            auto l(mkUniqueLock(mtx));
-            return data.empty();
-        }
-    };
-}
+                return dequeue_impl();
+            }
+
+            template <typename TDuration>
+            bool try_dequeue_for(const TDuration& mDuration, T& mOut)
+            {
+                auto l(mkUniqueLock(mtx));
+
+                // Release the lock and wait until `data` is not empty.
+                if(cv.wait_for(l, mDuration, [this]
+                       {
+                           return !data.empty();
+                       }))
+                {
+                    mOut = dequeue_impl();
+                    return true;
+                }
+
+                return false;
+            }
+
+            auto size() const
+            {
+                auto l(mkUniqueLock(mtx));
+                return data.size();
+            }
+
+            auto empty() const
+            {
+                auto l(mkUniqueLock(mtx));
+                return data.empty();
+            }
+        };
+    }
 }

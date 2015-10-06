@@ -1,25 +1,76 @@
 #pragma once
+
+#include <array>
 #include "../Common/Common.hpp"
 #include "../Architecture/Architecture.hpp"
 #include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
 
 namespace nl
 {
-namespace Impl
-{
-    template <typename... TFields>
-    struct Pckt
+
+    struct init_fields
     {
-        ssvu::Tpl<TFields...> fields;
     };
-}
+
+    namespace Impl
+    {
+
+        template <typename... TFields>
+        struct Pckt
+        {
+            using TplType = ssvu::Tpl<TFields...>;
+            TplType fields;
+
+            template <typename... Ts>
+            inline Pckt(nl::init_fields, Ts&&... mX)
+                : fields(FWD(mX)...)
+            {
+            }
+
+            inline Pckt() {}
+
+            inline Pckt(const Pckt& mX) : fields(mX.fields) {}
+            inline Pckt(Pckt&& mX) : fields(std::move(mX.fields)) {}
+
+            inline Pckt& operator=(const Pckt& mX)
+            {
+                fields = mX.fields;
+                return *this;
+            }
+
+            inline Pckt& operator=(Pckt&& mX)
+            {
+                fields = std::move(mX.fields);
+                return *this;
+            }
+        };
+
+        template <typename... TFields>
+        inline bool operator==(
+            const Pckt<TFields...>& a, const Pckt<TFields...>& b)
+        {
+            return a.fields == b.fields;
+        }
+
+        template <typename... TFields>
+        inline bool operator!=(
+            const Pckt<TFields...>& a, const Pckt<TFields...>& b)
+        {
+            return !(a == b);
+        }
+    }
 }
 
 // Defines getters and setters for a packet field.
-#define NL_DEFINE_PCKT_PROXY(mI, mName)                                       \
-    inline const auto& mName() const & { return std::get<mI>(this->fields); } \
+/*#define NL_DEFINE_PCKT_PROXY(mI, mName) \
+    inline const auto& mName() const& { return std::get<mI>(this->fields); } \
     inline auto& mName() & { return std::get<mI>(this->fields); }             \
-    inline auto mName() && { return std::move(std::get<mI>(this->fields)); }
+    inline auto&& mName() && { return std::move(std::get<mI>(this->fields)); }
+*/
+#define NL_DEFINE_PCKT_PROXY(mI, mName)                                     \
+    inline const auto& mName() const { return std::get<mI>(this->fields); } \
+    inline auto& mName() { return std::get<mI>(this->fields); }
+
 
 // Implementation of the preprocessor loop that generates the type list for
 // packet field types.
@@ -29,7 +80,7 @@ namespace Impl
 // Preprocessor loop that generates the type list for packet field types.
 #define NL_IMPL_DEFINE_PCKT_TEMPLATE_LIST(...) \
     VRM_PP_FOREACH_REVERSE(                    \
-    NL_IMPL_DEFINE_PCKT_TEMPLATE_LIST_FOR_IMPL, ~, __VA_ARGS__)
+        NL_IMPL_DEFINE_PCKT_TEMPLATE_LIST_FOR_IMPL, ~, __VA_ARGS__)
 
 
 
@@ -46,18 +97,18 @@ namespace Impl
 
 #define NL_IMPL_DEFINE_PCKT(mName, mFieldTpls)                         \
     struct mName : ::nl::Impl::Pckt<NL_IMPL_DEFINE_PCKT_TEMPLATE_LIST( \
-                   VRM_PP_TPL_EXPLODE(mFieldTpls))>                    \
+                       VRM_PP_TPL_EXPLODE(mFieldTpls))>                \
     {                                                                  \
         NL_IMPL_DEFINE_PCKT_BODY_LIST(VRM_PP_TPL_EXPLODE(mFieldTpls))  \
     }
 
 #define NL_DEFINE_PCKT(mName, mFieldTpls) NL_IMPL_DEFINE_PCKT(mName, mFieldTpls)
 
-#define NL_DEFINE_PCKT_1(mName, mTpl)                                \
-    struct mName                                                     \
-    : ::nl::Impl::Pckt<VRM_PP_TPL_ELEM(VRM_PP_TPL_ELEM(mTpl, 0), 0)> \
-    {                                                                \
-        NL_IMPL_DEFINE_PCKT_BODY_LIST_FOR_IMPL(0, ~, mTpl)           \
+#define NL_DEFINE_PCKT_1(mName, mTpl)                                    \
+    struct mName                                                         \
+        : ::nl::Impl::Pckt<VRM_PP_TPL_ELEM(VRM_PP_TPL_ELEM(mTpl, 0), 0)> \
+    {                                                                    \
+        NL_IMPL_DEFINE_PCKT_BODY_LIST_FOR_IMPL(0, ~, mTpl)               \
     }
 
 /*
@@ -75,105 +126,7 @@ struct AuthRequest : nl::Pckt
     NL_DEFINE_PCKT_PROXY(3, secondaryIDs);
 };
 */
-NL_DEFINE_PCKT(AuthRequest,
-(((int), requestID), ((std::string), requestUser), ((float), requestPriority),
-               ((std::map<int, float>), secondaryIDs)));
 
-namespace MPL = ::ecs::MPL;
-
-namespace experiment
-{
-// Settings forward-declaration.
-template <typename>
-struct Settings;
-
-template <typename TIDType = std::size_t>
-struct Settings
-{
-    using IDType = TIDType;
-};
-
-template <typename TType>
-struct PcktBind
-{
-    using Type = TType;
-};
-
-template <typename T>
-using PcktBindType = typename T::Type;
-
-template <typename... Ts>
-using PcktBinds = MPL::TypeList<Ts...>;
-
-template <typename TList>
-using PcktBindsTypes = MPL::Map<PcktBindType, TList>;
-
-template <typename TSettings, typename TPcktBinds>
-struct Config
-{
-    using Settings = TSettings;
-    using PcktBinds = TPcktBinds;
-    using BindsTypes = PcktBindsTypes<PcktBinds>;
-
-    // static_assert validity of settings
-    // static_assert validity of packet binds
-
-    template <typename T>
-    static constexpr auto hasPcktBindFor() noexcept
-    {
-        return MPL::Contains<T, BindsTypes>{};
-    }
-
-    template <typename T>
-    static constexpr auto getPcktBindID() noexcept
-    {
-        return MPL::IndexOf<T, BindsTypes>{};
-    }
-
-    template <typename T>
-    using PcktTypes = MPL::TypeList<int, float, char>; // TODO
-};
-
-template <typename TConfig, typename T>
-auto toPayload(const T& mX)
-{
-    static_assert(TConfig::template hasPcktBindFor<T>(), "");
-    constexpr auto id(TConfig::template getPcktBindID<T>());
-
-    nl::Impl::Payload p;
-    p << id;
-
-    using PcktTypes = typename TConfig::template PcktTypes<T>;
-    MPL::forTypes<PcktTypes>([&p, &mX](auto t)
-    {
-        p << std::get<ECS_TYPE(t)>(mX.fields);
-    });
-
-    return p;
-}
-
-// TODO: dispatch
-
-template <typename TConfig, typename T>
-T fromPayload(nl::Impl::Payload& mP)
-{
-    // TODO: assumes id has been read
-    // typename TConfig::Settings::PcktIDType id;
-    // mP >> id;
-
-    T result;
-
-    using PcktTypes = typename TConfig::template PcktTypes<T>;
-    MPL::forTypes<PcktTypes>([&mP, &result](auto t)
-    {
-        mP >> std::get<ECS_TYPE(t)>(result.fields);
-    });
-}
-
-// structure(...) and (...)destructure methods
-// payload -> packet
-// packet -> payload
-}
 
 
 template <typename T>
@@ -203,22 +156,22 @@ template <typename... Ts>
 inline auto& operator<<(nl::PcktBuf& mP, const ssvu::Tpl<Ts...>& mX)
 {
     ssvu::tplFor(
-    [&mP, &mX](const auto& mV)
-    {
-        mP << mV;
-    },
-    mX);
+        [&mP, &mX](const auto& mV)
+        {
+            mP << mV;
+        },
+        mX);
     return mP;
 }
 template <typename... Ts>
 inline auto& operator>>(nl::PcktBuf& mP, ssvu::Tpl<Ts...>& mX)
 {
     ssvu::tplFor(
-    [&mP, &mX](auto& mV)
-    {
-        mP >> mV;
-    },
-    mX);
+        [&mP, &mX](auto& mV)
+        {
+            mP >> mV;
+        },
+        mX);
     return mP;
 }
 
@@ -231,4 +184,16 @@ template <typename... Ts>
 inline auto& operator>>(nl::PcktBuf& mP, nl::Impl::Pckt<Ts...>& mX)
 {
     return mP >> mX.fields;
+}
+
+template <typename T>
+void serialize_nl(nl::PcktBuf& p, T&& x)
+{
+    p << FWD(x);
+}
+
+template <typename T>
+void deserialize_nl(nl::PcktBuf& p, T& x)
+{
+    p >> x;
 }
