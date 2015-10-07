@@ -49,16 +49,13 @@ namespace nl
             {
                 Payload p;
 
-                // NL_DEBUGLO() << "try dequeue...\n";
-                auto toSend(tsq.try_dequeue_for(100ms, p));
+                auto toSend(try_dequeue_for(100ms, p));
 
                 if(toSend)
                 {
-                    // NL_DEBUGLO() << "try dequeue... OK\n";
                     return try_send_retry(mSckt, p, 5);
                 }
 
-                // NL_DEBUGLO() << "try dequeue... fail\n";
                 return false;
             }
         };

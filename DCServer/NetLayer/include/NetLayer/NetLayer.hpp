@@ -18,7 +18,11 @@
 // * Managed abstraction for server/client hosts.
 #include "./Architecture/Architecture.hpp"
 
+// TODO:
+#include "./Pckt/Pckt.hpp"
 
 // TODO:
-#include "./Utils/Serialization.hpp"
-#include "./Utils/SerializationOther.hpp"
+#include "./Serialization/Serialization.hpp"
+
+// TODO:
+#include "./Bound/Bound.hpp"

@@ -13,7 +13,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 # vrm_cmake_generate_public_header_tests_glob("*.hpp" "${NETLAYER_SOURCE_DIR}/include")
-# 
+#
 # foreach(_t IN LISTS vrm_cmake_out)
 #     target_link_libraries(${_t} ${SFML_AUDIO_LIBRARY_RELEASE})
 #     target_link_libraries(${_t} ${SFML_GRAPHICS_LIBRARY_RELEASE})
@@ -31,6 +31,7 @@ foreach(_t IN LISTS vrm_cmake_out)
     target_link_libraries(${_t} ${SFML_WINDOW_LIBRARY_RELEASE})
     target_link_libraries(${_t} ${SFML_SYSTEM_LIBRARY_RELEASE})
     target_link_libraries(${_t} ${SFML_NETWORK_LIBRARY_RELEASE})
+    target_link_libraries(${_t} -lpthread)
 endforeach()
 
 # TODO: rewrite

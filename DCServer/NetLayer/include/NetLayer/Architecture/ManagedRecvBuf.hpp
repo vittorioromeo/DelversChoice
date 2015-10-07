@@ -55,7 +55,7 @@ namespace nl
                     },
                     [this, mDuration](auto& p)
                     {
-                        return tsq.try_enqueue_for(mDuration, p);
+                        return try_enqueue_for(mDuration, p);
                     });
             }
 
@@ -67,11 +67,6 @@ namespace nl
             {
                 // TODO: cv wait?
 
-                // NL_DEBUGLO() << "Clearing recv buffer\n";
-                // bp.data.clear();
-                // NL_DEBUGLO() << "Cleared  recv buffer\n";
-
-                // NL_DEBUGLO() << "wait recv\n";
                 return try_recv_retry_for(mSckt, 5, 100ms);
             }
         };

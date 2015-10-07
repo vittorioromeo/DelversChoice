@@ -1,6 +1,10 @@
 #pragma once
 
-#include "./PacketTypes.hpp"
+#include <array>
+#include "../Common/Common.hpp"
+#include "../Architecture/Architecture.hpp"
+#include "../Pckt/Pckt.hpp"
+#include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
 
 template <typename T>
 inline auto& operator<<(nl::PcktBuf& mP, const std::vector<T>& mX)
@@ -10,6 +14,7 @@ inline auto& operator<<(nl::PcktBuf& mP, const std::vector<T>& mX)
 
     return mP;
 }
+
 template <typename T>
 inline auto& operator>>(nl::PcktBuf& mP, std::vector<T>& mX)
 {
@@ -49,12 +54,12 @@ inline auto& operator>>(nl::PcktBuf& mP, ssvu::Tpl<Ts...>& mX)
 }
 
 template <typename... Ts>
-inline auto& operator<<(nl::PcktBuf& mP, const nl::Pckt<Ts...>& mX)
+inline auto& operator<<(nl::PcktBuf& mP, const nl::Impl::Pckt<Ts...>& mX)
 {
     return mP << mX.fields;
 }
 template <typename... Ts>
-inline auto& operator>>(nl::PcktBuf& mP, nl::Pckt<Ts...>& mX)
+inline auto& operator>>(nl::PcktBuf& mP, nl::Impl::Pckt<Ts...>& mX)
 {
     return mP >> mX.fields;
 }

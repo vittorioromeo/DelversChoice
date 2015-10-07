@@ -94,31 +94,34 @@ namespace nl
             for(auto& bf : busyFutures) bf->stop();
         }
 
-        void send(Impl::Payload& mPayload)
+        bool send(Impl::Payload& mPayload)
         {
             // TODO:
-            mpbSend.tsq.try_enqueue_for(100ms, mPayload);
+            return mpbSend.try_enqueue_for(100ms, mPayload);
         }
 
         template <typename... Ts>
-        void send(const Impl::PayloadTarget& mTarget, Ts&&... mXs)
+        bool send(const Impl::PayloadAddress& mTarget, Ts&&... mXs)
         {
-            auto p(Impl::mkPayload(mTarget, FWD(mXs)...));
-            send(p);
+            auto p(Impl::make_payload(mTarget, FWD(mXs)...));
+            return send(p);
         }
 
         template <typename TF>
-        void try_process(TF&& f)
+        bool try_process(TF&& f)
         {
             Impl::Payload p;
 
             // TODO:
-            auto ok(mpbRecv.tsq.try_dequeue_for(100ms, p));
+            auto ok(mpbRecv.try_dequeue_for(100ms, p));
 
             if(ok)
             {
-                f(p.data, p.target);
+                f(p.data, p.address);
+                return true;
             }
+
+            return false;
         }
     };
 }

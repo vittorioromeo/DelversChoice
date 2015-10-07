@@ -105,7 +105,7 @@ void choiceClient()
 
 
 
-        nl::Impl::PayloadTarget myself(nl::IpAddr::getLocalAddress(), 27015);
+        nl::Impl::PayloadAddress myself(nl::IpAddr::getLocalAddress(), 27015);
         client.send(myself, "hello!"s);
 
 
@@ -148,14 +148,14 @@ namespace example
     {
         MyContextHost h{27015};
 
-        h.on_in<RegistrationRequest>(
+        h.on_d<RegistrationRequest>(
             [](const auto&, const auto& user, const auto& pass)
             {
                 ssvu::lo() << "registration request from " << user
                            << ", pass: " << pass << "\n";
             });
 
-        h.on_in<LoginRequest>(
+        h.on_d<LoginRequest>(
             [](const auto&, const auto& user, const auto& pass)
             {
                 ssvu::lo() << "login request from " << user
@@ -181,7 +181,7 @@ namespace example
             r.user() = "username";
             r.pass() = "passwrd";
 
-            nl::Impl::PayloadTarget myself(
+            nl::Impl::PayloadAddress myself(
                 nl::IpAddr::getLocalAddress(), 27015);
 
 
