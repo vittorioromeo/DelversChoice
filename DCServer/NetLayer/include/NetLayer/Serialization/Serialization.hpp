@@ -20,4 +20,27 @@ namespace nl
     {
         p >> x;
     }
+
+    template <typename... Ts>
+    auto make_serialized(Ts&&... xs)
+    {
+        nl::PcktBuf p;
+
+        ssvu::forArgs(
+            [&p](auto&& x)
+            {
+                serialize(p, FWD(x));
+            },
+            FWD(xs)...);
+
+        return p;
+    }
+
+    template <typename T>
+    auto make_deserialized(nl::PcktBuf& p)
+    {
+        T out;
+        deserialize<T>(p, out);
+        return out;
+    }
 }

@@ -23,7 +23,7 @@ namespace nl
             {
             }
 
-            inline Pckt() {}
+            inline Pckt() = default;
 
             inline Pckt(const Pckt& mX) : fields(mX.fields) {}
             inline Pckt(Pckt&& mX) : fields(std::move(mX.fields)) {}

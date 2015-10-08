@@ -10,29 +10,26 @@ namespace nl
 {
     namespace Impl
     {
-        class ManagedRecvBuf : public ManagedPcktBuf
+        template <typename TTunnel>
+        class ManagedRecvBuf : public ManagedPcktBuf<TTunnel>
         {
         private:
-            // Buffer for the received payload.
-            Payload bp;
+            using BaseType = ManagedPcktBuf<TTunnel>;
 
-            bool recv_sckt_impl(ScktUdp& mSckt)
-            {
-                return scktRecv(mSckt, bp) == sf::Socket::Done;
-            }
+            // Buffer for the received payload.
+            Payload p;
 
             template <typename TFRecv, typename TFEnqueue>
-            bool recv_impl(
-                ScktUdp& mSckt, TFRecv&& mFnRecv, TFEnqueue&& mFnEnqueue)
+            bool recv_impl(TFRecv&& mFnRecv, TFEnqueue&& mFnEnqueue)
             {
                 // Try receiving the next packet.
-                if(!mFnRecv(mSckt))
+                if(!mFnRecv())
                 {
                     return false;
                 }
 
                 // If the packet was received, enqueue it.
-                if(!mFnEnqueue(bp))
+                if(!mFnEnqueue())
                 {
                     return false;
                 }
@@ -43,31 +40,32 @@ namespace nl
             // Blocking function that enqueues received packets.
             template <typename TDuration>
             bool try_recv_retry_for(
-                ScktUdp& mSckt, std::size_t mTries, const TDuration& mDuration)
+                std::size_t mTries, const TDuration& mDuration)
             {
-                return recv_impl(mSckt,
-                    [this, mTries](auto& s)
+                return recv_impl(
+                    [this, mTries]
                     {
-                        return retry(mTries, [this, &s]
+                        return retry(mTries, [this]
                             {
-                                return recv_sckt_impl(s);
+                                return this->receive_payload(p);
                             });
                     },
-                    [this, mDuration](auto& p)
+                    [this, mDuration]
                     {
-                        return try_enqueue_for(mDuration, p);
+                        return this->try_enqueue_for(mDuration, p);
                     });
             }
 
         public:
+            using BaseType::BaseType;
+
             // TODO: remove
             ~ManagedRecvBuf() { NL_DEBUGLO() << "~recvbuf"; }
 
-            auto recvLoop(ScktUdp& mSckt)
+            auto recvLoop()
             {
                 // TODO: cv wait?
-
-                return try_recv_retry_for(mSckt, 5, 100ms);
+                return try_recv_retry_for(5, 100ms);
             }
         };
     }

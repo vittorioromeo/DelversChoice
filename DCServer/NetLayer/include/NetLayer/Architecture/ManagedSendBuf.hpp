@@ -10,19 +10,19 @@ namespace nl
 {
     namespace Impl
     {
-        class ManagedSendBuf : public ManagedPcktBuf
+        template<typename TTunnel>
+        class ManagedSendBuf : public ManagedPcktBuf<TTunnel>
         {
         private:
-            bool send_sckt_impl(ScktUdp& mSckt, Payload& mP)
-            {
-                return scktSend(mSckt, mP) == sf::Socket::Done;
-            }
+            using BaseType = ManagedPcktBuf<TTunnel>;
+
+            Payload p;
 
             template <typename TFSend>
-            bool send_impl(ScktUdp& mSckt, Payload& mP, TFSend&& mFnSend)
+            bool send_impl(TFSend&& mFnSend)
             {
-                // Try receiving the next packet.
-                if(!mFnSend(mSckt, mP))
+                // Try sending the next packet.
+                if(!mFnSend())
                 {
                     return false;
                 }
@@ -31,29 +31,29 @@ namespace nl
             }
 
             // Blocking function that sends enqueued packets.
-            bool try_send_retry(ScktUdp& mSckt, Payload& mP, std::size_t mTries)
+            bool try_send_retry(std::size_t mTries)
             {
-                return send_impl(mSckt, mP, [this, mTries](auto& s, auto& p)
+                return send_impl([this, mTries]
                     {
-                        return retry(mTries, [this, &s, &p]
+                        return retry(mTries, [this]
                             {
-                                return send_sckt_impl(s, p);
+                                return this->send_payload(p);
                             });
                     });
             }
 
         public:
+            using BaseType::BaseType;
+
             ~ManagedSendBuf() { NL_DEBUGLO() << "~sendbuf"; }
 
-            auto sendLoop(ScktUdp& mSckt)
+            auto sendLoop()
             {
-                Payload p;
-
-                auto toSend(try_dequeue_for(100ms, p));
+                auto toSend(this->try_dequeue_for(100ms, p));
 
                 if(toSend)
                 {
-                    return try_send_retry(mSckt, p, 5);
+                    return try_send_retry(5);
                 }
 
                 return false;

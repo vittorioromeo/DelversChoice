@@ -22,12 +22,11 @@ namespace experiment
         MyDispatchTable dispatchTable;
         nl::ManagedHost managedHost;
 
-        template<typename T>
-        void send_with_header(const PayloadAddress& pa, T x)
+        template <typename T, typename TX>
+        void send_with_header(const PayloadAddress& pa, TX&& x)
         {
-            constexpr auto id(TConfig::template getPcktBindID<T>());
-            // ssvu::lo("SENT ID") << id << "\n";
-            managedHost.send(pa, id, x);
+            constexpr auto id(Config::template getPcktBindID<T>());
+            managedHost.send(pa, id, FWD(x));
         }
 
     public:
@@ -44,10 +43,10 @@ namespace experiment
                 });
         }
 
-        template <typename T>
-        void send(const PayloadAddress& pa, T x)
+        template <typename T, typename TX>
+        void send(const PayloadAddress& pa, TX&& x)
         {
-            send_with_header<T>(pa, x);
+            send_with_header<T>(pa, FWD(x));
         }
 
         template <typename TPckt, typename TF>

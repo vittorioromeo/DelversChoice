@@ -5,13 +5,15 @@
 #include "../Architecture/BusyFut.hpp"
 #include "../Architecture/ThreadSafeQueue.hpp"
 #include "../Architecture/Payload.hpp"
+#include "../Architecture/ManagedPcktBuf.hpp"
 #include "../Architecture/ManagedSendBuf.hpp"
 #include "../Architecture/ManagedRecvBuf.hpp"
 
 namespace nl
 {
-
-    class ManagedHost
+    // TODO: templatize with PayloadProvider/Sink ?
+    template <typename TTunnel>
+    class ManagedHostImpl
     {
     private:
         // This host's ip.
@@ -21,13 +23,13 @@ namespace nl
         Port port;
 
         // This host's socket.
-        ScktUdp sckt;
+        TTunnel tunnel;
 
         // Local host -> send queue/buf -> internet
-        Impl::ManagedSendBuf mpbSend;
+        Impl::ManagedSendBuf<TTunnel> mpbSend{tunnel};
 
         // Internet -> recv queue/buf -> local host
-        Impl::ManagedRecvBuf mpbRecv;
+        Impl::ManagedRecvBuf<TTunnel> mpbRecv{tunnel};
 
         // TODO:
         // Threads:
@@ -37,7 +39,7 @@ namespace nl
         {
             if(retry(5, [this]
                    {
-                       return sckt.bind(port) == sf::Socket::Done;
+                       return tunnel.bind(port);
                    }))
             {
                 ssvu::lo() << "Socket successfully bound to port " << port
@@ -50,27 +52,26 @@ namespace nl
         }
 
     public:
-        ManagedHost(Port mPort) : ip{IpAddr::getLocalAddress()}, port{mPort}
+        ManagedHostImpl(Port mPort) : ip{IpAddr::getLocalAddress()}, port{mPort}
         {
             // busyFutures.reserve(100);
 
-            sckt.setBlocking(false);
+            // TODO: static_if TTunnel...
             tryBindSocket();
 
             emplaceBusyFut([this]
                 {
-                    mpbSend.sendLoop(sckt);
+                    mpbSend.sendLoop();
                 });
 
             emplaceBusyFut([this]
                 {
-                    mpbRecv.recvLoop(sckt);
+                    mpbRecv.recvLoop();
                 });
         }
 
-        ~ManagedHost()
+        ~ManagedHostImpl()
         {
-            sckt.unbind();
             stop();
             NL_DEBUGLO() << "Destroyed ManagedHost\n";
         }
@@ -124,4 +125,6 @@ namespace nl
             return false;
         }
     };
+
+    using ManagedHost = ManagedHostImpl<Impl::Tunnel::UDPSckt>;
 }

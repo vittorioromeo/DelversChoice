@@ -14,61 +14,61 @@ namespace experiment
     class DispatchTable
     {
     private:
-        using IDType = typename TConfig::IDType;
-        static constexpr auto pcktBindsCount = TConfig::pcktBindsCount;
+        using Config = TConfig;
+        using IDType = typename Config::IDType;
+        using PcktBuf = nl::PcktBuf;
+        using Payload = nl::Impl::Payload;
+        using PayloadAddress = nl::Impl::PayloadAddress;
 
-        using PcktFn =
-            std::function<void(nl::Impl::PayloadAddress, nl::PcktBuf&)>;
+        static constexpr auto pcktBindsCount = Config::pcktBindsCount;
 
+        using PcktFn = std::function<void(const PayloadAddress&, PcktBuf&)>;
         std::array<PcktFn, pcktBindsCount> fncs;
+
+        void process_with_header(const PayloadAddress& sender, PcktBuf& p)
+        {
+            // Get ID (assumes id is still in buf)
+            auto id(nl::make_deserialized<IDType>(p));
+
+            // Assert ID validity
+            assert(id < pcktBindsCount);
+
+            // Call dispatch function
+            (fncs[id])(sender, p);
+        }
 
     public:
         template <typename T, typename TF>
         void add(TF&& fnToCall)
         {
-            constexpr auto id(TConfig::template getPcktBindID<T>());
+            constexpr auto id(Config::template getPcktBindID<T>());
 
             auto& fn(fncs[id]);
 
             // Assume id has already been taken from
-            fn = [id, fnToCall](const auto& pt, auto& buf)
+            fn = [id, fnToCall](const PayloadAddress& pt, PcktBuf& buf)
             {
-                T obj;
-                buf >> obj;
-
-                fnToCall(pt, obj);
+                fnToCall(pt, nl::make_deserialized<T>(buf));
             };
         }
 
         template <typename T, typename TF>
         void addDestructured(TF&& fnToCall)
         {
-            add<T>([fnToCall](auto& pt, auto& o)
+            add<T>([fnToCall](auto& pt, auto&& o)
                 {
-                    auto boundfn = [fnToCall, pt](auto&&... xs)
-                    {
-                        return fnToCall(pt, FWD(xs)...);
-                    };
+                    auto boundfn([fnToCall, pt](auto&&... xs)
+                        {
+                            return fnToCall(pt, FWD(xs)...);
+                        });
+
                     ecs::Utils::tupleApply(boundfn, o.fields);
                 });
         }
 
-        void process(const nl::Impl::PayloadAddress& sender, nl::PcktBuf& p)
+        void process(const PayloadAddress& sender, PcktBuf& p)
         {
-            // Assumes id is still in buf
-
-            // Get ID
-            IDType id;
-            p >> id;
-
-            // ssvu::lo("ID") << id << "\n";
-
-            // Assert ID validity
-            assert(id < pcktBindsCount);
-
-            // Call dispatch function
-            auto& fn(fncs[id]);
-            fn(sender, p);
+            process_with_header(sender, p);
         }
     };
 }

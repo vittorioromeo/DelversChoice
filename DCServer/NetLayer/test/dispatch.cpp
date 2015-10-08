@@ -34,18 +34,18 @@ int main()
     TestPckt outTestPckt;
 
     MyDispatchTable dt;
-    dt.add<int>([&outInt](const auto&, auto& x)
+    dt.add<int>([&outInt](const auto&, auto&& x)
         {
             outInt = x;
         });
 
-    dt.add<float>([&outFloat](const auto&, auto& x)
+    dt.add<float>([&outFloat](const auto&, auto&& x)
         {
             outFloat = x;
         });
 
     dt.addDestructured<TestPckt>(
-        [&](const auto&, auto& id, auto& user, auto& prio, auto& secids)
+        [&](const auto&, auto&& id, auto&& user, auto&& prio, auto&& secids)
         {
             outTestPckt.requestID() = id;
             outTestPckt.requestUser() = user;
