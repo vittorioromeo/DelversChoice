@@ -4,7 +4,10 @@
 #include "../Architecture/ThreadSafeQueue.hpp"
 
 // TODO:
-#include "../Architecture/Payload.hpp"
+#include "../Payload/Payload.hpp"
+
+// TODO:
+#include "../Tunnel/Tunnel.hpp"
 
 // Abstraction over a packet buffer (queue).
 #include "../Architecture/ManagedPcktBuf.hpp"

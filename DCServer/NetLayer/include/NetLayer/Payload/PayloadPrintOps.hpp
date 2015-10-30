@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Common/Common.hpp"
+#include "../Common/Common.hpp"
 #include "./PayloadAddress.hpp"
 #include "./Payload.hpp"
 

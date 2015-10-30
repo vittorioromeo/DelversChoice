@@ -4,7 +4,7 @@
 #include "../Utils/Retry.hpp"
 #include "../Architecture/BusyFut.hpp"
 #include "../Architecture/ThreadSafeQueue.hpp"
-#include "../Architecture/Payload.hpp"
+#include "../Payload/Payload.hpp"
 #include "../Architecture/ManagedPcktBuf.hpp"
 #include "../Architecture/ManagedSendBuf.hpp"
 #include "../Architecture/ManagedRecvBuf.hpp"
@@ -35,7 +35,7 @@ namespace nl
         // Threads:
         std::vector<std::unique_ptr<Impl::BusyFut>> busyFutures;
 
-        void tryBindSocket()
+        bool tryBindSocket()
         {
             if(retry(5, [this]
                    {
@@ -44,11 +44,11 @@ namespace nl
             {
                 ssvu::lo() << "Socket successfully bound to port " << port
                            << "\n";
+
+                return true;
             }
-            else
-            {
-                throw std::runtime_error("Error binding socket");
-            }
+
+            return false;
         }
 
     public:
@@ -73,7 +73,7 @@ namespace nl
         ~ManagedHostImpl()
         {
             stop();
-            NL_DEBUGLO() << "Destroyed ManagedHost\n";
+            ::nl::debugLo() << "Destroyed ManagedHost\n";
         }
 
         template <typename TF>

@@ -20,11 +20,11 @@ namespace nl
                       {
                           while(wrapperAlive)
                           {
-                              // NL_DEBUGLO() << "waiting\n";
+                              // ::nl::debugLo() << "waiting\n";
                               mFn();
                           }
 
-                          //      NL_DEBUGLO() << (wrapperAlive ? "alive" :
+                          //      ::nl::debugLo() << (wrapperAlive ? "alive" :
                           //      "dead!!");
                       })}
             {
@@ -58,9 +58,9 @@ namespace nl
                 }
 
                 // block, so it sees wrapperAlive before it is
-                // NL_DEBUGLO() << "beforeget";
+                // ::nl::debugLo() << "beforeget";
                 // destroyed.
-                // NL_DEBUGLO() << "aftgerget";
+                // ::nl::debugLo() << "aftgerget";
             }
 
             void stop() { wrapperAlive = false; }

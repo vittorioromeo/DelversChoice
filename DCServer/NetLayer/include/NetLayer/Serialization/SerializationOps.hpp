@@ -1,10 +1,21 @@
 #pragma once
 
-#include <array>
 #include "../Common/Common.hpp"
-#include "../Architecture/Architecture.hpp"
-#include "../Pckt/Pckt.hpp"
-#include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
+
+inline auto& operator<<(nl::PcktBuf& mP, const char& mX)
+{
+    mP << static_cast<nl::Int8>(mX);
+    return mP;
+}
+
+inline auto& operator>>(nl::PcktBuf& mP, char& mX)
+{
+    nl::Int8 temp;
+    mP >> temp;
+    mX = static_cast<char>(temp);
+
+    return mP;
+}
 
 template <typename T>
 inline auto& operator<<(nl::PcktBuf& mP, const std::vector<T>& mX)
@@ -25,7 +36,10 @@ inline auto& operator>>(nl::PcktBuf& mP, std::vector<T>& mX)
     mX.clear();
     mX.resize(sz);
 
-    for(decltype(sz) i(0); i < sz; ++i) mP >> mX[i];
+    for(decltype(sz) i(0); i < sz; ++i)
+    {
+        mP >> mX[i];
+    }
 
     return mP;
 }
@@ -41,6 +55,7 @@ inline auto& operator<<(nl::PcktBuf& mP, const ssvu::Tpl<Ts...>& mX)
         mX);
     return mP;
 }
+
 template <typename... Ts>
 inline auto& operator>>(nl::PcktBuf& mP, ssvu::Tpl<Ts...>& mX)
 {
@@ -51,15 +66,4 @@ inline auto& operator>>(nl::PcktBuf& mP, ssvu::Tpl<Ts...>& mX)
         },
         mX);
     return mP;
-}
-
-template <typename... Ts>
-inline auto& operator<<(nl::PcktBuf& mP, const nl::Impl::Pckt<Ts...>& mX)
-{
-    return mP << mX.fields;
-}
-template <typename... Ts>
-inline auto& operator>>(nl::PcktBuf& mP, nl::Impl::Pckt<Ts...>& mX)
-{
-    return mP >> mX.fields;
 }

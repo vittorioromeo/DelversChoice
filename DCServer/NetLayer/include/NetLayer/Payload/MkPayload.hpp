@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../Common/Common.hpp"
+#include "../Common/Common.hpp"
 #include "./PayloadAddress.hpp"
 #include "./Payload.hpp"
-#include "../../Serialization/Serialization.hpp"
+#include "../Serialization/Serialization.hpp"
 
 namespace nl
 {

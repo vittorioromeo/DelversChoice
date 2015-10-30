@@ -3,14 +3,14 @@
 #include "../Common/Common.hpp"
 #include "../Utils/Retry.hpp"
 #include "../Architecture/ThreadSafeQueue.hpp"
-#include "../Architecture/Payload.hpp"
+#include "../Payload/Payload.hpp"
 #include "../Architecture/ManagedPcktBuf.hpp"
 
 namespace nl
 {
     namespace Impl
     {
-        template<typename TTunnel>
+        template <typename TTunnel>
         class ManagedSendBuf : public ManagedPcktBuf<TTunnel>
         {
         private:
@@ -19,10 +19,10 @@ namespace nl
             Payload p;
 
             template <typename TFSend>
-            bool send_impl(TFSend&& mFnSend)
+            bool send_impl(TFSend&& f_send)
             {
                 // Try sending the next packet.
-                if(!mFnSend())
+                if(!f_send())
                 {
                     return false;
                 }
@@ -31,11 +31,11 @@ namespace nl
             }
 
             // Blocking function that sends enqueued packets.
-            bool try_send_retry(std::size_t mTries)
+            bool try_send_retry(std::size_t tries)
             {
-                return send_impl([this, mTries]
+                return send_impl([this, tries]
                     {
-                        return retry(mTries, [this]
+                        return retry(tries, [this]
                             {
                                 return this->send_payload(p);
                             });
@@ -45,7 +45,7 @@ namespace nl
         public:
             using BaseType::BaseType;
 
-            ~ManagedSendBuf() { NL_DEBUGLO() << "~sendbuf"; }
+            ~ManagedSendBuf() { ::nl::debugLo() << "~sendbuf"; }
 
             auto sendLoop()
             {

@@ -18,20 +18,20 @@ namespace nl
 
             if(i > 4)
             {
-                // NL_DEBUGLO() << i << "th retry...\n";
+                // ::nl::debugLo() << i << "th retry...\n";
             }
         }
 
-        // NL_DEBUGLO() << "failed!...\n";
+        // ::nl::debugLo() << "failed!...\n";
         return false;
     }
 
     template <typename TF>
     bool retry(std::size_t mTimes, TF&& mFn)
     {
-        return retry(mTimes, mFn, [](auto i, auto)
+        return retry(mTimes, mFn, [](auto itr, auto)
             {
-                return 100ms * i;
+                return 100ms * itr;
             });
     }
 }

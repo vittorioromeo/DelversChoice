@@ -60,7 +60,7 @@ void choiceServer()
 
         if(getInput<int>("Exit? (1)")) break;
 
-        // NL_DEBUGLO() << "bsy";
+        // ::nl::debugLo() << "bsy";
         if(cycles-- <= 0)
         {
             // server.stop();
@@ -73,7 +73,7 @@ void choiceServer()
         //    ssvu::lo() << "Processed packets: " << processedCount << "\n\n";
     }
 
-    NL_DEBUGLO() << "serverend\n";
+    ::nl::debugLo() << "serverend\n";
 }
 
 void choiceClient()
@@ -146,20 +146,74 @@ namespace example
 
     void startServer()
     {
+        std::vector<std::pair<std::string, std::string>> regs;
+
+        auto has_user([&](const auto& xuser)
+            {
+                return std::any_of(std::begin(regs), std::end(regs),
+                    [&](const auto& x)
+                    {
+                        return std::get<0>(x) == xuser;
+                    });
+            });
+
+        auto get_user([&](const auto& xuser)
+            {
+                for(const auto& p : regs)
+                    if(std::get<0>(p) == xuser) return p;
+
+                SSVU_UNREACHABLE();
+            });
+
         MyContextHost h{27015};
 
         h.on_d<RegistrationRequest>(
-            [](const auto&, const auto& user, const auto& pass)
+            [&](const auto& sender, const auto& user, const auto& pass)
             {
                 ssvu::lo() << "registration request from " << user
                            << ", pass: " << pass << "\n";
+
+                if(!has_user(user))
+                {
+                    ssvu::lo() << "Replying with OK\n";
+                    regs.emplace_back(user, pass);
+
+                    h.send<RegistrationResponse>(sender, true);
+                }
+                else
+                {
+                    ssvu::lo() << "User already exists, replying with NO\n";
+
+                    h.send<RegistrationResponse>(sender, false);
+                }
             });
 
         h.on_d<LoginRequest>(
-            [](const auto&, const auto& user, const auto& pass)
+            [&](const auto& sender, const auto& user, const auto& pass)
             {
                 ssvu::lo() << "login request from " << user
                            << ", pass: " << pass << "\n";
+
+                if(!has_user(user))
+                {
+                    ssvu::lo() << "No such user.\nReplying with NO\n";
+                    return;
+                }
+
+                const auto& u(get_user(user));
+
+                if(std::get<1>(u) == pass)
+                {
+                    ssvu::lo() << "Replying with OK\n";
+
+                    h.send<LoginResponse>(sender, true);
+                }
+                else
+                {
+                    ssvu::lo() << "Wrong password.\nReplying with NO\n";
+
+                    h.send<LoginResponse>(sender, false);
+                }
             });
 
         while(h.busy())
@@ -172,20 +226,59 @@ namespace example
     {
         MyContextHost h{27016};
 
+        nl::Impl::PayloadAddress serveraddr(
+            nl::IpAddr::getLocalAddress(), 27015);
+
+        h.on_d<RegistrationResponse>([&](const auto&, const auto& outcome)
+            {
+                ssvu::lo() << "Received registration response, outcome:\n"
+                           << (outcome ? "VALID" : "INVALID") << "\n";
+            });
+
+        h.on_d<LoginResponse>([&](const auto&, const auto& outcome)
+            {
+                ssvu::lo() << "Received login response, outcome:\n"
+                           << (outcome ? "VALID" : "INVALID") << "\n";
+            });
 
         while(h.busy())
         {
             std::this_thread::sleep_for(200ms);
 
-            LoginRequest r;
-            r.user() = "username";
-            r.pass() = "passwrd";
 
-            nl::Impl::PayloadAddress myself(
-                nl::IpAddr::getLocalAddress(), 27015);
+            ssvu::lo("Choose") << "\n"
+                               << "0. Register\n"
+                               << "1. Login\n"
+                               << "_. Exit\n";
 
+            auto choice(getInput<int>("Choice"));
 
-            h.send<LoginRequest>(myself, r);
+            if(choice == 0 || choice == 1)
+            {
+                std::string username, password;
+
+                ssvu::lo() << "Insert username:\n";
+                std::cin >> username;
+
+                ssvu::lo() << "Insert password:\n";
+                std::cin >> password;
+
+                if(choice == 0)
+                {
+                    h.make_and_send<RegistrationRequest>(
+                        serveraddr, username, password);
+                }
+                else if(choice == 1)
+                {
+                    h.make_and_send<LoginRequest>(
+                        serveraddr, username, password);
+                }
+            }
+            else
+            {
+                h.stop();
+                break;
+            }
         }
     }
 }
@@ -203,7 +296,7 @@ int main()
     {
         // choiceServer();
         example::startServer();
-        NL_DEBUGLO() << "end choiceserver";
+        ::nl::debugLo() << "end choiceserver";
     }
     else if(choice == 1)
     {
@@ -215,6 +308,6 @@ int main()
         std::terminate();
     }
 
-    NL_DEBUGLO() << "return0 ";
+    ::nl::debugLo() << "return0 ";
     return 0;
 }

@@ -2,7 +2,7 @@
 
 // The `Common` module contains:
 // * External dependencies.
-// * Commonly used utility fucntions and typedefs.
+// * Commonly used utility functions and typedefs.
 // * API macros.
 #include "./Common/Common.hpp"
 
@@ -11,6 +11,15 @@
 // * Metaprogramming facilities for data serialization
 // * User-interface macros.
 // include "./PacketTypes/PacketTypes.hpp"
+
+// TODO:
+#include "./Serialization/Serialization.hpp"
+
+// TODO:
+#include "./Payload/Payload.hpp"
+
+// TODO:
+#include "./Tunnel/Tunnel.hpp"
 
 // The `Architecture` module contains:
 // * Thread-safe data structures for packet queues.
@@ -21,8 +30,7 @@
 // TODO:
 #include "./Pckt/Pckt.hpp"
 
-// TODO:
-#include "./Serialization/Serialization.hpp"
+
 
 // TODO:
 #include "./Bound/Bound.hpp"

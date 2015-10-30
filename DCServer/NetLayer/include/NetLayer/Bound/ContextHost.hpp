@@ -43,10 +43,21 @@ namespace experiment
                 });
         }
 
+        void stop()
+        {
+            managedHost.stop();
+        }
+
         template <typename T, typename TX>
         void send(const PayloadAddress& pa, TX&& x)
         {
             send_with_header<T>(pa, FWD(x));
+        }
+
+        template <typename T, typename... Ts>
+        void make_and_send(const PayloadAddress& pa, Ts&&... xs)
+        {
+            send<T>(pa, nl::make_pckt<T>(FWD(xs)...));
         }
 
         template <typename TPckt, typename TF>

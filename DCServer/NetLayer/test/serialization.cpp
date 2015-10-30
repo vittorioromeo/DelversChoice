@@ -6,7 +6,7 @@
 int main()
 {
     using namespace std;
-    using namespace std::literals;
+    using namespace literals;
 
 #define PRIMITIVE_TEST(type, val)     \
     {                                 \
@@ -19,18 +19,21 @@ int main()
         TEST_ASSERT_OP(r, ==, val);   \
     }
 
+    PRIMITIVE_TEST(char, 'a')
+    PRIMITIVE_TEST(char, 'b')
+    PRIMITIVE_TEST(char, 'c')
     PRIMITIVE_TEST(int, 0)
     PRIMITIVE_TEST(float, 1.5f)
     PRIMITIVE_TEST(double, 2.5)
-    PRIMITIVE_TEST(std::string, "abcd"s)
+    PRIMITIVE_TEST(string, "abcd"s)
 
     // ---
 
     {
         nl::PcktBuf pb;
-        pb << std::vector<int>{0, 1, 2, 3, 4, 5};
+        pb << vector<int>{0, 1, 2, 3, 4, 5};
 
-        std::vector<int> r;
+        vector<int> r;
         pb >> r;
 
         TEST_ASSERT_OP(r[0], ==, 0);
@@ -43,10 +46,10 @@ int main()
 
     {
         nl::PcktBuf pb;
-        pb << std::vector<std::vector<float>>{
-            std::vector<float>{1.1f, 1.2f}, std::vector<float>{1.3f}};
+        pb << vector<vector<float>>{
+            vector<float>{1.1f, 1.2f}, vector<float>{1.3f}};
 
-        std::vector<std::vector<float>> r;
+        vector<vector<float>> r;
         pb >> r;
 
         TEST_ASSERT_OP(r[0][0], ==, 1.1f);
@@ -69,8 +72,8 @@ int main()
     }
 
     {
-        auto o = make_tuple(
-            1, 2.f, make_tuple(1, 2, std::vector<int>{1, 2}), "ciao"s);
+        auto o =
+            make_tuple(1, 2.f, make_tuple(1, 2, vector<int>{1, 2}), "ciao"s);
 
         nl::PcktBuf pb;
         pb << o;

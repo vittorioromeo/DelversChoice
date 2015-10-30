@@ -3,7 +3,7 @@
 #include "../Common/Common.hpp"
 #include "../Utils/Retry.hpp"
 #include "../Architecture/ThreadSafeQueue.hpp"
-#include "../Architecture/Payload.hpp"
+#include "../Payload/Payload.hpp"
 #include "../Architecture/ManagedPcktBuf.hpp"
 
 namespace nl
@@ -20,16 +20,16 @@ namespace nl
             Payload p;
 
             template <typename TFRecv, typename TFEnqueue>
-            bool recv_impl(TFRecv&& mFnRecv, TFEnqueue&& mFnEnqueue)
+            bool recv_impl(TFRecv&& f_recv, TFEnqueue&& f_enqueue)
             {
                 // Try receiving the next packet.
-                if(!mFnRecv())
+                if(!f_recv())
                 {
                     return false;
                 }
 
                 // If the packet was received, enqueue it.
-                if(!mFnEnqueue())
+                if(!f_enqueue())
                 {
                     return false;
                 }
@@ -40,19 +40,19 @@ namespace nl
             // Blocking function that enqueues received packets.
             template <typename TDuration>
             bool try_recv_retry_for(
-                std::size_t mTries, const TDuration& mDuration)
+                std::size_t tries, const TDuration& duration)
             {
                 return recv_impl(
-                    [this, mTries]
+                    [this, tries]
                     {
-                        return retry(mTries, [this]
+                        return retry(tries, [this]
                             {
                                 return this->receive_payload(p);
                             });
                     },
-                    [this, mDuration]
+                    [this, duration]
                     {
-                        return this->try_enqueue_for(mDuration, p);
+                        return this->try_enqueue_for(duration, p);
                     });
             }
 
@@ -60,7 +60,7 @@ namespace nl
             using BaseType::BaseType;
 
             // TODO: remove
-            ~ManagedRecvBuf() { NL_DEBUGLO() << "~recvbuf"; }
+            ~ManagedRecvBuf() { ::nl::debugLo() << "~recvbuf"; }
 
             auto recvLoop()
             {

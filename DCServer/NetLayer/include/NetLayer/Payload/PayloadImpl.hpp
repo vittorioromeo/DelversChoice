@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../Common/Common.hpp"
+#include "../Common/Common.hpp"
 #include "./PayloadAddress.hpp"
 
 namespace nl
@@ -14,8 +14,9 @@ namespace nl
             PcktBuf data;
 
             Payload() = default;
-
-            Payload(const PayloadAddress& mAddress) noexcept : address{mAddress} { }
+            Payload(const PayloadAddress& mAddress) noexcept : address{mAddress}
+            {
+            }
 
             template <typename TData>
             Payload(const PayloadAddress& mAddress, TData&& mData)

@@ -55,14 +55,14 @@ namespace experiment
         template <typename T, typename TF>
         void addDestructured(TF&& fnToCall)
         {
-            add<T>([fnToCall](auto& pt, auto&& o)
+            add<T>([fnToCall](auto& pt_addr, auto&& obj)
                 {
-                    auto boundfn([fnToCall, pt](auto&&... xs)
+                    auto boundfn([fnToCall, pt_addr](auto&&... xs)
                         {
-                            return fnToCall(pt, FWD(xs)...);
+                            return fnToCall(pt_addr, FWD(xs)...);
                         });
 
-                    ecs::Utils::tupleApply(boundfn, o.fields);
+                    ecs::Utils::tupleApply(boundfn, obj.fields);
                 });
         }
 
