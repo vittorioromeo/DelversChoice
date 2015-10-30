@@ -34,3 +34,16 @@
 
 // TODO:
 #include "./Bound/Bound.hpp"
+
+
+
+// TODO:
+// Thesis:
+// * TDD development
+// * Layered architecture
+// * Doxygen + doxygraph for UML
+// * Use AutoSyncGen as thesis template
+// * Dependencies
+// * AutoSyncGen integration possibility?
+// * Why C++, why C++14
+// * User freedom
