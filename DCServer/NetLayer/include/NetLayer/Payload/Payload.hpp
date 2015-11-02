@@ -5,7 +5,7 @@
 // Aggregate of an IP address and a Port.
 #include "./PayloadAddress.hpp"
 
-// Combination of a `PayloadAddress` and a `PcktBuf`.
+// Combination of a `PAddress` and a `PcktBuf`.
 #include "./PayloadImpl.hpp"
 
 // Utility function `make_payload`.

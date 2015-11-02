@@ -62,7 +62,7 @@ namespace nl
             // TODO: remove
             ~ManagedRecvBuf() { ::nl::debugLo() << "~recvbuf"; }
 
-            auto recvLoop()
+            auto recv_step()
             {
                 // TODO: cv wait?
                 return try_recv_retry_for(5, 100ms);

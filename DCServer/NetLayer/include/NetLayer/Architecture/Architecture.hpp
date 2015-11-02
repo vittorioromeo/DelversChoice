@@ -3,12 +3,6 @@
 // Lock-based thread safe queue.
 #include "../Architecture/ThreadSafeQueue.hpp"
 
-// TODO:
-#include "../Payload/Payload.hpp"
-
-// TODO:
-#include "../Tunnel/Tunnel.hpp"
-
 // Abstraction over a packet buffer (queue).
 #include "../Architecture/ManagedPcktBuf.hpp"
 

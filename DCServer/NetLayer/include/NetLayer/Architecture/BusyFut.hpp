@@ -7,64 +7,50 @@ namespace nl
 {
     namespace Impl
     {
-        class BusyFut
+        template <typename TF>
+        auto make_async_and_launch(TF&& f)
+        {
+            return std::async(std::launch::async, FWD(f));
+        }
+
+        /// @brief Wrapper around an `std::future<void>` that runs a busy loop
+        /// until explicitly stopped by the user.
+        class busy_loop
         {
         private:
-            std::atomic<bool> wrapperAlive{true}; // construct flag first!
-            std::future<void> fut;
+            std::atomic<bool> _alive{true}; // construct flag first!
+            std::future<void> _future;
 
         public:
             template <typename TF>
-            BusyFut(TF&& mFn)
-                : fut{std::async(std::launch::async, [this, mFn]
+            busy_loop(TF&& f)
+                : _future{make_async_and_launch([this, f]
                       {
-                          while(wrapperAlive)
+                          while(_alive)
                           {
-                              // ::nl::debugLo() << "waiting\n";
-                              mFn();
+                              f();
                           }
-
-                          //      ::nl::debugLo() << (wrapperAlive ? "alive" :
-                          //      "dead!!");
                       })}
             {
             }
-            /*
-                    BusyFut(const BusyFut& mX) = delete;
-                    BusyFut(BusyFut&& mX) : wrapperAlive(true),
-               fut(std::move(mX.fut))
-                    {
-                       // std::cout << "move ctor\n";
-                        mX.wrapperAlive = false;
-                    }
-            */
-            /*    BusyFut& operator=(const BusyFut&) = delete;
-                BusyFut& operator=(BusyFut&& mX)
-                {
-                    mX.wrapperAlive = false;
-                    fut = std::move(mX.fut);
-                    return *this;
-                }*/
 
-            ~BusyFut()
+            busy_loop(const busy_loop&) = delete;
+            busy_loop& operator=(const busy_loop&) = delete;
+
+            busy_loop(busy_loop&&) = default;
+            busy_loop& operator=(busy_loop&&) = default;
+
+            ~busy_loop()
             {
-                // std::cout << "dtor\n";
-
-                if(fut.valid())
+                if(_future.valid())
                 {
-                    // std::cout << "dtor kill\n";
-                    wrapperAlive = false;
-                    fut.get();
+                    _alive = false;
+                    _future.get();
                 }
-
-                // block, so it sees wrapperAlive before it is
-                // ::nl::debugLo() << "beforeget";
-                // destroyed.
-                // ::nl::debugLo() << "aftgerget";
             }
 
-            void stop() { wrapperAlive = false; }
-            bool isBusy() const { return wrapperAlive; }
+            void stop() noexcept { _alive = false; }
+            bool busy() const noexcept { return _alive; }
         };
     }
 }

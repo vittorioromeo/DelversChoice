@@ -1,13 +1,7 @@
 #pragma once
 
 #include "../Common/Common.hpp"
-#include "../Pckt/Pckt.hpp"
-
-template <typename... Ts>
-inline auto& operator<<(std::ostream& o, const nl::Impl::Pckt<Ts...>& mX)
-{
-    return o << mX.fields;
-}
+#include "../Pckt/PcktImpl.hpp"
 
 template <typename... Ts>
 inline auto& operator<<(std::ostream& o, const std::tuple<Ts...>& mX)
@@ -21,3 +15,10 @@ inline auto& operator<<(std::ostream& o, const std::tuple<Ts...>& mX)
 
     return o;
 }
+
+template <typename... Ts>
+inline auto& operator<<(std::ostream& o, const nl::Impl::Pckt<Ts...>& mX)
+{
+    return o << mX.fields;
+}
+

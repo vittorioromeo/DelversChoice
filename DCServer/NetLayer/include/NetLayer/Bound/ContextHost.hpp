@@ -3,7 +3,7 @@
 #include <array>
 #include "../Common/Common.hpp"
 #include "../Architecture/Architecture.hpp"
-#include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
+//#include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
 #include "../Serialization/Serialization.hpp"
 
 namespace MPL = ::ecs::MPL;
@@ -16,14 +16,14 @@ namespace experiment
     private:
         using Config = TConfig;
         using MyDispatchTable = DispatchTable<Config>;
-        using Payload = nl::Impl::Payload;
-        using PayloadAddress = nl::Impl::PayloadAddress;
+        using Payload = nl::Payload;
+        using PAddress = nl::PAddress;
 
         MyDispatchTable dispatchTable;
         nl::ManagedHost managedHost;
 
         template <typename T, typename TX>
-        void send_with_header(const PayloadAddress& pa, TX&& x)
+        void send_with_header(const PAddress& pa, TX&& x)
         {
             constexpr auto id(Config::template getPcktBindID<T>());
             managedHost.send(pa, id, FWD(x));
@@ -37,7 +37,7 @@ namespace experiment
                     dispatchTable.process(sender, data);
                 });
 
-            managedHost.emplaceBusyFut([this, fnProcess]
+            managedHost.emplace_busy_loop([this, fnProcess]
                 {
                     managedHost.try_process(fnProcess);
                 });
@@ -49,13 +49,13 @@ namespace experiment
         }
 
         template <typename T, typename TX>
-        void send(const PayloadAddress& pa, TX&& x)
+        void send(const PAddress& pa, TX&& x)
         {
             send_with_header<T>(pa, FWD(x));
         }
 
         template <typename T, typename... Ts>
-        void make_and_send(const PayloadAddress& pa, Ts&&... xs)
+        void make_and_send(const PAddress& pa, Ts&&... xs)
         {
             send<T>(pa, nl::make_pckt<T>(FWD(xs)...));
         }

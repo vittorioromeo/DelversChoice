@@ -5,24 +5,19 @@
 
 namespace nl
 {
-    namespace Impl
+    // Combination of data, ip and port.
+    struct Payload
     {
-        // Combination of data, ip and port.
-        struct Payload
+        PAddress address;
+        PcktBuf data;
+
+        Payload() = default;
+        Payload(const PAddress& mAddress) noexcept : address{mAddress} {}
+
+        template <typename TData>
+        Payload(const PAddress& mAddress, TData&& mData)
+            : address{mAddress}, data(FWD(mData))
         {
-            PayloadAddress address;
-            PcktBuf data;
-
-            Payload() = default;
-            Payload(const PayloadAddress& mAddress) noexcept : address{mAddress}
-            {
-            }
-
-            template <typename TData>
-            Payload(const PayloadAddress& mAddress, TData&& mData)
-                : address{mAddress}, data(FWD(mData))
-            {
-            }
-        };
-    }
+        }
+    };
 }

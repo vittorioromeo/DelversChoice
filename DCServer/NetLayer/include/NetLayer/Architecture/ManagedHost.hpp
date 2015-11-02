@@ -11,38 +11,37 @@
 
 namespace nl
 {
-    // TODO: templatize with PayloadProvider/Sink ?
     template <typename TTunnel>
     class ManagedHostImpl
     {
     private:
         // This host's ip.
-        IpAddr ip;
+        IpAddr _ip;
 
         // This host's port.
-        Port port;
+        Port _port;
 
         // This host's socket.
-        TTunnel tunnel;
+        TTunnel _tunnel;
 
         // Local host -> send queue/buf -> internet
-        Impl::ManagedSendBuf<TTunnel> mpbSend{tunnel};
+        Impl::ManagedSendBuf<TTunnel> _mpb_send{_tunnel};
 
         // Internet -> recv queue/buf -> local host
-        Impl::ManagedRecvBuf<TTunnel> mpbRecv{tunnel};
+        Impl::ManagedRecvBuf<TTunnel> _mpb_recv{_tunnel};
 
         // TODO:
         // Threads:
-        std::vector<std::unique_ptr<Impl::BusyFut>> busyFutures;
+        std::vector<std::unique_ptr<Impl::busy_loop>> _busy_loops;
 
-        bool tryBindSocket()
+        bool try_bind_tunnel()
         {
             if(retry(5, [this]
                    {
-                       return tunnel.bind(port);
+                       return _tunnel.bind(_port);
                    }))
             {
-                ssvu::lo() << "Socket successfully bound to port " << port
+                ssvu::lo() << "Socket successfully bound to port " << _port
                            << "\n";
 
                 return true;
@@ -52,21 +51,24 @@ namespace nl
         }
 
     public:
-        ManagedHostImpl(Port mPort) : ip{IpAddr::getLocalAddress()}, port{mPort}
+        template <typename... TTunnelArgs>
+        ManagedHostImpl(Port port, TTunnelArgs&&... ts)
+            : _ip{IpAddr::getLocalAddress()}, _port{port}, _tunnel{FWD(ts)...}
         {
-            // busyFutures.reserve(100);
+            if(!try_bind_tunnel())
+            {
+                std::cout << "Could not bind socket/tunnel.\n";
+                std::terminate();
+            }
 
-            // TODO: static_if TTunnel...
-            tryBindSocket();
-
-            emplaceBusyFut([this]
+            emplace_busy_loop([this]
                 {
-                    mpbSend.sendLoop();
+                    _mpb_send.send_step();
                 });
 
-            emplaceBusyFut([this]
+            emplace_busy_loop([this]
                 {
-                    mpbRecv.recvLoop();
+                    _mpb_recv.recv_step();
                 });
         }
 
@@ -77,52 +79,51 @@ namespace nl
         }
 
         template <typename TF>
-        void emplaceBusyFut(TF&& fn)
+        auto& emplace_busy_loop(TF&& f)
         {
-            busyFutures.emplace_back(std::make_unique<Impl::BusyFut>(FWD(fn)));
+            _busy_loops.emplace_back(std::make_unique<Impl::busy_loop>(FWD(f)));
+
+            return _busy_loops.back();
         }
 
         bool isBusy() const noexcept
         {
-            for(const auto& bf : busyFutures)
-                if(bf->isBusy()) return true;
+            for(const auto& bf : _busy_loops)
+                if(bf->busy()) return true;
 
             return false;
         }
 
         void stop()
         {
-            for(auto& bf : busyFutures) bf->stop();
+            for(auto& bf : _busy_loops) bf->stop();
         }
 
-        bool send(Impl::Payload& mPayload)
+        bool send(Payload& p)
         {
             // TODO:
-            return mpbSend.try_enqueue_for(100ms, mPayload);
+            return _mpb_send.try_enqueue_for(100ms, p);
         }
 
         template <typename... Ts>
-        bool send(const Impl::PayloadAddress& mTarget, Ts&&... mXs)
+        bool send(const PAddress& pa, Ts&&... mXs)
         {
-            auto p(Impl::make_payload(mTarget, FWD(mXs)...));
+            auto p(make_payload(pa, FWD(mXs)...));
             return send(p);
         }
 
         template <typename TF>
         bool try_process(TF&& f)
         {
-            Impl::Payload p;
+            Payload p;
 
             // TODO:
-            auto ok(mpbRecv.try_dequeue_for(100ms, p));
+            auto ok(_mpb_recv.try_dequeue_for(100ms, p));
 
-            if(ok)
-            {
-                f(p.data, p.address);
-                return true;
-            }
+            if(!ok) return false;
 
-            return false;
+            f(p.data, p.address);
+            return true;
         }
     };
 

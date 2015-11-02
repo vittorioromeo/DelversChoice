@@ -3,13 +3,12 @@
 #include "../Common/Common.hpp"
 #include "../Architecture/ThreadSafeQueue.hpp"
 #include "../Payload/Payload.hpp"
-#include "../Tunnel/Tunnel.hpp"
 
 namespace nl
 {
     namespace Impl
     {
-        using PayloadTSQueue = ThreadSafeQueue<Payload>;
+        using payload_ts_queue = ThreadSafeQueue<Payload>;
     }
 
     namespace Impl
@@ -21,7 +20,7 @@ namespace nl
         {
         private:
             TTunnel& _tunnel;
-            PayloadTSQueue _tsq;
+            payload_ts_queue _tsq;
 
         protected:
             auto receive_payload(Payload& p)
@@ -34,16 +33,16 @@ namespace nl
         public:
             ManagedPcktBuf(TTunnel& t) : _tunnel{t} {}
 
-            template <typename TDuration, typename... TArgs>
-            bool try_enqueue_for(const TDuration& mDuration, TArgs&&... mArgs)
+            template <typename TDuration, typename... Ts>
+            bool try_enqueue_for(const TDuration& d, Ts&&... xs)
             {
-                return _tsq.try_enqueue_for(mDuration, FWD(mArgs)...);
+                return _tsq.try_enqueue_for(d, FWD(xs)...);
             }
 
             template <typename TDuration>
-            bool try_dequeue_for(const TDuration& mDuration, Payload& mOut)
+            bool try_dequeue_for(const TDuration& d, Payload& p)
             {
-                return _tsq.try_dequeue_for(mDuration, mOut);
+                return _tsq.try_dequeue_for(d, p);
             }
 
             auto& tunnel() noexcept { return _tunnel; }

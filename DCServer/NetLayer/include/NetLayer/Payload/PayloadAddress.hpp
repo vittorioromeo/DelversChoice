@@ -4,28 +4,24 @@
 
 namespace nl
 {
-    namespace Impl
+    struct PAddress
     {
-        struct PayloadAddress
+        IpAddr ip;
+        Port port;
+
+        PAddress() = default;
+        PAddress(const IpAddr& mIp, Port mPort) noexcept : ip{mIp}, port{mPort}
         {
-            IpAddr ip;
-            Port port;
+        }
 
-            PayloadAddress() = default;
-            PayloadAddress(const IpAddr& mIp, Port mPort) noexcept : ip{mIp},
-                                                                     port{mPort}
-            {
-            }
+        inline bool operator==(const PAddress& rhs) noexcept
+        {
+            return ip == rhs.ip && port == rhs.port;
+        }
 
-            inline bool operator==(const PayloadAddress& rhs) noexcept
-            {
-                return ip == rhs.ip && port == rhs.port;
-            }
-
-            inline bool operator!=(const PayloadAddress& rhs) noexcept
-            {
-                return !(*this == rhs);
-            }
-        };
-    }
+        inline bool operator!=(const PAddress& rhs) noexcept
+        {
+            return !(*this == rhs);
+        }
+    };
 }

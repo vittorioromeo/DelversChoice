@@ -17,15 +17,15 @@ namespace experiment
         using Config = TConfig;
         using IDType = typename Config::IDType;
         using PcktBuf = nl::PcktBuf;
-        using Payload = nl::Impl::Payload;
-        using PayloadAddress = nl::Impl::PayloadAddress;
+        using Payload = nl::Payload;
+        using PAddress = nl::PAddress;
 
         static constexpr auto pcktBindsCount = Config::pcktBindsCount;
 
-        using PcktFn = std::function<void(const PayloadAddress&, PcktBuf&)>;
+        using PcktFn = std::function<void(const PAddress&, PcktBuf&)>;
         std::array<PcktFn, pcktBindsCount> fncs;
 
-        void process_with_header(const PayloadAddress& sender, PcktBuf& p)
+        void process_with_header(const PAddress& sender, PcktBuf& p)
         {
             // Get ID (assumes id is still in buf)
             auto id(nl::make_deserialized<IDType>(p));
@@ -46,9 +46,8 @@ namespace experiment
             auto& fn(fncs[id]);
 
             // Assume id has already been taken from
-            fn = [id, fnToCall](const PayloadAddress& pt, PcktBuf& buf)
-            {
-                fnToCall(pt, nl::make_deserialized<T>(buf));
+            fn = [id, fnToCall](const PAddress& pt, PcktBuf& buf)
+            {                fnToCall(pt, nl::make_deserialized<T>(buf));
             };
         }
 
@@ -66,7 +65,7 @@ namespace experiment
                 });
         }
 
-        void process(const PayloadAddress& sender, PcktBuf& p)
+        void process(const PAddress& sender, PcktBuf& p)
         {
             process_with_header(sender, p);
         }

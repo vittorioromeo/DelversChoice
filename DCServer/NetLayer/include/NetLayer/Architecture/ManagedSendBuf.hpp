@@ -47,7 +47,7 @@ namespace nl
 
             ~ManagedSendBuf() { ::nl::debugLo() << "~sendbuf"; }
 
-            auto sendLoop()
+            auto send_step()
             {
                 auto toSend(this->try_dequeue_for(100ms, p));
 

@@ -37,14 +37,14 @@ namespace nl
             template <typename... TArgs>
             void enqueue(TArgs&&... mArgs)
             {
-                auto l(mkUniqueLock(mtx));
+                auto l(make_unique_lock(mtx));
                 enqueue_impl(FWD(mArgs)...);
             }
 
             template <typename TDuration, typename... TArgs>
             bool try_enqueue_for(const TDuration& mDuration, TArgs&&... mArgs)
             {
-                auto l(mkUniqueLock(mtx, std::defer_lock));
+                auto l(make_unique_lock(mtx, std::defer_lock));
 
                 if(l.try_lock_for(mDuration))
                 {
@@ -57,7 +57,7 @@ namespace nl
 
             T dequeue()
             {
-                auto l(mkUniqueLock(mtx));
+                auto l(make_unique_lock(mtx));
 
                 // Release the lock and wait until `data` is not empty.
                 cv.wait(l, [this]
@@ -71,7 +71,7 @@ namespace nl
             template <typename TDuration>
             bool try_dequeue_for(const TDuration& mDuration, T& mOut)
             {
-                auto l(mkUniqueLock(mtx));
+                auto l(make_unique_lock(mtx));
 
                 // Release the lock and wait until `data` is not empty.
                 if(cv.wait_for(l, mDuration, [this]
@@ -88,13 +88,13 @@ namespace nl
 
             auto size() const
             {
-                auto l(mkUniqueLock(mtx));
+                auto l(make_unique_lock(mtx));
                 return data.size();
             }
 
             auto empty() const
             {
-                auto l(mkUniqueLock(mtx));
+                auto l(make_unique_lock(mtx));
                 return data.empty();
             }
         };
