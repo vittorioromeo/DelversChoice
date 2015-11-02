@@ -70,7 +70,7 @@ int main()
         auto v = ssvu::getRndI(0, 1000);
         auto p = mkpckt((int)v);
 
-        dt.process(nl::Impl::PayloadAddress{}, p);
+        dt.process(nl::PAddress{}, p);
         TEST_ASSERT_OP(v, ==, outInt);
     }
 
@@ -79,7 +79,7 @@ int main()
         auto v = ssvu::getRndR(0.f, 1000.f);
         auto p = mkpckt((float)v);
 
-        dt.process(nl::Impl::PayloadAddress{}, p);
+        dt.process(nl::PAddress{}, p);
         TEST_ASSERT_OP(v, ==, outFloat);
     }
 
@@ -89,7 +89,7 @@ int main()
             ssvu::getRndR(0.f, 1000.f), std::vector<int>{1, 2, 3, 4, 5});
         auto p = mkpckt((TestPckt)v);
 
-        dt.process(nl::Impl::PayloadAddress{}, p);
+        dt.process(nl::PAddress{}, p);
         TEST_ASSERT_NS_OP(v, ==, outTestPckt);
     }
 

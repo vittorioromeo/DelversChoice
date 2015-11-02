@@ -44,7 +44,7 @@ void choiceServer()
             server.send(sender, "I got your message!"s);
         });
 
-    server.emplaceBusyFut([&server, &fnProcess]
+    server.emplace_busy_loop([&server, &fnProcess]
         {
             server.try_process(fnProcess);
         });
@@ -92,7 +92,7 @@ void choiceClient()
             ssvu::lo() << "Reply: " << str << "\n";
         });
 
-    client.emplaceBusyFut([&client, &fnProcess]
+    client.emplace_busy_loop([&client, &fnProcess]
         {
             client.try_process(fnProcess);
         });
@@ -105,7 +105,7 @@ void choiceClient()
 
 
 
-        nl::Impl::PayloadAddress myself(nl::IpAddr::getLocalAddress(), 27015);
+        nl::PAddress myself(nl::IpAddr::getLocalAddress(), 27015);
         client.send(myself, "hello!"s);
 
 
@@ -226,7 +226,7 @@ namespace example
     {
         MyContextHost h{27016};
 
-        nl::Impl::PayloadAddress serveraddr(
+        nl::PAddress serveraddr(
             nl::IpAddr::getLocalAddress(), 27015);
 
         h.on_d<RegistrationResponse>([&](const auto&, const auto& outcome)

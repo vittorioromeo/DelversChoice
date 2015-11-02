@@ -7,9 +7,9 @@ void manualtest()
     using namespace std;
     using namespace std::literals;
 
-    using Payload = nl::Impl::Payload;
+    using Payload = nl::Payload;
 
-    auto addr = nl::Impl::PayloadAddress{"127.0.0.1", 27015};
+    auto addr = nl::PAddress{"127.0.0.1", 27015};
     Payload p0{addr};
 
     TEST_ASSERT_OP(addr, ==, p0.address);
@@ -34,9 +34,9 @@ void mktest()
     using namespace std;
     using namespace std::literals;
 
-    using Payload = nl::Impl::Payload;
+    using Payload = nl::Payload;
 
-    auto addr = nl::Impl::PayloadAddress{"127.0.0.1", 27015};
+    auto addr = nl::PAddress{"127.0.0.1", 27015};
     auto p0 = nl::Impl::make_payload(addr, 10, 15.f, 'a');
 
     TEST_ASSERT_OP(addr, ==, p0.address);

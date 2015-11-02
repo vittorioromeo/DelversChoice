@@ -8,7 +8,7 @@ using namespace nl;
 
 void test_send()
 {
-    Impl::PayloadAddress a{IpAddr::getLocalAddress(), 10000};
+    PAddress a{IpAddr::getLocalAddress(), 10000};
     Impl::Tunnel::Fake t;
     Impl::ManagedSendBuf<Impl::Tunnel::Fake> b{t};
 
@@ -26,7 +26,7 @@ void test_send()
         b.try_enqueue_for(10ms, Impl::make_payload(a, i));
     }
 
-    while(b.sendLoop())
+    while(b.send_step())
     {
     }
 
