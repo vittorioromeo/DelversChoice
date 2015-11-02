@@ -23,7 +23,7 @@ void test_send()
     for(auto i = 0; i < 100; ++i)
     {
         orig_acc += i;
-        b.try_enqueue_for(10ms, Impl::make_payload(a, i));
+        b.try_enqueue_for(10ms, make_payload(a, i));
     }
 
     while(b.send_step())

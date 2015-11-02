@@ -37,7 +37,7 @@ void mktest()
     using Payload = nl::Payload;
 
     auto addr = nl::PAddress{"127.0.0.1", 27015};
-    auto p0 = nl::Impl::make_payload(addr, 10, 15.f, 'a');
+    auto p0 = nl::make_payload(addr, 10, 15.f, 'a');
 
     TEST_ASSERT_OP(addr, ==, p0.address);
 

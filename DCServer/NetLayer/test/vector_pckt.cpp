@@ -73,7 +73,7 @@ int main()
         for(auto i = 0; i < test_count; ++i)
         {
             auto lc = make_rnd_line_collection();
-            auto res = b.try_enqueue_for(100ms, nl::Impl::make_payload(a, lc));
+            auto res = b.try_enqueue_for(100ms, nl::make_payload(a, lc));
 
             TEST_ASSERT_OP(res, ==, true);
         }

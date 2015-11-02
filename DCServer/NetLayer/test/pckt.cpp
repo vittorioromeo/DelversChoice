@@ -65,7 +65,7 @@ int main()
         auto lr(nl::make_pckt<LoginResponse>(true));
         TEST_ASSERT_OP(lr.valid(), ==, true);
 
-        auto pl(nl::Impl::make_payload(nl::PAddress{"127.0.0.1", 27015}, lr));
+        auto pl(nl::make_payload(nl::PAddress{"127.0.0.1", 27015}, lr));
 
         LoginResponse t;
         pl.data >> t;
@@ -77,7 +77,7 @@ int main()
         auto lr(nl::make_pckt<LoginResponse>(true));
         TEST_ASSERT_OP(lr.valid(), ==, true);
 
-        auto pl(nl::Impl::make_payload(nl::PAddress{"127.0.0.1", 27015}, lr));
+        auto pl(nl::make_payload(nl::PAddress{"127.0.0.1", 27015}, lr));
 
         auto t(nl::make_deserialized<LoginResponse>(pl.data));
         TEST_ASSERT_OP(t.valid(), ==, true);
