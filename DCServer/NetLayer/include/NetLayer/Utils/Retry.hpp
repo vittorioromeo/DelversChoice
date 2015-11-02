@@ -5,31 +5,25 @@
 namespace nl
 {
     template <typename TFDuration, typename TF>
-    bool retry(std::size_t mTimes, TF&& mFn, TFDuration&& mFDuration)
+    auto retry(std::size_t times, TF&& f, TFDuration&& f_duration)
     {
-        for(auto i(0u); i < mTimes; ++i)
+        for(auto i(0u); i < times; ++i)
         {
-            if(mFn())
+            if(f())
             {
                 return true;
             }
 
-            std::this_thread::sleep_for(mFDuration(i, mTimes));
-
-            if(i > 4)
-            {
-                // ::nl::debugLo() << i << "th retry...\n";
-            }
+            std::this_thread::sleep_for(f_duration(i, times));
         }
 
-        // ::nl::debugLo() << "failed!...\n";
         return false;
     }
 
     template <typename TF>
-    bool retry(std::size_t mTimes, TF&& mFn)
+    auto retry(std::size_t times, TF&& f)
     {
-        return retry(mTimes, mFn, [](auto itr, auto)
+        return retry(times, f, [](auto itr, auto)
             {
                 return 100ms * itr;
             });

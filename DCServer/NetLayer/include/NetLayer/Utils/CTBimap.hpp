@@ -64,9 +64,11 @@ namespace nl
         template <typename TBimap, typename TKey>
         using LookupByKey =
             typename BMByKeyHelper<TKey, typename TBimap::PairList>::Type;
+
         template <typename TBimap, typename TValue>
         using LookupByValue =
             typename BMByValueHelper<TValue, typename TBimap::PairList>::Type;
+
         template <typename TBimap, typename TKey, typename TValue>
         using Add = typename TBimap::template Add<BMPair<TKey, TValue>>;
 
@@ -75,6 +77,7 @@ namespace nl
 
         SSVU_ASSERT_STATIC_NM(
             ssvu::isSame<LookupByKey<TestBimap, int>, const int>());
+
         SSVU_ASSERT_STATIC_NM(
             ssvu::isSame<LookupByValue<TestBimap, const int>, int>());
     }
