@@ -15,6 +15,10 @@ namespace nl
                 ScktUdp sckt;
 
             public:
+                UDPSckt() = default;
+                UDPSckt(const UDPSckt&) = default;
+                UDPSckt(UDPSckt&&) = default;
+
                 template <typename... Ts>
                 UDPSckt(Ts&&... xs)
                     : sckt{FWD(xs)...}

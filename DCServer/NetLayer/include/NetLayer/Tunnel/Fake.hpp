@@ -15,6 +15,8 @@ namespace nl
                 std::function<void(Payload&)> on_recv;
                 std::function<void(Payload&)> on_send;
 
+                bool bind(Port) { return true; }
+
                 auto receive_payload(Payload& p)
                 {
                     on_recv(p);
