@@ -15,9 +15,11 @@ namespace nl
                 ScktUdp sckt;
 
             public:
-                UDPSckt() = default;
-                UDPSckt(const UDPSckt&) = default;
+                UDPSckt(const UDPSckt&) = delete;
+                UDPSckt& operator=(const UDPSckt&) = delete;
+
                 UDPSckt(UDPSckt&&) = default;
+                UDPSckt& operator=(UDPSckt&&) = default;
 
                 template <typename... Ts>
                 UDPSckt(Ts&&... xs)

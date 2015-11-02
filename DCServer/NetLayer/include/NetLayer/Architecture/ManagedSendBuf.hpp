@@ -45,7 +45,7 @@ namespace nl
         public:
             using BaseType::BaseType;
 
-            ~ManagedSendBuf() { ::nl::debugLo() << "~sendbuf"; }
+            ~ManagedSendBuf() { ::nl::debugLo() << "~sendbuf\n"; }
 
             auto send_step()
             {

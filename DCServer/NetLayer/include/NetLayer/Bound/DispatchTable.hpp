@@ -47,7 +47,8 @@ namespace experiment
 
             // Assume id has already been taken from
             fn = [id, fnToCall](const PAddress& pt, PcktBuf& buf)
-            {                fnToCall(pt, nl::make_deserialized<T>(buf));
+            {
+                fnToCall(pt, nl::make_deserialized<T>(buf));
             };
         }
 

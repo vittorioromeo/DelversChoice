@@ -19,34 +19,27 @@ namespace experiment
         using Payload = nl::Payload;
         using PAddress = nl::PAddress;
 
-        MyDispatchTable dispatchTable;
-        nl::ManagedHost managedHost;
+        MyDispatchTable _dispatch_table;
+        nl::ManagedHost _host;
 
         template <typename T, typename TX>
         void send_with_header(const PAddress& pa, TX&& x)
         {
             constexpr auto id(Config::template getPcktBindID<T>());
-            managedHost.send(pa, id, FWD(x));
+            _host.send(pa, id, FWD(x));
         }
+
+        template <typename T>
+        void fn_proecss(nl::PcktBuf& data, const T& sender)
+        {
+            _dispatch_table.process(sender, data);
+        }
+
 
     public:
-        ContextHost(nl::Port port) : managedHost(port)
-        {
-            auto fnProcess([this](nl::PcktBuf& data, const auto& sender)
-                {
-                    dispatchTable.process(sender, data);
-                });
+        ContextHost(nl::Port port) : _host(port) {}
 
-            managedHost.emplace_busy_loop([this, fnProcess]
-                {
-                    managedHost.try_process(fnProcess);
-                });
-        }
-
-        void stop()
-        {
-            managedHost.stop();
-        }
+        void stop() { _host.stop(); }
 
         template <typename T, typename TX>
         void send(const PAddress& pa, TX&& x)
@@ -63,16 +56,24 @@ namespace experiment
         template <typename TPckt, typename TF>
         void on(TF&& fn)
         {
-            dispatchTable.template add<TPckt>(fn);
+            _dispatch_table.template add<TPckt>(fn);
         }
 
         template <typename TPckt, typename TF>
         void on_d(TF&& fn)
         {
-            dispatchTable.template addDestructured<TPckt>(fn);
+            _dispatch_table.template addDestructured<TPckt>(fn);
         }
 
-        bool busy() const noexcept { return managedHost.isBusy(); }
-        auto& host() noexcept { return managedHost; }
+        bool busy() const noexcept { return _host.busy(); }
+        auto& host() noexcept { return _host; }
+
+        bool try_dispatch_and_process()
+        {
+            return _host.try_process([this](auto&&... xs)
+                {
+                    this->fn_proecss(FWD(xs)...);
+                });
+        }
     };
 }

@@ -86,7 +86,7 @@ namespace nl
             return _busy_loops.back();
         }
 
-        bool isBusy() const noexcept
+        bool busy() const noexcept
         {
             for(const auto& bf : _busy_loops)
                 if(bf->busy()) return true;
@@ -112,18 +112,24 @@ namespace nl
             return send(p);
         }
 
-        template <typename TF>
-        bool try_process(TF&& f)
+        template <typename TF, typename TDuration>
+        bool try_process_for(TF&& f, const TDuration& d)
         {
             Payload p;
 
             // TODO:
-            auto ok(_mpb_recv.try_dequeue_for(100ms, p));
+            auto ok(_mpb_recv.try_dequeue_for(d, p));
 
             if(!ok) return false;
 
             f(p.data, p.address);
             return true;
+        }
+
+        template <typename TF>
+        bool try_process(TF&& f)
+        {
+            return try_process_for(f, 100ms);
         }
     };
 

@@ -60,7 +60,7 @@ namespace nl
             using BaseType::BaseType;
 
             // TODO: remove
-            ~ManagedRecvBuf() { ::nl::debugLo() << "~recvbuf"; }
+            ~ManagedRecvBuf() { ::nl::debugLo() << "~recvbuf\n"; }
 
             auto recv_step()
             {

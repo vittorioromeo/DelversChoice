@@ -14,14 +14,20 @@ namespace nl
         {
         }
 
-        inline bool operator==(const PAddress& rhs) noexcept
+        inline bool operator==(const PAddress& rhs) const noexcept
         {
             return ip == rhs.ip && port == rhs.port;
         }
 
-        inline bool operator!=(const PAddress& rhs) noexcept
+        inline bool operator!=(const PAddress& rhs) const noexcept
         {
             return !(*this == rhs);
+        }
+
+        inline bool operator<(const PAddress& rhs) const noexcept
+        {
+            if(ip == rhs.ip) return port < rhs.port;
+            return ip < rhs.ip;
         }
     };
 }

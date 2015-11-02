@@ -19,101 +19,6 @@ T getInput(const std::string& mTitle)
     return input;
 }
 
-
-void choiceServer()
-{
-    /*ssvu::lo() << "Insert port:\n";
-    auto port(getInput<nl::Port>("Port"));
-    nl::ManagedSocket server{port};*/
-
-    auto processedCount(0u);
-
-    nl::ManagedHost server{27015};
-
-    auto fnProcess([&processedCount, &server](auto& data, const auto& sender)
-        {
-            ++processedCount;
-
-            ssvu::lo() << "Received some data from " << sender << "!\n";
-
-            std::string str;
-            data >> str;
-
-            ssvu::lo() << "Data: " << str << "\n";
-
-            server.send(sender, "I got your message!"s);
-        });
-
-    server.emplace_busy_loop([&server, &fnProcess]
-        {
-            server.try_process(fnProcess);
-        });
-
-
-    // auto server(nl::mkManagedHost(27015, fnProcess));
-    // auto server(nl::makeManagedHost(27015, fnProcess));
-
-    int cycles{20};
-
-    while(server.isBusy())
-    {
-
-        if(getInput<int>("Exit? (1)")) break;
-
-        // ::nl::debugLo() << "bsy";
-        if(cycles-- <= 0)
-        {
-            // server.stop();
-        }
-
-        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        // ssvu::lo() << "...\n";
-
-        // if(processedCount > 0)
-        //    ssvu::lo() << "Processed packets: " << processedCount << "\n\n";
-    }
-
-    ::nl::debugLo() << "serverend\n";
-}
-
-void choiceClient()
-{
-    /*ssvu::lo() << "Insert port:\n";
-    auto port(getInput<nl::Port>("Port"));
-    nl::ManagedSocket client{port};*/
-
-    nl::ManagedHost client{27016};
-
-    auto fnProcess([](auto& data, const auto&)
-        {
-            std::string str;
-            data >> str;
-
-            ssvu::lo() << "Reply: " << str << "\n";
-        });
-
-    client.emplace_busy_loop([&client, &fnProcess]
-        {
-            client.try_process(fnProcess);
-        });
-
-
-    while(client.isBusy())
-    {
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-
-
-        nl::PAddress myself(nl::IpAddr::getLocalAddress(), 27015);
-        client.send(myself, "hello!"s);
-
-
-
-        // ssvu::lo() << "...\n";
-    }
-}
-
 namespace example
 {
     NL_DEFINE_PCKT(
@@ -125,6 +30,7 @@ namespace example
         LoginRequest, (((std::string), user), ((std::string), pass)));
 
     NL_DEFINE_PCKT_1(LoginResponse, ((bool), valid));
+    NL_DEFINE_PCKT_1(Message, ((std::string), msg));
 
     namespace nle = experiment;
 
@@ -132,7 +38,7 @@ namespace example
 
     using MyPcktBinds = nle::PcktBinds<nle::PcktBind<RegistrationRequest>,
         nle::PcktBind<LoginRequest>, nle::PcktBind<RegistrationResponse>,
-        nle::PcktBind<LoginResponse>>;
+        nle::PcktBind<LoginResponse>, nle::PcktBind<Message>>;
 
     using MyConfig = nle::Config<MySettings, MyPcktBinds>;
 
@@ -146,21 +52,59 @@ namespace example
 
     void startServer()
     {
-        std::vector<std::pair<std::string, std::string>> regs;
+        struct user_data
+        {
+            nl::PAddress _id;
+            std::string _user;
+            std::string _pass;
 
-        auto has_user([&](const auto& xuser)
+            user_data(const nl::PAddress& id, const std::string& user,
+                const std::string& pass)
+                : _id(id), _user(user), _pass(pass)
             {
-                return std::any_of(std::begin(regs), std::end(regs),
-                    [&](const auto& x)
-                    {
-                        return std::get<0>(x) == xuser;
-                    });
+            }
+        };
+
+        struct login_data
+        {
+            nl::PAddress _id;
+            int _life{100};
+
+            login_data(const nl::PAddress& id) : _id(id) {}
+        };
+
+        // int next_id = 0;
+        std::vector<user_data> registered_users;
+        std::vector<login_data> logged_in;
+
+        auto user_exists([&](const auto& xuser)
+            {
+                for(const auto& x : registered_users)
+                    if(x._user == xuser) return true;
+
+                return false;
             });
 
-        auto get_user([&](const auto& xuser)
+        auto get_user_by_username([&](const auto& xuser)
             {
-                for(const auto& p : regs)
-                    if(std::get<0>(p) == xuser) return p;
+                for(const auto& x : registered_users)
+                    if(x._user == xuser) return x;
+
+                SSVU_UNREACHABLE();
+            });
+
+        auto is_logged_in([&](const auto& id)
+            {
+                for(const auto& x : logged_in)
+                    if(x._id == id) return true;
+
+                return false;
+            });
+
+        auto get_logged_user_by_id([&](const auto& id) -> login_data&
+            {
+                for(auto& x : logged_in)
+                    if(x._id == id) return x;
 
                 SSVU_UNREACHABLE();
             });
@@ -173,10 +117,10 @@ namespace example
                 ssvu::lo() << "registration request from " << user
                            << ", pass: " << pass << "\n";
 
-                if(!has_user(user))
+                if(!user_exists(user))
                 {
                     ssvu::lo() << "Replying with OK\n";
-                    regs.emplace_back(user, pass);
+                    registered_users.emplace_back(sender, user, pass);
 
                     h.send<RegistrationResponse>(sender, true);
                 }
@@ -194,19 +138,27 @@ namespace example
                 ssvu::lo() << "login request from " << user
                            << ", pass: " << pass << "\n";
 
-                if(!has_user(user))
+                if(!user_exists(user))
                 {
                     ssvu::lo() << "No such user.\nReplying with NO\n";
                     return;
                 }
 
-                const auto& u(get_user(user));
+                const auto& u(get_user_by_username(user));
 
-                if(std::get<1>(u) == pass)
+                if(u._pass == pass)
                 {
-                    ssvu::lo() << "Replying with OK\n";
-
-                    h.send<LoginResponse>(sender, true);
+                    if(is_logged_in(sender))
+                    {
+                        ssvu::lo() << "Already logged in.\nReplying with NO\n";
+                        h.send<LoginResponse>(sender, false);
+                    }
+                    else
+                    {
+                        ssvu::lo() << "Replying with OK\n";
+                        logged_in.emplace_back(u._id);
+                        h.send<LoginResponse>(sender, true);
+                    }
                 }
                 else
                 {
@@ -216,8 +168,46 @@ namespace example
                 }
             });
 
+        h.on_d<Message>([&](const auto& sender, const auto& msg)
+            {
+                if(!is_logged_in(sender))
+                {
+                    ssvu::lo() << "Error: not logged in.\n";
+                    return;
+                }
+
+                get_logged_user_by_id(sender)._life = 100;
+
+                ssvu::lo() << "Message from " << sender << ":\n" << msg
+                           << "\n\n";
+            });
+
         while(h.busy())
         {
+            // Try to process all packets.
+            while(h.try_dispatch_and_process())
+            {
+                // std::cout << "p...\n";
+            }
+
+            //   std::cout << "NO MORE P...\n";
+
+            for(auto& x : logged_in)
+            {
+                --x._life;
+            }
+
+            ssvu::eraseRemoveIf(logged_in, [](const auto& x)
+                {
+                    if(x._life <= 0)
+                    {
+                        ssvu::lo() << "Client #" << x._id << " timed out.\n";
+                        return true;
+                    }
+
+                    return false;
+                });
+
             std::this_thread::sleep_for(100ms);
         }
     }
@@ -226,8 +216,7 @@ namespace example
     {
         MyContextHost h{27016};
 
-        nl::PAddress serveraddr(
-            nl::IpAddr::getLocalAddress(), 27015);
+        nl::PAddress serveraddr(nl::IpAddr::getLocalAddress(), 27015);
 
         h.on_d<RegistrationResponse>([&](const auto&, const auto& outcome)
             {
@@ -243,12 +232,20 @@ namespace example
 
         while(h.busy())
         {
-            std::this_thread::sleep_for(200ms);
+            // Try to process all packets.
+            while(h.try_dispatch_and_process())
+            {
+                // std::cout << "p...\n";
+            }
+
+            // std::cout << "NO MORE P...\n";
+
 
 
             ssvu::lo("Choose") << "\n"
                                << "0. Register\n"
                                << "1. Login\n"
+                               << "2. Send message\n"
                                << "_. Exit\n";
 
             auto choice(getInput<int>("Choice"));
@@ -274,11 +271,21 @@ namespace example
                         serveraddr, username, password);
                 }
             }
+            else if(choice == 2)
+            {
+                std::string m;
+                ssvu::lo() << "Insert message:\n";
+                std::cin >> m;
+
+                h.make_and_send<Message>(serveraddr, m);
+            }
             else
             {
                 h.stop();
                 break;
             }
+
+            std::this_thread::sleep_for(100ms);
         }
     }
 }

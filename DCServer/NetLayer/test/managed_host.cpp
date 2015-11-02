@@ -20,7 +20,7 @@ int main()
     Tunnel::Fake t;
     t.on_recv = [&](auto& p)
     {
-        if(!cp->isBusy()) return false;
+        if(!cp->busy()) return false;
 
         p = make_payload(some_address, 1234);
         return true;
@@ -28,7 +28,7 @@ int main()
 
     t.on_send = [&](auto& p)
     {
-        if(!cp->isBusy()) return false;
+        if(!cp->busy()) return false;
 
         TEST_ASSERT_OP(p.address, ==, some_sender_addr);
 
@@ -58,7 +58,7 @@ int main()
 
     int iters = 10;
 
-    while(client.isBusy())
+    while(client.busy())
     {
         auto p(make_payload(some_sender_addr, 4321));
         client.send(p);
