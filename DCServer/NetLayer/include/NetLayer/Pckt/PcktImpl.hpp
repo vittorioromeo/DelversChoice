@@ -16,7 +16,7 @@ namespace nl
         template <typename... TFields>
         struct Pckt : PcktBase
         {
-            using TplType = ssvu::Tpl<TFields...>;
+            using TplType = std::tuple<TFields...>;
             TplType fields;
 
             template <typename... Ts>
