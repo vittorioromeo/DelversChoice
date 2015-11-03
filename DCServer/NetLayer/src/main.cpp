@@ -430,14 +430,16 @@ namespace example
             }
         }
 
-        void decrease_life()
+        template <typename TF>
+        void decrease_life(TF&& f)
         {
             for(auto& c : _connections) c->decrease_life();
 
-            ssvu::eraseRemoveIf(_connections, [](const auto& x)
+            ssvu::eraseRemoveIf(_connections, [&](const auto& x)
                 {
                     if(x->dead())
                     {
+                        f(x->addr());
                         ssvu::lo() << "Client #" << x->id() << " timed out.\n";
                         return true;
                     }
@@ -633,7 +635,10 @@ namespace example
             }
 
             // Timeout.
-            s.decrease_life();
+            s.decrease_life([&](const auto& addr)
+                {
+                    h.make_and_send<to_c::TimedOut>(addr);
+                });
 
             std::this_thread::sleep_for(100ms);
         }
