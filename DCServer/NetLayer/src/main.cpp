@@ -19,9 +19,9 @@ auto getInput(const std::string& title)
 auto getInputLine(const std::string& title)
 {
     std::string input;
-    getline(std::cin, input);
+    std::getline(std::cin, input);
 
-    ssvu::lo(title) << input << "\n";
+    // ssvu::lo(title) << input << "\n";
     return input;
 }
 
@@ -77,6 +77,11 @@ namespace example
                              (int), id) // .
             );
 
+        NL_DEFINE_PCKT_1(Subscribe,     // .
+            (                           // .
+                             (int), id) // .
+            );
+
         NL_DEFINE_PCKT(SendMessage,                   // .
             (                                         // .
                            ((int), channel_id),       // .
@@ -110,6 +115,11 @@ namespace example
                              (std::vector<std::string>), messages) // .
             );
 
+        NL_DEFINE_PCKT_1(Channels,                                 // .
+            (                                                      // .
+                             (std::vector<std::string>), channels) // .
+            );
+
         NL_DEFINE_PCKT(Notify,                   // .
             (                                    // .
                            ((int), channel_id),  // .
@@ -127,6 +137,16 @@ namespace db_actions
 {
     using namespace example;
     using namespace example_ddl;
+
+    template <typename TF>
+    void for_channels(TF&& f)
+    {
+        auto result(
+            db()(select(all_of(tbl_channel)).from(tbl_channel).where(true)));
+
+        for(const auto& row : result) f(row);
+    }
+
 
     template <typename TF>
     bool user_by_id(int id, TF&& f)
@@ -180,9 +200,29 @@ namespace db_actions
         return true;
     }
 
+    template <typename TF>
+    bool channel_by_name(const std::string& name, TF&& f)
+    {
+        auto result(db()(select(all_of(tbl_channel))
+                             .from(tbl_channel)
+                             .where(tbl_channel.name == name)));
+
+        if(result.empty()) return false;
+
+        f(result.front());
+        return true;
+    }
+
     bool has_channel_by_id(int id)
     {
         return channel_by_id(id, [](const auto&)
+            {
+            });
+    }
+
+    bool has_channel_by_name(const std::string& name)
+    {
+        return channel_by_name(name, [](const auto&)
             {
             });
     }
@@ -246,22 +286,26 @@ namespace example
 
     using MySettings = nle::Settings<nl::UInt32>;
 
-    constexpr auto my_pckt_binds(nle::pckt_binds<to_s::Registration,
-        to_s::Login, to_s::CreateChannel, to_s::DeleteChannel,
-        to_s::SendMessage, to_s::GetMessages, to_s::ChannelList, to_s::Logout,
-        to_c::Outcome, to_c::Messages, to_c::Notify>());
+    constexpr auto my_pckt_binds(
+        nle::pckt_binds<to_s::Registration, to_s::Login, to_s::CreateChannel,
+            to_s::DeleteChannel, to_s::SendMessage, to_s::GetMessages,
+            to_s::ChannelList, to_s::Subscribe, to_s::Logout, to_c::Outcome,
+            to_c::Messages, to_c::Notify, to_c::Channels>());
 
     constexpr auto my_config(nle::make_config<MySettings>(my_pckt_binds));
 
     using MyConfig = decltype(my_config);
-
     using MyContextHost = nle::ContextHost<MyConfig>;
 }
 
 namespace example
 {
+    class server_state;
+
     class connection_state
     {
+        friend class server_state;
+
     private:
         static constexpr int max_life{100};
         nl::PAddress _addr;
@@ -291,8 +335,30 @@ namespace example
     private:
         std::vector<std::unique_ptr<connection_state>> _connections;
 
+        template <typename... Ts>
+        auto add_connection(Ts&&... xs)
+        {
+            _connections.emplace_back(
+                std::make_unique<connection_state>(FWD(xs)...));
+
+            return _connections.back().get();
+        }
+
     public:
         server_state() = default;
+
+        void logout(const nl::PAddress& x)
+        {
+            auto c = conn_by_addr(x);
+
+            if(c != nullptr)
+            {
+                ssvu::eraseRemoveIf(_connections, [&](const auto& y)
+                    {
+                        return y.get() == c;
+                    });
+            }
+        }
 
         connection_state* conn_by_addr(const nl::PAddress& x)
         {
@@ -310,11 +376,20 @@ namespace example
             return nullptr;
         }
 
-        template <typename... Ts>
-        void add_connection(Ts&&... xs)
+        void connect_or_reset(int id, const nl::PAddress& x)
         {
-            _connections.emplace_back(
-                std::make_unique<connection_state>(FWD(xs)...));
+            auto c = conn_by_addr(x);
+
+            if(c == nullptr)
+            {
+                auto cc = add_connection(x);
+                cc->_id = id;
+            }
+            else
+            {
+                c->reset_life();
+                c->_id = id;
+            }
         }
 
         void decrease_life()
@@ -344,24 +419,18 @@ namespace example
         server_state s;
         MyContextHost h{27015};
 
+        auto print_success([&](bool x, const auto& msg)
+            {
+                ssvu::lo() << (x ? "Failure: " : "Success: ") << msg;
+            });
+
         h.on_d<Registration>(
             [&](const auto& sender, const auto& user, const auto& pass)
             {
                 auto r = db_actions::create_user(user, pass);
 
-                std::cout << "R: " << r << "\n\n";
-
                 bool success = r > 0;
-
-                if(success)
-                {
-                    ssvu::lo() << "User " << user << " registered.\n";
-                }
-                else
-                {
-                    ssvu::lo() << "User " << user
-                               << " could not be registered.\n";
-                }
+                print_success(success, "user "s + user + " registration\n");
 
                 h.make_and_send<to_c::Outcome>(
                     sender, to_c::ot_registration, success);
@@ -371,60 +440,107 @@ namespace example
             [&](const auto& sender, const auto& user, const auto& pass)
             {
                 bool success = false;
+                int uid = 0;
 
-                db_actions::user_by_username(user, [&](const auto& x)
-                    {
-                        success = x.pwdHash == utils::hash_pwd(pass);
-                    });
-
-                if(!success)
+                if(db_actions::has_user_by_username(user))
                 {
-                    ssvu::lo() << "User " << user << " wrong login password.\n";
-                }
-                else
-                {
-                    auto c = s.conn_by_addr(sender);
+                    db_actions::user_by_username(user, [&](const auto& x)
+                        {
+                            success = x.pwdHash == utils::hash_pwd(pass);
+                            uid = x.id;
 
-                    if(c == nullptr)
-                    {
-                        s.add_connection(sender);
-                    }
-                    else
-                    {
-                        c->reset_life();
-                    }
-
-                    ssvu::lo() << "User " << user << " logged in.\n";
+                            if(success)
+                            {
+                                s.connect_or_reset(uid, sender);
+                            }
+                        });
                 }
 
+                print_success(success, "user "s + user + " logged in\n");
                 h.make_and_send<to_c::Outcome>(sender, success, to_c::ot_login);
-
             });
 
         h.on_d<CreateChannel>([&](const auto& sender, const auto& name)
             {
+                auto c = s.conn_by_addr(sender);
+                bool success = false;
+
+                if(c != nullptr)
+                {
+                    if(!db_actions::has_channel_by_name(name))
+                    {
+                        auto r = db_actions::create_channel(c->id(), name);
+                        success = r > 0;
+                    }
+                }
+
+                h.make_and_send<to_c::Outcome>(
+                    sender, success, to_c::ot_create_channel);
             });
 
+        /*
         h.on_d<DeleteChannel>([&](const auto& sender, const auto& id)
             {
             });
+        */
 
         h.on_d<SendMessage>([&](
             const auto& sender, const auto& channel_id, const auto& contents)
             {
+                auto c = s.conn_by_addr(sender);
+                // bool success = false;
+                if(c != nullptr)
+                {
+                    if(db_actions::has_channel_by_id(channel_id))
+                    {
+                        auto r = db_actions::create_message(
+                            c->id(), channel_id, contents);
+                    }
+                }
             });
 
+        /*
         h.on_d<GetMessages>(
             [&](const auto& sender, const auto& channel_id, const auto& count)
             {
             });
+        */
 
         h.on_d<Logout>([&](const auto& sender, auto)
             {
+                s.logout(sender);
             });
 
         h.on_d<ChannelList>([&](const auto& sender, auto)
             {
+                auto c = s.conn_by_addr(sender);
+                if(c != nullptr)
+                {
+                    std::vector<std::string> vec;
+                    db_actions::for_channels([&](const auto& row)
+                        {
+                            std::string id_str = std::to_string(row.id);
+                            std::string name_str = row.name;
+
+                            vec.emplace_back(id_str + ": " + name_str);
+                        });
+
+                    h.make_and_send<to_c::Channels>(sender, vec);
+                }
+            });
+
+        h.on_d<Subscribe>([&](const auto& sender, const auto& channel_id)
+            {
+                auto c = s.conn_by_addr(sender);
+                if(c != nullptr)
+                {
+                    if(db_actions::has_channel_by_id(channel_id))
+                    {
+                        // TODO: check duplicate subscriptions
+                        auto r = db_actions::add_user_to_channel(
+                            c->id(), channel_id);
+                    }
+                }
             });
 
         while(h.busy())
@@ -492,14 +608,20 @@ namespace example
 
             });
 
+        h.on_d<Channels>([&](const auto&, const auto& vec)
+            {
+                for(const auto& s : vec) std::cout << s << "\n";
+                std::cout << "\n";
+
+                s.s = cs::logged;
+            });
+
         while(h.busy())
         {
             // Try to process all packets.
             while(h.try_dispatch_and_process())
             {
             }
-
-            // std::cout << "NO MORE P...\n";
 
             if(s.s == cs::awaiting_login_response)
             {
@@ -557,15 +679,16 @@ namespace example
             {
                 ssvu::lo("Choose") << "\n"
                                    << "0. Create channel\n"
-                                   << "1. Subscribe to channel\n"
-                                   << "2. Send broadcast\n"
+                                   << "1. Get channel list\n"
+                                   << "2. Subscribe to channel\n"
+                                   << "3. Send broadcast\n"
                                    << "_. Logout\n";
 
                 auto choice(getInput<int>("Choice"));
 
                 if(choice == 0)
                 {
-                    auto name = getInputLine("Channel name:");
+                    auto name = getInput<std::string>("Channel name:");
                     h.make_and_send<to_s::CreateChannel>(serveraddr, name);
                     s.s = cs::awaiting_create_channel_response;
                 }
@@ -576,6 +699,11 @@ namespace example
                 }
                 else if(choice == 2)
                 {
+                    auto ch_id(getInput<int>("Channel ID"));
+                }
+                else if(choice == 3)
+                {
+                    auto ch_id(getInput<int>("Channel ID"));
                 }
                 else
                 {
