@@ -41,6 +41,10 @@ namespace experiment
 
         void stop() { _host.stop(); }
 
+        // TODO: try_send_for
+        // TODO: try_make_and_send_for
+        // TODO: try_send
+        // TODO: try_make_and_send
         template <typename T, typename TX>
         bool send(const PAddress& pa, TX&& x)
         {
