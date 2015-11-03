@@ -11,7 +11,9 @@ namespace nl
 
     namespace Impl
     {
-        struct PcktBase { };
+        struct PcktBase
+        {
+        };
 
         template <typename... TFields>
         struct Pckt : PcktBase
@@ -57,6 +59,4 @@ namespace nl
             return !(a == b);
         }
     }
-
-   // using Impl::Pckt;
 }

@@ -22,9 +22,8 @@ int main()
     namespace nle = experiment;
 
     using MySettings = nle::Settings<nl::UInt32>;
-    using MyPcktBinds = nle::PcktBinds<nle::PcktBind<int>, nle::PcktBind<float>,
-        nle::PcktBind<TestPckt>>;
-    using MyConfig = nle::Config<MySettings, MyPcktBinds>;
+    constexpr auto my_binds = nle::pckt_binds<int, float, TestPckt>();
+    using MyConfig = decltype(nle::make_config<MySettings>(my_binds));
 
     using MyDispatchTable = nle::DispatchTable<MyConfig>;
 

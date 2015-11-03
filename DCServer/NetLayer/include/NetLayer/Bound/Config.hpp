@@ -8,13 +8,12 @@ namespace MPL = ::ecs::MPL;
 
 namespace experiment
 {
-    template <typename TSettings, typename TPcktBinds>
+    template <typename TSettings, typename TBindList>
     struct Config
     {
         using IDType = typename TSettings::IDType;
         using Settings = TSettings;
-        using PcktBinds = TPcktBinds;
-        using BindsTypes = PcktBindsTypes<PcktBinds>;
+        using PcktBinds = TBindList;
 
         // static_assert validity of settings
         // static_assert validity of packet binds
@@ -24,16 +23,19 @@ namespace experiment
         template <typename T>
         static constexpr auto hasPcktBindFor() noexcept
         {
-            return MPL::Contains<T, BindsTypes>{};
+            return MPL::Contains<T, PcktBinds>{};
         }
 
         template <typename T>
         static constexpr auto getPcktBindID() noexcept
         {
-            return static_cast<IDType>(MPL::IndexOf<T, BindsTypes>{});
+            return static_cast<IDType>(MPL::IndexOf<T, PcktBinds>{});
         }
-
-        template <typename T>
-        using PcktTypes = MPL::TypeList<int, float, char>; // TODO
     };
+
+    template<typename TSettings, typename TBindList>
+    constexpr auto make_config(TBindList)
+    {
+        return Config<TSettings, TBindList>{};
+    }
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vrm/pp.hpp>
+
 #define NL_DEFINE_PCKT_PROXY(mI, mName)                                     \
     inline const auto& mName() const { return std::get<mI>(this->fields); } \
     inline auto& mName() { return std::get<mI>(this->fields); }

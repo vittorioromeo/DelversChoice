@@ -42,6 +42,10 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 SSVCMake_linkSFML()
 vrm_cmake_link_pthread()
+
+    target_link_libraries(${PROJECT_NAME} sqlpp-mysql)
+    target_link_libraries(${PROJECT_NAME} mysqlclient)
+
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/_RELEASE/)
 
 # TODO: simplify through vrm_cmake

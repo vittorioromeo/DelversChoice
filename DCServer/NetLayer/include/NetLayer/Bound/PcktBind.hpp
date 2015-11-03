@@ -7,18 +7,25 @@ namespace MPL = ::ecs::MPL;
 
 namespace experiment
 {
-    template <typename TType>
-    struct PcktBind
+    namespace impl
     {
-        using Type = TType;
-    };
+        template <typename T>
+        struct pckt_bind_type
+        {
+            using type = T;
+        };
 
-    template <typename T>
-    using PcktBindType = typename T::Type;
+        template <typename T>
+        constexpr auto pckt_bind()
+        {
+            return impl::pckt_bind_type<T>{};
+        }
+    }
 
     template <typename... Ts>
-    using PcktBinds = MPL::TypeList<Ts...>;
-
-    template <typename TList>
-    using PcktBindsTypes = MPL::Map<PcktBindType, TList>;
+    constexpr auto pckt_binds()
+    {
+        return MPL::TypeList<typename decltype(
+            impl::pckt_bind<Ts>())::type...>{};
+    }
 }

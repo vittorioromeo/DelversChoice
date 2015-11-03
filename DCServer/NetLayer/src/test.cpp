@@ -1,3 +1,5 @@
+#ifdef OLD_TEST
+
 #include "../include/NetLayer/NetLayer.hpp"
 // #include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
 
@@ -36,11 +38,12 @@ namespace example
 
     using MySettings = nle::Settings<nl::UInt32>;
 
-    using MyPcktBinds = nle::PcktBinds<nle::PcktBind<RegistrationRequest>,
-        nle::PcktBind<LoginRequest>, nle::PcktBind<RegistrationResponse>,
-        nle::PcktBind<LoginResponse>, nle::PcktBind<Message>>;
+    constexpr auto my_pckt_binds(nle::pckt_binds<RegistrationRequest, LoginRequest,
+                                 RegistrationResponse, LoginResponse, Message>());
 
-    using MyConfig = nle::Config<MySettings, MyPcktBinds>;
+    constexpr auto my_config(nle::make_config<MySettings>(my_pckt_binds));
+
+    using MyConfig = decltype(my_config);
 
     using MyContextHost = nle::ContextHost<MyConfig>;
 
@@ -290,7 +293,7 @@ namespace example
     }
 }
 
-int main()
+int main_TODO()
 {
     ssvu::lo("Choose") << "\n"
                        << "0. Server\n"
@@ -318,3 +321,5 @@ int main()
     ::nl::debugLo() << "return0 ";
     return 0;
 }
+
+#endif
