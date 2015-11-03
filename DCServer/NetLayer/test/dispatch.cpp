@@ -2,13 +2,13 @@
 #include "./utils/test_utils.hpp"
 #include <string>
 
-struct TestPckt : nl::Impl::Pckt<int,  // 0
+struct TestPckt : nl::impl::Pckt<int,  // 0
                       std::string,     // 1
                       float,           // 2
                       std::vector<int> // 3
                       >
 {
-    using BaseType = nl::Impl::Pckt<int, std::string, float, std::vector<int>>;
+    using BaseType = nl::impl::Pckt<int, std::string, float, std::vector<int>>;
     using BaseType::BaseType;
 
     NL_DEFINE_PCKT_PROXY(0, requestID);

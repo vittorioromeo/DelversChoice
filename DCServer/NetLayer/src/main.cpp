@@ -21,7 +21,7 @@ auto getInputLine(const std::string& title)
     std::string input;
     std::getline(std::cin, input);
 
-    // ssvu::lo(title) << input << "\n";
+    ssvu::lo(title) << input << "\n";
     return input;
 }
 
@@ -477,7 +477,7 @@ namespace example
                     print_success(success, "user "s + user + " registration\n");
                 }
 
-                h.make_and_send<to_c::Outcome>(
+                h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, to_c::ot_registration, success);
             });
 
@@ -502,7 +502,8 @@ namespace example
                 }
 
                 print_success(success, "user "s + user + " logged in\n");
-                h.make_and_send<to_c::Outcome>(sender, success, to_c::ot_login);
+                h.try_make_and_send_pckt<to_c::Outcome>(
+                    sender, success, to_c::ot_login);
             });
 
         h.on_d<CreateChannel>([&](const auto& sender, const auto& name)
@@ -519,7 +520,7 @@ namespace example
                     }
                 }
 
-                h.make_and_send<to_c::Outcome>(
+                h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, success, to_c::ot_create_channel);
             });
 
@@ -550,7 +551,7 @@ namespace example
                     }
                 }
 
-                h.make_and_send<to_c::Outcome>(
+                h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, success, to_c::ot_create_message);
 
                 if(success && id > 0)
@@ -570,7 +571,7 @@ namespace example
                             os << "New message in channel " << channel_id
                                << ": " << msg << "\n";
 
-                            h.make_and_send<to_c::Notify>(
+                            h.try_make_and_send_pckt<to_c::Notify>(
                                 s.conn_by_id(uid)->addr(), channel_id,
                                 os.str());
                         });
@@ -595,15 +596,15 @@ namespace example
                 if(c != nullptr)
                 {
                     std::vector<std::string> vec;
-                    db_actions::for_channels([&](const auto& row)
+                    db_actions::for_channels([&](const auto& r)
                         {
-                            std::string id_str = std::to_string(row.id);
-                            std::string name_str = row.name;
+                            std::string id_str = std::to_string(r.id);
+                            std::string name_str = r.name;
 
                             vec.emplace_back(id_str + ": " + name_str);
                         });
 
-                    h.make_and_send<to_c::Channels>(sender, vec);
+                    h.try_make_and_send_pckt<to_c::Channels>(sender, vec);
                 }
             });
 
@@ -623,7 +624,7 @@ namespace example
                     }
                 }
 
-                h.make_and_send<to_c::Outcome>(
+                h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, success, to_c::ot_subscribe);
             });
 
@@ -637,7 +638,7 @@ namespace example
             // Timeout.
             s.decrease_life([&](const auto& addr)
                 {
-                    h.make_and_send<to_c::TimedOut>(addr);
+                    h.try_make_and_send_pckt<to_c::TimedOut>(addr);
                 });
 
             std::this_thread::sleep_for(100ms);
@@ -769,14 +770,14 @@ namespace example
 
                     if(choice == 0)
                     {
-                        h.make_and_send<to_s::Registration>(
+                        h.try_make_and_send_pckt<to_s::Registration>(
                             serveraddr, username, password);
 
                         s.s = cs::awaiting_registration_response;
                     }
                     else if(choice == 1)
                     {
-                        h.make_and_send<to_s::Login>(
+                        h.try_make_and_send_pckt<to_s::Login>(
                             serveraddr, username, password);
 
                         s.s = cs::awaiting_login_response;
@@ -802,30 +803,33 @@ namespace example
                 if(choice == 0)
                 {
                     auto name = getInput<std::string>("Channel name:");
-                    h.make_and_send<to_s::CreateChannel>(serveraddr, name);
+                    h.try_make_and_send_pckt<to_s::CreateChannel>(
+                        serveraddr, name);
                     s.s = cs::awaiting_create_channel_response;
                 }
                 else if(choice == 1)
                 {
-                    h.make_and_send<to_s::ChannelList>(serveraddr);
+                    h.try_make_and_send_pckt<to_s::ChannelList>(serveraddr);
                     s.s = cs::awaiting_channel_list;
                 }
                 else if(choice == 2)
                 {
                     auto ch_id(getInput<int>("Channel ID"));
-                    h.make_and_send<to_s::Subscribe>(serveraddr, ch_id);
+                    h.try_make_and_send_pckt<to_s::Subscribe>(
+                        serveraddr, ch_id);
                     s.s = cs::awaiting_subscribe_response;
                 }
                 else if(choice == 3)
                 {
                     auto ch_id(getInput<int>("Channel ID"));
                     auto msg = getInput<std::string>("Message:");
-                    h.make_and_send<to_s::SendMessage>(serveraddr, ch_id, msg);
+                    h.try_make_and_send_pckt<to_s::SendMessage>(
+                        serveraddr, ch_id, msg);
                     s.s = cs::awaiting_create_message_response;
                 }
                 else
                 {
-                    h.make_and_send<to_s::Logout>(serveraddr);
+                    h.try_make_and_send_pckt<to_s::Logout>(serveraddr);
                     s.s = cs::unlogged;
                 }
             }

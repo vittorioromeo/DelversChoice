@@ -14,18 +14,18 @@ int main()
 
     NL_DEFINE_PCKT_1(LoginResponse, ((bool), valid));
 
-    static_assert(std::is_base_of<nl::Impl::Pckt<std::string, std::string>,
+    static_assert(std::is_base_of<nl::impl::Pckt<std::string, std::string>,
                       RegistrationRequest>{},
         "");
 
     static_assert(
-        std::is_base_of<nl::Impl::Pckt<bool>, RegistrationResponse>{}, "");
+        std::is_base_of<nl::impl::Pckt<bool>, RegistrationResponse>{}, "");
 
-    static_assert(std::is_base_of<nl::Impl::Pckt<std::string, std::string>,
+    static_assert(std::is_base_of<nl::impl::Pckt<std::string, std::string>,
                       LoginRequest>{},
         "");
 
-    static_assert(std::is_base_of<nl::Impl::Pckt<bool>, LoginResponse>{}, "");
+    static_assert(std::is_base_of<nl::impl::Pckt<bool>, LoginResponse>{}, "");
 
     {
         LoginResponse lr{nl::init_fields{}, false};

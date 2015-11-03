@@ -5,7 +5,7 @@
 using namespace std;
 using namespace std::literals;
 using namespace nl;
-using namespace nl::Impl;
+
 
 int main()
 {
@@ -15,9 +15,9 @@ int main()
     PAddress some_address(nl::IpAddr::getLocalAddress(), 27015);
     PAddress some_sender_addr(nl::IpAddr::getLocalAddress(), 17015);
 
-    ManagedHostImpl<Tunnel::Fake>* cp;
+    ManagedHostImpl<nl::impl::Tunnel::Fake>* cp;
 
-    Tunnel::Fake t;
+    nl::impl::Tunnel::Fake t;
     t.on_recv = [&](auto& p)
     {
         if(!cp->busy()) return false;
@@ -39,7 +39,7 @@ int main()
         return true;
     };
 
-    ManagedHostImpl<Tunnel::Fake> client{27016, t};
+    ManagedHostImpl<nl::impl::Tunnel::Fake> client{27016, t};
     cp = &client;
 
     auto fnProcess([&](auto& data, const PAddress& a)
@@ -61,7 +61,7 @@ int main()
     while(client.busy())
     {
         auto p(make_payload(some_sender_addr, 4321));
-        client.send(p);
+        client.try_send_payload(p);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         --iters;

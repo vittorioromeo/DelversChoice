@@ -5,7 +5,7 @@
 
 namespace nl
 {
-    namespace Impl
+    namespace impl
     {
         // TODO
         namespace Tunnel

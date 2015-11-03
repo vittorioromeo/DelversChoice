@@ -6,23 +6,24 @@
 int main()
 {
     using namespace nl;
-    using namespace nl::Impl;
+
 
     NL_DEFINE_PCKT(Point, (((int), x), ((int), y)));
 
-    static_assert(std::is_base_of<Pckt<int, int>, Point>{}, "");
+    static_assert(std::is_base_of<nl::impl::Pckt<int, int>, Point>{}, "");
 
 
     NL_DEFINE_PCKT(Line, (((Point), a), ((Point), b)));
 
-    static_assert(std::is_base_of<Pckt<Point, Point>, Line>{}, "");
+    static_assert(std::is_base_of<nl::impl::Pckt<Point, Point>, Line>{}, "");
 
 
 
     NL_DEFINE_PCKT_1(LineCollection, ((std::vector<Line>), lines));
 
     static_assert(
-        std::is_base_of<Pckt<std::vector<Line>>, LineCollection>{}, "");
+        std::is_base_of<nl::impl::Pckt<std::vector<Line>>, LineCollection>{},
+        "");
 
 
     auto make_rnd_point = []
@@ -59,7 +60,7 @@ int main()
         PAddress a{IpAddr::getLocalAddress(), 10000};
 
         std::vector<LineCollection> fake_data;
-        Impl::Tunnel::Fake t;
+        impl::Tunnel::Fake t;
         t.on_send = [&](auto&& x)
         {
             fake_data.emplace_back(
@@ -68,7 +69,7 @@ int main()
             std::cout << "test\n";
         };
 
-        Impl::ManagedSendBuf<Impl::Tunnel::Fake> b{t};
+        impl::ManagedSendBuf<impl::Tunnel::Fake> b{t};
 
         for(auto i = 0; i < test_count; ++i)
         {

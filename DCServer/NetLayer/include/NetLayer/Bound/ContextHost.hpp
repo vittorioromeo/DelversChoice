@@ -22,15 +22,22 @@ namespace experiment
         MyDispatchTable _dispatch_table;
         nl::ManagedHost _host;
 
-        template <typename T, typename TX>
-        bool send_with_header(const PAddress& pa, TX&& x)
+        template <typename T, typename TDuration, typename TPckt>
+        auto try_send_pckt_with_header_for(
+            const PAddress& pa, const TDuration& d, TPckt&& pckt)
         {
             constexpr auto id(Config::template getPcktBindID<T>());
-            return _host.send(pa, id, FWD(x));
+            return _host.try_make_and_send_payload_for(pa, d, id, FWD(pckt));
+        }
+
+        template <typename T, typename TPckt>
+        auto try_send_pckt_with_header(const PAddress& pa, TPckt&& pckt)
+        {
+            return try_send_pckt_with_header_for<T>(pa, 100ms, FWD(pckt));
         }
 
         template <typename T>
-        void fn_proecss(nl::PcktBuf& data, const T& sender)
+        void fn_process(nl::PcktBuf& data, const T& sender)
         {
             _dispatch_table.process(sender, data);
         }
@@ -41,21 +48,31 @@ namespace experiment
 
         void stop() { _host.stop(); }
 
-        // TODO: try_send_for
-        // TODO: try_make_and_send_for
-        // TODO: try_send
-        // TODO: try_make_and_send
-        template <typename T, typename TX>
-        bool send(const PAddress& pa, TX&& x)
+        template <typename T, typename TDuration>
+        auto try_send_pckt_for(const PAddress& pa, const TDuration& d, T&& pckt)
         {
-            return send_with_header<T>(pa, FWD(x));
+            return try_send_pckt_with_header_for<T>(pa, d, FWD(pckt));
+        }
+
+        template <typename T>
+        auto try_send_pckt(const PAddress& pa, T&& pckt)
+        {
+            return try_send_pckt_with_header<T>(pa, FWD(pckt));
+        }
+
+        template <typename T, typename TDuration, typename... Ts>
+        auto try_make_and_send_pckt_for(
+            const PAddress& pa, const TDuration& d, Ts&&... xs)
+        {
+            return try_send_pckt_for<T>(pa, d, nl::make_pckt<T>(FWD(xs)...));
         }
 
         template <typename T, typename... Ts>
-        bool make_and_send(const PAddress& pa, Ts&&... xs)
+        auto try_make_and_send_pckt(const PAddress& pa, Ts&&... xs)
         {
-            return send<T>(pa, nl::make_pckt<T>(FWD(xs)...));
+            return try_send_pckt<T>(pa, nl::make_pckt<T>(FWD(xs)...));
         }
+
 
         template <typename TPckt, typename TF>
         void on(TF&& fn)
@@ -72,12 +89,18 @@ namespace experiment
         bool busy() const noexcept { return _host.busy(); }
         auto& host() noexcept { return _host; }
 
-        bool try_dispatch_and_process()
+        template <typename TDuration>
+        auto try_dispatch_and_process_for(const TDuration& d)
         {
-            return _host.try_process([this](auto&&... xs)
+            return _host.try_process_for(d, [this](auto&&... xs)
                 {
-                    this->fn_proecss(FWD(xs)...);
+                    this->fn_process(FWD(xs)...);
                 });
+        }
+
+        auto try_dispatch_and_process()
+        {
+            return try_dispatch_and_process_for(100ms);
         }
     };
 }

@@ -29,7 +29,7 @@
     VRM_PP_FOREACH(NL_IMPL_DEFINE_PCKT_BODY_LIST_FOR_IMPL, ~, __VA_ARGS__)
 
 #define NL_IMPL_PCKT_BASETYPE(mName, mFieldTpls)        \
-    ::nl::Impl::Pckt<NL_IMPL_DEFINE_PCKT_TEMPLATE_LIST( \
+    ::nl::impl::Pckt<NL_IMPL_DEFINE_PCKT_TEMPLATE_LIST( \
         VRM_PP_TPL_EXPLODE(mFieldTpls))>
 
 #define NL_IMPL_DEFINE_PCKT(mName, mFieldTpls)                        \
@@ -44,9 +44,9 @@
 
 
 #define NL_IMPL_PCKT_BASETYPE_1(mName, mTpl) \
-    ::nl::Impl::Pckt<VRM_PP_TPL_ELEM(VRM_PP_TPL_ELEM(mTpl, 0), 0)>
+    ::nl::impl::Pckt<VRM_PP_TPL_ELEM(VRM_PP_TPL_ELEM(mTpl, 0), 0)>
 
-#define NL_IMPL_PCKT_BASETYPE_0(mName) ::nl::Impl::Pckt<char>
+#define NL_IMPL_PCKT_BASETYPE_0(mName) ::nl::impl::Pckt<char>
 
 #define NL_DEFINE_PCKT_1(mName, mTpl)                          \
     struct mName : NL_IMPL_PCKT_BASETYPE_1(mName, mTpl)        \

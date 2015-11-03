@@ -10,13 +10,13 @@ namespace nl
     void serialize(PcktBuf& p, Ts&&... xs)
     {
         ssvu::forArgs(
-                [&p](auto&& x)
-                {
-                    p << FWD(x);
-                },
-                FWD(xs)...);
+            [&p](auto&& x)
+            {
+                p << FWD(x);
+            },
+            FWD(xs)...);
 
-      //  ::serialize(p, FWD(xs)...);
+        //  ::serialize(p, FWD(xs)...);
     }
 
 

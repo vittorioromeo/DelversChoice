@@ -5,7 +5,7 @@
 
 namespace nl
 {
-    namespace Impl
+    namespace impl
     {
         template <typename TF>
         auto make_async_and_launch(TF&& f)

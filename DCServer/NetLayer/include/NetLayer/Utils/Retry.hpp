@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../Common/Common.hpp"
+#include <cstddef>
+#include <chrono>
 
 namespace nl
 {

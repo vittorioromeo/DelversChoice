@@ -8,7 +8,7 @@ int main()
     using namespace std;
     using namespace std::literals;
 
-    nl::Impl::ThreadSafeQueue<int> tsq;
+    nl::impl::ThreadSafeQueue<int> tsq;
     std::vector<std::future<void>> futs;
 
 

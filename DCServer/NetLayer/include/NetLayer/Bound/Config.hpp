@@ -33,7 +33,7 @@ namespace experiment
         }
     };
 
-    template<typename TSettings, typename TBindList>
+    template <typename TSettings, typename TBindList>
     constexpr auto make_config(TBindList)
     {
         return Config<TSettings, TBindList>{};

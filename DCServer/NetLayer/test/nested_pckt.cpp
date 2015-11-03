@@ -5,18 +5,16 @@
 int main()
 {
     using namespace nl;
-    using namespace nl::Impl;
-
-    NL_DEFINE_PCKT(
-        Point, (((int), x), ((int), y)));
-
-    static_assert(std::is_base_of<Pckt<int, int>, Point>{}, "");
 
 
-    NL_DEFINE_PCKT(
-        Line, (((Point), a), ((Point), b)));
+    NL_DEFINE_PCKT(Point, (((int), x), ((int), y)));
 
-    static_assert(std::is_base_of<Pckt<Point, Point>, Line>{}, "");
+    static_assert(std::is_base_of<nl::impl::Pckt<int, int>, Point>{}, "");
+
+
+    NL_DEFINE_PCKT(Line, (((Point), a), ((Point), b)));
+
+    static_assert(std::is_base_of<nl::impl::Pckt<Point, Point>, Line>{}, "");
 
 
     {

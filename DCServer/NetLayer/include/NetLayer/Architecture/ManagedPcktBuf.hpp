@@ -6,12 +6,12 @@
 
 namespace nl
 {
-    namespace Impl
+    namespace impl
     {
         using payload_ts_queue = ThreadSafeQueue<Payload>;
     }
 
-    namespace Impl
+    namespace impl
     {
         // Class that represents a packet buffer and a thread safe queue.
         // Can be used to receive and send queued packets.

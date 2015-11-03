@@ -8,7 +8,7 @@
 
 namespace nl
 {
-    namespace Impl
+    namespace impl
     {
         template <typename TTunnel>
         class ManagedRecvBuf : public ManagedPcktBuf<TTunnel>

@@ -7,7 +7,7 @@
 
 namespace nl
 {
-    namespace Impl
+    namespace impl
     {
         template <typename T>
         class ThreadSafeQueue

@@ -9,7 +9,7 @@ namespace nl
     {
     };
 
-    namespace Impl
+    namespace impl
     {
         struct PcktBase
         {

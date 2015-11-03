@@ -38,8 +38,8 @@ namespace example
 
     using MySettings = nle::Settings<nl::UInt32>;
 
-    constexpr auto my_pckt_binds(nle::pckt_binds<RegistrationRequest, LoginRequest,
-                                 RegistrationResponse, LoginResponse, Message>());
+    constexpr auto my_pckt_binds(nle::pckt_binds<RegistrationRequest,
+        LoginRequest, RegistrationResponse, LoginResponse, Message>());
 
     constexpr auto my_config(nle::make_config<MySettings>(my_pckt_binds));
 

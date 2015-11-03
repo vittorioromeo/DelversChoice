@@ -17,8 +17,7 @@ inline auto& operator<<(std::ostream& o, const std::tuple<Ts...>& mX)
 }
 
 template <typename... Ts>
-inline auto& operator<<(std::ostream& o, const nl::Impl::Pckt<Ts...>& mX)
+inline auto& operator<<(std::ostream& o, const nl::impl::Pckt<Ts...>& mX)
 {
     return o << mX.fields;
 }
-

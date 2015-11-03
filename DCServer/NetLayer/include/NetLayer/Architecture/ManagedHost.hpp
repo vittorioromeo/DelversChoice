@@ -25,14 +25,14 @@ namespace nl
         TTunnel _tunnel;
 
         // Local host -> send queue/buf -> internet
-        Impl::ManagedSendBuf<TTunnel> _mpb_send{_tunnel};
+        impl::ManagedSendBuf<TTunnel> _mpb_send{_tunnel};
 
         // Internet -> recv queue/buf -> local host
-        Impl::ManagedRecvBuf<TTunnel> _mpb_recv{_tunnel};
+        impl::ManagedRecvBuf<TTunnel> _mpb_recv{_tunnel};
 
         // TODO:
         // Threads:
-        std::vector<std::unique_ptr<Impl::busy_loop>> _busy_loops;
+        std::vector<std::unique_ptr<impl::busy_loop>> _busy_loops;
 
         bool try_bind_tunnel()
         {
@@ -81,7 +81,7 @@ namespace nl
         template <typename TF>
         auto& emplace_busy_loop(TF&& f)
         {
-            _busy_loops.emplace_back(std::make_unique<Impl::busy_loop>(FWD(f)));
+            _busy_loops.emplace_back(std::make_unique<impl::busy_loop>(FWD(f)));
 
             return _busy_loops.back();
         }
@@ -99,21 +99,33 @@ namespace nl
             for(auto& bf : _busy_loops) bf->stop();
         }
 
-        bool send(Payload& p)
+        template <typename TDuration>
+        auto try_send_payload_for(Payload& p, const TDuration& d)
         {
-            // TODO:
-            return _mpb_send.try_enqueue_for(100ms, p);
+            return _mpb_send.try_enqueue_for(d, p);
+        }
+
+        auto try_send_payload(Payload& p)
+        {
+            return try_send_payload_for(p, 100ms);
+        }
+
+        template <typename TDuration, typename... Ts>
+        auto try_make_and_send_payload_for(
+            const PAddress& pa, const TDuration& d, Ts&&... xs)
+        {
+            auto p(make_payload(pa, FWD(xs)...));
+            return try_send_payload_for(p, d);
         }
 
         template <typename... Ts>
-        bool send(const PAddress& pa, Ts&&... mXs)
+        auto try_make_and_send_payload(const PAddress& pa, Ts&&... xs)
         {
-            auto p(make_payload(pa, FWD(mXs)...));
-            return send(p);
+            return try_make_and_send_payload_for(pa, 100ms, FWD(xs)...);
         }
 
         template <typename TF, typename TDuration>
-        bool try_process_for(TF&& f, const TDuration& d)
+        bool try_process_for(const TDuration& d, TF&& f)
         {
             Payload p;
 
@@ -129,9 +141,9 @@ namespace nl
         template <typename TF>
         bool try_process(TF&& f)
         {
-            return try_process_for(f, 100ms);
+            return try_process_for(100ms, f);
         }
     };
 
-    using ManagedHost = ManagedHostImpl<Impl::Tunnel::UDPSckt>;
+    using ManagedHost = ManagedHostImpl<impl::Tunnel::UDPSckt>;
 }
