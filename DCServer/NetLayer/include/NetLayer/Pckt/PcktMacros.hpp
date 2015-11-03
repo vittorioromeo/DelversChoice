@@ -46,10 +46,20 @@
 #define NL_IMPL_PCKT_BASETYPE_1(mName, mTpl) \
     ::nl::Impl::Pckt<VRM_PP_TPL_ELEM(VRM_PP_TPL_ELEM(mTpl, 0), 0)>
 
+#define NL_IMPL_PCKT_BASETYPE_0(mName) ::nl::Impl::Pckt<char>
+
 #define NL_DEFINE_PCKT_1(mName, mTpl)                          \
     struct mName : NL_IMPL_PCKT_BASETYPE_1(mName, mTpl)        \
     {                                                          \
         using BaseType = NL_IMPL_PCKT_BASETYPE_1(mName, mTpl); \
         using BaseType::BaseType;                              \
         NL_IMPL_DEFINE_PCKT_BODY_LIST_FOR_IMPL(0, ~, mTpl)     \
+    }
+
+
+#define NL_DEFINE_PCKT_0(mName)                          \
+    struct mName : NL_IMPL_PCKT_BASETYPE_0(mName)        \
+    {                                                    \
+        using BaseType = NL_IMPL_PCKT_BASETYPE_0(mName); \
+        using BaseType::BaseType;                        \
     }

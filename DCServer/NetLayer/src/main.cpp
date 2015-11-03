@@ -42,7 +42,7 @@ void initialize_db_connection()
     auto config = std::make_shared<mysql::connection_config>();
 
     config->host = "127.0.0.1";
-    config->user = "userx";
+    config->user = "root";
     config->password = "root";
     config->port = 3306;
     config->database = "db_netlayer_example";
@@ -88,14 +88,21 @@ namespace example
                            ((int), channel_id), // .
                            ((int), count))      // .
             );
+
+        NL_DEFINE_PCKT_0(ChannelList);
+        NL_DEFINE_PCKT_0(Logout);
     }
 
     namespace to_c
     {
-        NL_DEFINE_PCKT(Outcome,                  // .
-            (                                    // .
-                           ((bool), valid),      // .
-                           ((std::string), msg)) // .
+        constexpr int ot_login = 0;
+        constexpr int ot_registration = 1;
+        constexpr int ot_create_channel = 2;
+
+        NL_DEFINE_PCKT(Outcome,             // .
+            (                               // .
+                           ((bool), valid), // .
+                           ((int), type))   // .
             );
 
         NL_DEFINE_PCKT_1(Messages,                                 // .
@@ -232,17 +239,6 @@ namespace db_actions
     }
 }
 
-int main()
-{
-    initialize_db_connection();
-
-    // auto x =
-    // db_actions::registration(example::to_s::Registration{nl::init_fields{},
-    // "ciao", "Mondo"});
-    // std::cout << x <<"\n";
-
-    return 0;
-}
 
 namespace example
 {
@@ -250,10 +246,10 @@ namespace example
 
     using MySettings = nle::Settings<nl::UInt32>;
 
-    constexpr auto my_pckt_binds(
-        nle::pckt_binds<to_s::Registration, to_s::Login, to_s::CreateChannel,
-            to_s::DeleteChannel, to_s::SendMessage, to_s::GetMessages,
-            to_c::Outcome, to_c::Messages, to_c::Notify>());
+    constexpr auto my_pckt_binds(nle::pckt_binds<to_s::Registration,
+        to_s::Login, to_s::CreateChannel, to_s::DeleteChannel,
+        to_s::SendMessage, to_s::GetMessages, to_s::ChannelList, to_s::Logout,
+        to_c::Outcome, to_c::Messages, to_c::Notify>());
 
     constexpr auto my_config(nle::make_config<MySettings>(my_pckt_binds));
 
@@ -314,6 +310,13 @@ namespace example
             return nullptr;
         }
 
+        template <typename... Ts>
+        void add_connection(Ts&&... xs)
+        {
+            _connections.emplace_back(
+                std::make_unique<connection_state>(FWD(xs)...));
+        }
+
         void decrease_life()
         {
             for(auto& c : _connections) c->decrease_life();
@@ -322,7 +325,7 @@ namespace example
                 {
                     if(x->dead())
                     {
-                        ssvu::lo() << "Client #" << x._id << " timed out.\n";
+                        ssvu::lo() << "Client #" << x->id() << " timed out.\n";
                         return true;
                     }
 
@@ -344,11 +347,58 @@ namespace example
         h.on_d<Registration>(
             [&](const auto& sender, const auto& user, const auto& pass)
             {
+                auto r = db_actions::create_user(user, pass);
+
+                std::cout << "R: " << r << "\n\n";
+
+                bool success = r > 0;
+
+                if(success)
+                {
+                    ssvu::lo() << "User " << user << " registered.\n";
+                }
+                else
+                {
+                    ssvu::lo() << "User " << user
+                               << " could not be registered.\n";
+                }
+
+                h.make_and_send<to_c::Outcome>(
+                    sender, to_c::ot_registration, success);
             });
 
         h.on_d<Login>(
             [&](const auto& sender, const auto& user, const auto& pass)
             {
+                bool success = false;
+
+                db_actions::user_by_username(user, [&](const auto& x)
+                    {
+                        success = x.pwdHash == utils::hash_pwd(pass);
+                    });
+
+                if(!success)
+                {
+                    ssvu::lo() << "User " << user << " wrong login password.\n";
+                }
+                else
+                {
+                    auto c = s.conn_by_addr(sender);
+
+                    if(c == nullptr)
+                    {
+                        s.add_connection(sender);
+                    }
+                    else
+                    {
+                        c->reset_life();
+                    }
+
+                    ssvu::lo() << "User " << user << " logged in.\n";
+                }
+
+                h.make_and_send<to_c::Outcome>(sender, success, to_c::ot_login);
+
             });
 
         h.on_d<CreateChannel>([&](const auto& sender, const auto& name)
@@ -366,6 +416,14 @@ namespace example
 
         h.on_d<GetMessages>(
             [&](const auto& sender, const auto& channel_id, const auto& count)
+            {
+            });
+
+        h.on_d<Logout>([&](const auto& sender, auto)
+            {
+            });
+
+        h.on_d<ChannelList>([&](const auto& sender, auto)
             {
             });
 
@@ -408,11 +466,20 @@ namespace example
 
         nl::PAddress serveraddr(nl::IpAddr::getLocalAddress(), 27015);
 
-        h.on_d<Outcome>([&](const auto&, const auto& valid, const auto& msg)
+        h.on_d<Outcome>([&](const auto&, const auto& valid, const auto& otv)
             {
-                ssvu::lo() << "Received registration response, outcome:\n"
-                           << (valid ? "VALID" : "INVALID")
-                           << "\nMessage: " << msg << "\n\n";
+                switch(otv)
+                {
+                    case to_c::ot_registration: // .
+                        s.s = cs::unlogged;
+                        break;
+                    case to_c::ot_create_channel: // .
+                        s.s = cs::logged;
+                        break;
+                    case to_c::ot_login: // .
+                        s.s = valid ? cs::logged : cs::unlogged;
+                        break;
+                }
             });
 
         h.on_d<Messages>([&](const auto&, const auto& messages)
@@ -522,8 +589,10 @@ namespace example
     }
 }
 
-int main_xd()
+int main()
 {
+    initialize_db_connection();
+
     ssvu::lo("Choose") << "\n"
                        << "0. Server\n"
                        << "1. Client\n"
