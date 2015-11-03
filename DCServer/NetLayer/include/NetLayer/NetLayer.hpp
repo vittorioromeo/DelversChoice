@@ -52,3 +52,5 @@
 // * Why C++, why C++14
 // * User freedom
 // * dependencies: ssvu, vrm_pp, vrm_core? ecs?
+// * polling mode
+// * non-polling mode

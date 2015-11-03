@@ -103,6 +103,8 @@ namespace example
         constexpr int ot_login = 0;
         constexpr int ot_registration = 1;
         constexpr int ot_create_channel = 2;
+        constexpr int ot_create_message = 3;
+        constexpr int ot_subscribe = 4;
 
         NL_DEFINE_PCKT(Outcome,             // .
             (                               // .
@@ -125,6 +127,8 @@ namespace example
                            ((int), channel_id),  // .
                            ((std::string), msg)) // .
             );
+
+        NL_DEFINE_PCKT_0(TimedOut);
     }
 }
 
@@ -147,6 +151,18 @@ namespace db_actions
         for(const auto& row : result) f(row);
     }
 
+    template <typename TF>
+    bool message_by_id(int id, TF&& f)
+    {
+        auto result(db()(select(all_of(tbl_message))
+                             .from(tbl_message)
+                             .where(tbl_message.id == id)));
+
+        if(result.empty()) return false;
+
+        f(result.front());
+        return true;
+    }
 
     template <typename TF>
     bool user_by_id(int id, TF&& f)
@@ -248,8 +264,8 @@ namespace db_actions
 
     auto add_user_to_channel(int user_id, int channel_id)
     {
-        assert(has_channel_by_id(user_id));
-        assert(has_user_by_id(channel_id));
+        assert(has_channel_by_id(channel_id));
+        assert(has_user_by_id(user_id));
 
         return db()(insert_into(tbl_user_channel)
                         .set(tbl_user_channel.idUser = user_id,
@@ -258,8 +274,8 @@ namespace db_actions
 
     auto remove_user_from_channel(int user_id, int channel_id)
     {
-        assert(has_channel_by_id(user_id));
-        assert(has_user_by_id(channel_id));
+        assert(has_channel_by_id(channel_id));
+        assert(has_user_by_id(user_id));
 
         return db()(remove_from(tbl_user_channel)
                         .where(tbl_user_channel.idUser == user_id &&
@@ -269,13 +285,35 @@ namespace db_actions
     auto create_message(
         int user_id, int channel_id, const std::string& contents)
     {
-        assert(has_channel_by_id(user_id));
-        assert(has_user_by_id(channel_id));
+        assert(has_channel_by_id(channel_id));
+        assert(has_user_by_id(user_id));
 
         return db()(insert_into(tbl_message)
                         .set(tbl_message.idUser = user_id,
                             tbl_message.idChannel = channel_id,
                             tbl_message.contents = contents));
+    }
+
+    auto is_user_in_channel(int user_id, int channel_id)
+    {
+        auto result(db()(select(all_of(tbl_user_channel))
+                             .from(tbl_user_channel)
+                             .where(tbl_user_channel.idUser == user_id &&
+                                    tbl_user_channel.idChannel == channel_id)));
+
+        return !result.empty();
+    }
+
+    template <typename TF>
+    void for_users_subscribed_to(int channel_id, TF&& f)
+    {
+        if(!has_channel_by_id(channel_id)) return;
+
+        auto result(db()(select(all_of(tbl_user_channel))
+                             .from(tbl_user_channel)
+                             .where(tbl_user_channel.idChannel == channel_id)));
+
+        for(const auto& row : result) f(row.idUser);
     }
 }
 
@@ -290,7 +328,7 @@ namespace example
         nle::pckt_binds<to_s::Registration, to_s::Login, to_s::CreateChannel,
             to_s::DeleteChannel, to_s::SendMessage, to_s::GetMessages,
             to_s::ChannelList, to_s::Subscribe, to_s::Logout, to_c::Outcome,
-            to_c::Messages, to_c::Notify, to_c::Channels>());
+            to_c::Messages, to_c::Notify, to_c::Channels, to_c::TimedOut>());
 
     constexpr auto my_config(nle::make_config<MySettings>(my_pckt_binds));
 
@@ -421,16 +459,21 @@ namespace example
 
         auto print_success([&](bool x, const auto& msg)
             {
-                ssvu::lo() << (x ? "Failure: " : "Success: ") << msg;
+                ssvu::lo() << (x ? "Success: "s : "Failure: "s) << msg;
             });
 
         h.on_d<Registration>(
             [&](const auto& sender, const auto& user, const auto& pass)
             {
-                auto r = db_actions::create_user(user, pass);
+                bool success = false;
 
-                bool success = r > 0;
-                print_success(success, "user "s + user + " registration\n");
+                if(!db_actions::has_user_by_username(user))
+                {
+                    auto r = db_actions::create_user(user, pass);
+
+                    success = r > 0;
+                    print_success(success, "user "s + user + " registration\n");
+                }
 
                 h.make_and_send<to_c::Outcome>(
                     sender, to_c::ot_registration, success);
@@ -488,14 +531,47 @@ namespace example
             const auto& sender, const auto& channel_id, const auto& contents)
             {
                 auto c = s.conn_by_addr(sender);
-                // bool success = false;
+                bool success = false;
+                int id = 0;
                 if(c != nullptr)
                 {
                     if(db_actions::has_channel_by_id(channel_id))
                     {
-                        auto r = db_actions::create_message(
-                            c->id(), channel_id, contents);
+                        if(db_actions::is_user_in_channel(c->id(), channel_id))
+                        {
+                            auto r = db_actions::create_message(
+                                c->id(), channel_id, contents);
+
+                            success = r > 0;
+                            id = r;
+                        }
                     }
+                }
+
+                h.make_and_send<to_c::Outcome>(
+                    sender, success, to_c::ot_create_message);
+
+                if(success && id > 0)
+                {
+                    db_actions::for_users_subscribed_to(channel_id,
+                        [&](const auto& uid)
+                        {
+                            auto msg_id = id;
+                            std::string msg;
+
+                            db_actions::message_by_id(msg_id, [&](const auto& m)
+                                {
+                                    msg = m.contents;
+                                });
+
+                            std::ostringstream os;
+                            os << "New message in channel " << channel_id
+                               << ": " << msg << "\n";
+
+                            h.make_and_send<to_c::Notify>(
+                                s.conn_by_id(uid)->addr(), channel_id,
+                                os.str());
+                        });
                 }
             });
 
@@ -532,6 +608,7 @@ namespace example
         h.on_d<Subscribe>([&](const auto& sender, const auto& channel_id)
             {
                 auto c = s.conn_by_addr(sender);
+                bool success = false;
                 if(c != nullptr)
                 {
                     if(db_actions::has_channel_by_id(channel_id))
@@ -539,8 +616,13 @@ namespace example
                         // TODO: check duplicate subscriptions
                         auto r = db_actions::add_user_to_channel(
                             c->id(), channel_id);
+
+                        success = r > 0;
                     }
                 }
+
+                h.make_and_send<to_c::Outcome>(
+                    sender, success, to_c::ot_subscribe);
             });
 
         while(h.busy())
@@ -566,6 +648,8 @@ namespace example
         awaiting_login_response,
         awaiting_create_channel_response,
         awaiting_registration_response,
+        awaiting_create_message_response,
+        awaiting_subscribe_response,
     };
 
     struct client_state
@@ -590,6 +674,8 @@ namespace example
                         s.s = cs::unlogged;
                         break;
                     case to_c::ot_create_channel: // .
+                    case to_c::ot_create_message: // .
+                    case to_c::ot_subscribe:      // .
                         s.s = cs::logged;
                         break;
                     case to_c::ot_login: // .
@@ -598,19 +684,33 @@ namespace example
                 }
             });
 
+        /*
         h.on_d<Messages>([&](const auto&, const auto& messages)
             {
 
             });
+            */
+
+        h.on_d<TimedOut>([&](const auto&, const auto&)
+            {
+                s.s = cs::unlogged;
+                std::cout << "Force-disconnected.\n";
+            });
 
         h.on_d<Notify>([&](const auto&, const auto& channel_id, const auto& msg)
             {
+                (void)channel_id;
 
+                std::cout << "Notification:\n" << msg << "\n";
             });
 
         h.on_d<Channels>([&](const auto&, const auto& vec)
             {
-                for(const auto& s : vec) std::cout << s << "\n";
+                for(const auto& sx : vec)
+                {
+                    std::cout << sx << "\n";
+                }
+
                 std::cout << "\n";
 
                 s.s = cs::logged;
@@ -634,6 +734,14 @@ namespace example
             else if(s.s == cs::awaiting_registration_response)
             {
                 ssvu::lo() << "Awaiting registration response...\n";
+            }
+            else if(s.s == cs::awaiting_subscribe_response)
+            {
+                ssvu::lo() << "Awaiting subscribe response...\n";
+            }
+            else if(s.s == cs::awaiting_create_message_response)
+            {
+                ssvu::lo() << "Awaiting create message response...\n";
             }
             else if(s.s == cs::unlogged)
             {
@@ -700,17 +808,22 @@ namespace example
                 else if(choice == 2)
                 {
                     auto ch_id(getInput<int>("Channel ID"));
+                    h.make_and_send<to_s::Subscribe>(serveraddr, ch_id);
+                    s.s = cs::awaiting_subscribe_response;
                 }
                 else if(choice == 3)
                 {
                     auto ch_id(getInput<int>("Channel ID"));
+                    auto msg = getInput<std::string>("Message:");
+                    h.make_and_send<to_s::SendMessage>(serveraddr, ch_id, msg);
+                    s.s = cs::awaiting_create_message_response;
                 }
                 else
                 {
                     h.make_and_send<to_s::Logout>(serveraddr);
+                    s.s = cs::unlogged;
                 }
             }
-
 
             std::this_thread::sleep_for(100ms);
         }
@@ -730,20 +843,16 @@ int main()
 
     if(choice == 0)
     {
-        // choiceServer();
         example::startServer();
-        ::nl::debugLo() << "end choiceserver";
     }
     else if(choice == 1)
     {
         example::startClient();
-        // choiceClient();
     }
     else
     {
         std::terminate();
     }
 
-    ::nl::debugLo() << "return0 ";
     return 0;
 }
