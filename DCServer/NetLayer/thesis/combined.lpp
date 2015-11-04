@@ -1,0 +1,126 @@
+\documentclass[12pt]{report}
+\usepackage{verbatim}
+\usepackage{fullpage}
+\usepackage{etoolbox}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{pdftexcmds}
+\usepackage{minted}
+
+%!group(cpp)(\begin{minted}[mathescape, linenos, numbersep=5pt, gobble=2, frame=lines, framesep=2mm, fontsize=\footnotesize]{cpp})(\end{minted})
+%!group(php)(\begin{minted}[mathescape, linenos, numbersep=5pt, gobble=2, frame=lines, framesep=2mm, fontsize=\footnotesize]{php})(\end{minted})
+%!group(sql)(\begin{minted}[mathescape, linenos, numbersep=5pt, gobble=2, frame=lines, framesep=2mm, fontsize=\footnotesize]{sql})(\end{minted})
+%!group(bash)(\begin{minted}[mathescape, linenos, numbersep=5pt, gobble=2, frame=lines, framesep=2mm, fontsize=\footnotesize]{bash})(\end{minted})
+%!group(json)(\begin{minted}[mathescape, linenos, numbersep=5pt, gobble=2, frame=lines, framesep=2mm, fontsize=\footnotesize]{json})(\end{minted})
+
+\graphicspath{ {res/} }
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\renewcommand\emph{\textbf}
+\renewcommand{\baselinestretch}{1.1}
+
+\newcommand{\printSQLtest}[1]
+{
+    \inputminted[linenos, breaklines, breakbytoken, tabsize=4, fontsize=\footnotesize]{mysql}{#1}
+}
+
+\newcommand{\printPHPImpl}[1]
+{
+    \inputminted[linenos, breaklines, breakbytoken, tabsize=4, fontsize=\footnotesize]{php}{#1}
+}
+
+\newcommand{\printPHP}[1]
+{
+    \printPHP{../www/php/#1}
+}
+
+\newcommand{\printSQLTablepage}[2]
+{    
+    \subsection{#2}
+    \subsubsection{Code}
+    \printSQLtest{../sql/parts/#1}
+    \subsubsection{Explanation}
+}
+
+\begin{document}
+
+
+
+\begin{titlepage}
+
+    \center
+
+    \textsc{\LARGE Universita' degli Studi di Messina}\\[0.1cm]
+    \textsc{\Large Dipartimento di Matematica e Informatica}\\[0.5cm]
+    \textsc{\Large Programming II project}\\[0.5cm]
+
+    \HRule \\[0.4cm]
+    { \huge \bfseries NetLayer}\\[0.1cm]
+
+    {\large 11 June 2015}
+    \HRule \\[1.5cm]
+
+    \begin{minipage}{0.4\textwidth}
+    \begin{flushleft} \large
+    \emph{Authors:}\\
+    Vittorio \textsc{Romeo}
+    \end{flushleft}
+    \end{minipage}
+    ~
+    \begin{minipage}{0.4\textwidth}
+    \begin{flushright} \large
+    \emph{Professors:} \\
+    Massimo \textsc{Vilari}
+
+
+    \end{flushright}
+    \end{minipage}\\[4cm]
+
+    \vfill
+
+
+    \begin{minipage}{\linewidth}
+        \centering
+        \begin{minipage}{0.35\linewidth}
+            \begin{figure}[H]
+                \center
+                \includegraphics[width=2cm, height=2cm]{logovee}
+
+                \url{http://vittorioromeo.info}
+            \end{figure}
+        \end{minipage}
+        \hspace{0.27\linewidth}
+        \begin{minipage}{0.35\linewidth}
+            \begin{figure}[H]
+                \center
+                \includegraphics[width=2cm, height=2cm]{logounime}
+
+                \url{http://unime.it}
+            \end{figure}
+        \end{minipage}
+    \end{minipage}\\[3cm]
+\end{titlepage}
+
+
+
+\pagenumbering{gobble}
+\newcommand{\atoc}[1]{\addtocontents{toc}{#1\par}}
+\renewcommand{\thesection}{\arabic{section}.}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+
+
+
+\end{document}
+
+
+

@@ -14,6 +14,13 @@ doc/xml
 *.5e4d6ab
 *.mk
 *.project
+*.pygstyle
+*.pygtex
+*.toc
+*.aux
+*.out
+*.pyg
+*.log
 
 #################
 ## Eclipse
