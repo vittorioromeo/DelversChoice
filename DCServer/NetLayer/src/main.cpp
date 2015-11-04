@@ -21,7 +21,7 @@ auto getInputLine(const std::string& title)
     std::string input;
     std::getline(std::cin, input);
 
-    ssvu::lo(title) << input << "\n";
+    // ssvu::lo(title) << input << "\n";
     return input;
 }
 
@@ -142,6 +142,18 @@ namespace db_actions
     using namespace example;
     using namespace example_ddl;
 
+    namespace impl
+    {
+        template <typename T, typename TF>
+        bool execute_if_not_empty(T&& r, TF&& f)
+        {
+            if(r.empty()) return false;
+
+            f(r.front());
+            return true;
+        }
+    }
+
     template <typename TF>
     void for_channels(TF&& f)
     {
@@ -158,10 +170,7 @@ namespace db_actions
                              .from(tbl_message)
                              .where(tbl_message.id == id)));
 
-        if(result.empty()) return false;
-
-        f(result.front());
-        return true;
+        return impl::execute_if_not_empty(result, f);
     }
 
     template <typename TF>
@@ -170,10 +179,7 @@ namespace db_actions
         auto result(db()(
             select(all_of(tbl_user)).from(tbl_user).where(tbl_user.id == id)));
 
-        if(result.empty()) return false;
-
-        f(result.front());
-        return true;
+        return impl::execute_if_not_empty(result, f);
     }
 
     template <typename TF>
@@ -183,10 +189,7 @@ namespace db_actions
                              .from(tbl_user)
                              .where(tbl_user.username == username)));
 
-        if(result.empty()) return false;
-
-        f(result.front());
-        return true;
+        return impl::execute_if_not_empty(result, f);
     }
 
     bool has_user_by_id(int id)
@@ -210,10 +213,7 @@ namespace db_actions
                              .from(tbl_channel)
                              .where(tbl_channel.id == id)));
 
-        if(result.empty()) return false;
-
-        f(result.front());
-        return true;
+        return impl::execute_if_not_empty(result, f);
     }
 
     template <typename TF>
@@ -223,10 +223,7 @@ namespace db_actions
                              .from(tbl_channel)
                              .where(tbl_channel.name == name)));
 
-        if(result.empty()) return false;
-
-        f(result.front());
-        return true;
+        return impl::execute_if_not_empty(result, f);
     }
 
     bool has_channel_by_id(int id)
@@ -385,17 +382,17 @@ namespace example
     public:
         server_state() = default;
 
-        void logout(const nl::PAddress& x)
+        bool logout(const nl::PAddress& x)
         {
             auto c = conn_by_addr(x);
+            if(c == nullptr) return false;
 
-            if(c != nullptr)
-            {
-                ssvu::eraseRemoveIf(_connections, [&](const auto& y)
-                    {
-                        return y.get() == c;
-                    });
-            }
+            ssvu::eraseRemoveIf(_connections, [&](const auto& y)
+                {
+                    return y.get() == c;
+                });
+
+            return true;
         }
 
         connection_state* conn_by_addr(const nl::PAddress& x)
@@ -437,14 +434,11 @@ namespace example
 
             ssvu::eraseRemoveIf(_connections, [&](const auto& x)
                 {
-                    if(x->dead())
-                    {
-                        f(x->addr());
-                        ssvu::lo() << "Client #" << x->id() << " timed out.\n";
-                        return true;
-                    }
+                    if(!x->dead()) return false;
 
-                    return false;
+                    f(x->addr());
+                    ssvu::lo() << "Client #" << x->id() << " timed out.\n";
+                    return true;
                 });
         }
     };
@@ -463,6 +457,15 @@ namespace example
             {
                 ssvu::lo() << (x ? "Success: "s : "Failure: "s) << msg;
             });
+
+        auto execute_connected = [&](const auto& addr, auto&& f)
+        {
+            auto c = s.conn_by_addr(addr);
+            if(c == nullptr) return false;
+
+            f(c);
+            return true;
+        };
 
         h.on_d<Registration>(
             [&](const auto& sender, const auto& user, const auto& pass)
@@ -508,17 +511,13 @@ namespace example
 
         h.on_d<CreateChannel>([&](const auto& sender, const auto& name)
             {
-                auto c = s.conn_by_addr(sender);
-                bool success = false;
-
-                if(c != nullptr)
-                {
-                    if(!db_actions::has_channel_by_name(name))
+                bool success = execute_connected(sender, [&](auto& c)
                     {
+                        if(db_actions::has_channel_by_name(name)) return false;
+
                         auto r = db_actions::create_channel(c->id(), name);
-                        success = r > 0;
-                    }
-                }
+                        return r > 0;
+                    });
 
                 h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, success, to_c::ot_create_channel);
@@ -533,23 +532,21 @@ namespace example
         h.on_d<SendMessage>([&](
             const auto& sender, const auto& channel_id, const auto& contents)
             {
-                auto c = s.conn_by_addr(sender);
-                bool success = false;
                 int id = 0;
-                if(c != nullptr)
-                {
-                    if(db_actions::has_channel_by_id(channel_id))
+                bool success = execute_connected(sender, [&](auto& c)
                     {
-                        if(db_actions::is_user_in_channel(c->id(), channel_id))
-                        {
-                            auto r = db_actions::create_message(
-                                c->id(), channel_id, contents);
+                        if(!db_actions::has_channel_by_id(channel_id))
+                            return false;
 
-                            success = r > 0;
-                            id = r;
-                        }
-                    }
-                }
+                        if(!db_actions::is_user_in_channel(c->id(), channel_id))
+                            return false;
+
+                        auto r = db_actions::create_message(
+                            c->id(), channel_id, contents);
+
+                        id = r;
+                        return r > 0;
+                    });
 
                 h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, success, to_c::ot_create_message);
@@ -590,39 +587,37 @@ namespace example
                 s.logout(sender);
             });
 
+
         h.on_d<ChannelList>([&](const auto& sender, auto)
             {
-                auto c = s.conn_by_addr(sender);
-                if(c != nullptr)
-                {
-                    std::vector<std::string> vec;
-                    db_actions::for_channels([&](const auto& r)
-                        {
-                            std::string id_str = std::to_string(r.id);
-                            std::string name_str = r.name;
+                execute_connected(sender, [&](auto&)
+                    {
+                        std::vector<std::string> vec;
+                        db_actions::for_channels([&](const auto& row)
+                            {
+                                std::string id_str = std::to_string(row.id);
+                                std::string name_str = row.name;
 
-                            vec.emplace_back(id_str + ": " + name_str);
-                        });
+                                vec.emplace_back(id_str + ": " + name_str);
+                            });
 
-                    h.try_make_and_send_pckt<to_c::Channels>(sender, vec);
-                }
+                        h.try_make_and_send_pckt<to_c::Channels>(sender, vec);
+                    });
             });
 
         h.on_d<Subscribe>([&](const auto& sender, const auto& channel_id)
             {
-                auto c = s.conn_by_addr(sender);
-                bool success = false;
-                if(c != nullptr)
-                {
-                    if(db_actions::has_channel_by_id(channel_id))
+                bool success = execute_connected(sender, [&](auto& c)
                     {
+                        if(!db_actions::has_channel_by_id(channel_id))
+                            return false;
+
                         // TODO: check duplicate subscriptions
                         auto r = db_actions::add_user_to_channel(
                             c->id(), channel_id);
 
-                        success = r > 0;
-                    }
-                }
+                        return r > 0;
+                    });
 
                 h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, success, to_c::ot_subscribe);
