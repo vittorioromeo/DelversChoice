@@ -290,7 +290,11 @@
                             \item An usable tunnel type for context hosts or manual payload management was defined.
                         \end{itemize}
 
-
+                    \begin{figure}[H]
+                    \caption{Defining tunnel types - use case diagram.}
+                    \centering
+                    \includegraphics[width=0.65\textwidth]{d/uc/def_tunnels.png}
+                    \end{figure}
 
                 \subsubsection{Defining serializable types}
                     ...
@@ -318,6 +322,11 @@
                             \item Defined types can be used as normal C++ types.
                         \end{itemize}
 
+                    \begin{figure}[H]
+                    \caption{Defining serializable types - use case diagram.}
+                    \centering
+                    \includegraphics[width=0.65\textwidth]{d/uc/def_serializable_t.png}
+                    \end{figure}
 
 
                 \subsubsection{Binding types to dispatch table}
@@ -344,6 +353,11 @@
                             \item Functions can now be assigned to every inbound payload type.
                         \end{itemize}
 
+                    \begin{figure}[H]
+                    \caption{Binding types to dispatch table - use case diagram.}
+                    \centering
+                    \includegraphics[width=0.65\textwidth]{d/uc/bind_types.png}
+                    \end{figure}
 
 
                 \subsubsection{Defining a context host}
@@ -373,6 +387,11 @@
                             \item The context host can now send/receive bound payload types.
                         \end{itemize}
 
+                    \begin{figure}[H]
+                    \caption{Defining a context host - use case diagram.}
+                    \centering
+                    \includegraphics[width=0.65\textwidth]{d/uc/def_context_host.png}
+                    \end{figure}
 
 
                 \subsubsection{Handling incoming payloads}
@@ -401,6 +420,13 @@
                             \item Incoming payloads were handled or an error occurred.
                         \end{itemize}
 
+                    \begin{figure}[H]
+                    \caption{Handling incoming payloads - use case diagram.}
+                    \centering
+                    \includegraphics[width=0.65\textwidth]{d/uc/inc_payloads.png}
+                    \end{figure}
+
+
 
                 \subsubsection{Handling outgoing payloads}
                     ...
@@ -427,6 +453,13 @@
                         \begin{itemize}
                             \item Outgoing payloads were sent or an error occurred.
                         \end{itemize}
+
+                    \begin{figure}[H]
+                    \caption{Handling outgoing payloads - use case diagram.}
+                    \centering
+                    \includegraphics[width=0.65\textwidth]{d/uc/outgoing.png}
+                    \end{figure}
+
 
 
             \newpage
@@ -468,87 +501,87 @@
 
                 The following diagram shows the steps that the \emph{forum management team} must take in order to setup and initialize a veeForum-enabled forum.
 
-                \begin{figure}[H]
-                \caption{Forum setup and initialization activity diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{uc/a1}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Forum setup and initialization activity diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{uc/a1}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the steps required for \emph{user registration}
 
-                \begin{figure}[H]
-                \caption{User registration activity diagram.}
-                \centering
-                \includegraphics[width=0.65\textwidth]{di/1}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{User registration activity diagram.}
+                %\centering
+                %\includegraphics[width=0.65\textwidth]{di/1}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the steps required for \emph{user authentication}
 
-                \begin{figure}[H]
-                \caption{User authentication activity diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{di/8}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{User authentication activity diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{di/8}
+                %\end{figure}
 
                 \newpage
 
                 The following diagrams shows the steps that the \emph{forum users} must take in order to add content to the forum system.
 
-                \begin{figure}[H]
-                \caption{Content creation activity diagram - 0.}
-                \centering
-                \includegraphics[width=1\textwidth]{uc/a2}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Content creation activity diagram - 0.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{uc/a2}
+                %\end{figure}
 
-                \begin{figure}[H]
-                \caption{Content creation activity diagram - 1.}
-                \centering
-                \includegraphics[width=0.65\textwidth]{di/3}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Content creation activity diagram - 1.}
+                %\centering
+                %\includegraphics[width=0.65\textwidth]{di/3}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the steps required for \emph{post content editing}
 
-                \begin{figure}[H]
-                \caption{Post content editing activity diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{di/5}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Post content editing activity diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{di/5}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the steps required for \emph{attachment creation}
 
-                \begin{figure}[H]
-                \caption{Attachment creation activity diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{di/6}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Attachment creation activity diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{di/6}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the steps required for \emph{content subscription}
 
-                \begin{figure}[H]
-                \caption{Content subscription activity diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{di/2}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Content subscription activity diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{di/2}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the steps that the \emph{forum system} must take in order to validate a permission bitset for a specific action.
 
-                \begin{figure}[H]
-                \caption{Recursive permission validation algorithm.}
-                \centering
-                \includegraphics[width=1\textwidth]{dn/0}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Recursive permission validation algorithm.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{dn/0}
+                %\end{figure}
 
                 \newpage
                 \newpage
@@ -570,19 +603,19 @@
                     \item External user interface.
                 \end{itemize}
 
-                \begin{figure}[H]
-                \caption{Database entities UML diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{uml/umldb}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Database entities UML diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{uml/umldb}
+                %\end{figure}
 
                 \newpage
 
-                \begin{figure}[H]
-                \caption{Server backend UML diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{uml/umlphp}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Server backend UML diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{uml/umlphp}
+                %\end{figure}
 
                 \newpage
                 \newpage
@@ -591,41 +624,41 @@
 
                 The following diagram shows the interaction between \emph{forum users}, the \emph{subscription broker} and the \emph{content management} systen in order to manage subscriptions and generate notifications.
 
-                \begin{figure}[H]
-                \caption{Subscription/notification system sequence diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{uc/s1}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Subscription/notification system sequence diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{uc/s1}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the interaction between the backend and the database.
 
-                \begin{figure}[H]
-                \caption{Backend-database interaction sequence diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{di/0}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Backend-database interaction sequence diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{di/0}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the interaction between the backend and database stored procedures.
 
-                \begin{figure}[H]
-                \caption{Backend-stored procedures interaction sequence diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{di/4}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Backend-stored procedures interaction sequence diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{di/4}
+                %\end{figure}
 
                 \newpage
 
                 The following diagram shows the interaction between the authentication system and the database.
 
-                \begin{figure}[H]
-                \caption{Authentication system-database interaction sequence diagram.}
-                \centering
-                \includegraphics[width=1\textwidth]{di/7}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Authentication system-database interaction sequence diagram.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{di/7}
+                %\end{figure}
 
                 \newpage
 
@@ -637,8 +670,8 @@
 
                 The nodes appear as boxes, and the artifacts allocated to each node appear as rectangles within the boxes. Nodes may have subnodes, which appear as nested boxes. Device nodes are physical computing resources with processing memory and services to execute software, such as typical computers or mobile phones.
 
-                \begin{figure}[H]
-                \caption{Deployment diagram for veeForum.}
-                \centering
-                \includegraphics[width=1\textwidth]{deployment}
-                \end{figure}
+                %\begin{figure}[H]
+                %\caption{Deployment diagram for veeForum.}
+                %\centering
+                %\includegraphics[width=1\textwidth]{deployment}
+                %\end{figure}
