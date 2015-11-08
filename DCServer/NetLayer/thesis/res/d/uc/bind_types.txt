@@ -1,0 +1,32 @@
+@startuml
+
+skinparam packageStyle rect
+
+actor NL_Developer
+actor AL_Developer
+actor NetLayer
+
+
+
+
+
+
+
+AL_Developer -- (Use bound types)
+NL_Developer -- (Use bound types)
+
+NL_Developer -- (Define serializable type)
+NL_Developer -- (Create dispatch table)
+NL_Developer -- (Define type binds)
+
+
+NetLayer .> (Include NetLayer) : include
+(Define serializable type) .> (Include NetLayer) : include
+(Create dispatch table) .> (Define serializable type) : include
+(Define type binds) .> (Create dispatch table): include
+(Use bound types) .> (Define type binds) : include
+
+
+
+
+@enduml

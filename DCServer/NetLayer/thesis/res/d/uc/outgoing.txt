@@ -1,0 +1,32 @@
+@startuml
+
+left to right direction
+
+skinparam packageStyle rect
+
+actor NL_Developer
+actor AL_Developer
+actor NetLayer
+
+
+rectangle Prerequisites {
+NetLayer .> (Include NetLayer) : include
+(Define serializable type) .> (Include NetLayer) : include
+(Create dispatch table) .> (Define serializable type) : include
+(Define type binds) .> (Create dispatch table): include
+(Create context host) .> (Define type binds) : include
+
+NL_Developer -- (Define serializable type)
+NL_Developer -- (Create dispatch table)
+NL_Developer -- (Define type binds)
+NL_Developer -- (Create context host)
+}
+
+AL_Developer -- (Send outgoing payload)
+NL_Developer -- (Send outgoing payload)
+(Send outgoing payload) .> (Create context host) : include
+(Send outgoing payload) .> (Valid handling) : extends
+(Send outgoing payload) .> (Error handling) : extends
+
+
+@enduml

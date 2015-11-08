@@ -20,13 +20,13 @@
 
     \chapter{Client request}
 
-        The client requests the design and implementation of an \emph{open-source multi-purpose C++14 networking library}. 
+        The client requests the design and implementation of an \emph{open-source multi-purpose C++14 networking library}.
 
         The library must allow the client to develop its own \emph{server-client} architectures and applications with ease, while still being performant and allowing low-level operations if required.
 
         The client intends to use the library as a basis for the networking layer in applications belonging to different domains, ranging from \emph{chat web applications} to \emph{real-time games and simulations}.
 
-        The library must fulfill the following requirements: 
+        The library must fulfill the following requirements:
 
         \begin{itemize}
             \item The library must be written in \emph{modern C++14}, making use of the latest features to improve performance, readability and flexibility.
@@ -35,7 +35,7 @@
 
             \item The library must have a \emph{layered architecture}, allowing developers using it to go as low-level/high-level they desire.
 
-            \item The library must deal with \emph{byte serialization} of native and user-defined classes. Nested serializable data structures must be supported. 
+            \item The library must deal with \emph{byte serialization} of native and user-defined classes. Nested serializable data structures must be supported.
 
             \item The library must provide a generic \emph{tunnel abstraction} that represents a network entity providing and receiving data. A UDP socket tunnel implementation must be provided with the library.
 
@@ -52,7 +52,7 @@
 
         For ease of development and deployment, the client requested the library to be optionally usable in \emph{header-only} mode and compatibility with the \emph{CMake} build system.
 
-        The abstraction provided by the library must work asynchronously by default, but an option to use blocking IO must be present. 
+        The abstraction provided by the library must work asynchronously by default, but an option to use blocking IO must be present.
 
     \chapter{Software Requirements Specification}
 
@@ -72,7 +72,7 @@
                     \item The application of a systematic, disciplined, quantifiable approach to the development, operation, and maintenance of software.
                     \item An engineering discipline that is concerned with all aspects of software production.
                     \item The establishment and use of sound engineering principles in order to economically obtain software that is reliable and works efficiently on real machines.
-                \end{itemize}   
+                \end{itemize}
 
                 \subsubsection{Background}
 
@@ -92,10 +92,10 @@
 
                     \begin{itemize}
                         \item \emph{1950s}: Computers start to be used extensively in business applications.
-                        \item \emph{1960s}: The first software product is marketed. 
+                        \item \emph{1960s}: The first software product is marketed.
 
                         IBM announces its unbundling in June 1969.
-                        \item \emph{1970s}: Software products are now regularly bought by normal users. 
+                        \item \emph{1970s}: Software products are now regularly bought by normal users.
 
                         The software development industry grows rapidly despite the lack of financing.
 
@@ -166,7 +166,7 @@
                 \begin{itemize}
                     \item A layer-based architecture allows developers to make use of both low-level constructs and operations and high-level abstractions in the same application.
                     \item The library will optionally allow developers to use a programming style similar to \emph{functional programming}, making use of callbacks and first-class functions to deal with packet management and function dispatching.
-                    \item 
+                    \item
                 \end{itemize}
 
             \subsection{User characteristics}
@@ -184,13 +184,13 @@
                 \item \emph{Packet Buffer}: dynamically resizable buffer that can store and provide serialized generic data.
                 \item \emph{Address}: union of an IP address and a port.
                 \item \emph{Payload}: abstraction consisting of an Address and PcktBuf. It can be sent to and received by Tunnel instances.
-                \item \emph{Tunnel}: abstraction of a Payload provider/receiver. The default Tunnel is an UDP socket. 
+                \item \emph{Tunnel}: abstraction of a Payload provider/receiver. The default Tunnel is an UDP socket.
                 \item \emph{Thread Safe Queue}: a lock-based thread safe queue that supports concurrent enqueueing and dequeueing.
                 \item \emph{Managed Packet Buffer}: abstraction consisting of a Thread Safe Queue and a reference to a Tunnel. It can be either a \emph{Managed Receive Buffer}, which enqueues received data from the tunnel, or a \emph{Managed Send Buffer}, which enqueues data that will be sent through the tunnel.
                 \item \emph{Managed Host}: union of an Address, a Tunnel, a Managed Receive Buffer and a Managed Send Buffer. Represents a network entity capable of sending and receiving data through a tunnel.
                 \item \emph{Serializable}: abstraction over a tuple of generic types that automatically allows the user to serialize and deserialize data. Serializable packets can also be nested and contain dynamically-resizable data structures.
                 \item \emph{Packet Bind}: compile-time bind of a Serializable to a Packet type. Used to generate a dispatch table.
-                \item \emph{Dispatch Table}: compile-time function table that binds a function to specific packet binds. Used to handle received packets. 
+                \item \emph{Dispatch Table}: compile-time function table that binds a function to specific packet binds. Used to handle received packets.
                 \item \emph{Context Managed Host}: union of a managed host and a dispatch table.
             \end{itemize}
 
@@ -228,8 +228,8 @@
 
                  \subsubsection{Data serialization}
                     \begin{itemize}
-                        \item \emph{Fundamental types}: fundamental C++ type serialization will automatically be provided by the library.                        
-                        \item \emph{Common C++ classes}: serialization for commonly used C++ classes, such as \mintinline{cpp}{std::vector} and \mintinline{cpp}{std::array}, is provided by default.                         
+                        \item \emph{Fundamental types}: fundamental C++ type serialization will automatically be provided by the library.
+                        \item \emph{Common C++ classes}: serialization for commonly used C++ classes, such as \mintinline{cpp}{std::vector} and \mintinline{cpp}{std::array}, is provided by default.
                         \item \emph{Extensible serialization}: library user will be able to extend the serialization system with their own types, using simple class inheritance or macros for convenience.
                     \end{itemize}
 
@@ -257,7 +257,7 @@
                 \subsubsection{Context binding}
                  \begin{itemize}
                         \item \emph{Managed hosts}: abstraction consisting of a send managed buffer and a receive managed buffer. Allows the user to add processing threads and to poll the buffers for received data.
-                        \item \emph{Dispatch table}: an extensible table, configurable at compile-time, is provided to allow the user to define functions which will automatically handle specific packet types. 
+                        \item \emph{Dispatch table}: an extensible table, configurable at compile-time, is provided to allow the user to define functions which will automatically handle specific packet types.
                         \item \emph{Context host}: union of a managed host and a dispatch table. Provides a convenient interface to quickly develop a server/client architecture capable of sending and receiving payloads.
                     \end{itemize}
 
@@ -271,12 +271,13 @@
                     ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Developer.
+                            \item Networking layer developer.
+                            \item NetLayer library.
                         \end{itemize}
 
                     \paragraph{Pre-conditions}
                         \begin{itemize}
-                            \item
+                            \item NetLayer was correctly included.
                         \end{itemize}
 
                     \paragraph{Flow of events}
@@ -286,19 +287,23 @@
 
                     \paragraph{Post-conditions}
                         \begin{itemize}
-                            \item 
+                            \item An usable tunnel type for context hosts or manual payload management was defined.
                         \end{itemize}
+
+
 
                 \subsubsection{Defining serializable types}
                     ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Developer.
+                            \item Networking layer developer.
+                            \item Application layer developer.
+                            \item NetLayer library.
                         \end{itemize}
 
                     \paragraph{Pre-conditions}
                         \begin{itemize}
-                            
+                            \item NetLayer was correctly included.
                         \end{itemize}
 
                     \paragraph{Flow of events}
@@ -308,14 +313,24 @@
 
                     \paragraph{Post-conditions}
                         \begin{itemize}
-                            \item 
+                            \item Any number of serializable types were defined.
+                            \item Defined types can be sent/received through tunnels.
+                            \item Defined types can be used as normal C++ types.
                         \end{itemize}
+
+
 
                 \subsubsection{Binding types to dispatch table}
                     ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Developer.
+                            \item Networking layer developer.
+                            \item NetLayer library.
+                        \end{itemize}
+
+                    \paragraph{Pre-conditions}
+                        \begin{itemize}
+                            \item NetLayer was correctly included.
                         \end{itemize}
 
                     \paragraph{Flow of events}
@@ -325,20 +340,55 @@
 
                     \paragraph{Post-conditions}
                         \begin{itemize}
-                            \item 
+                            \item A dispatch table was defined.
+                            \item Functions can now be assigned to every inbound payload type.
                         \end{itemize}
+
+
+
                 \subsubsection{Defining a context host}
                     ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Developer.
+                            \item Networking layer developer.
+                            \item NetLayer library.
                         \end{itemize}
+
+                     \paragraph{Pre-conditions}
+                        \begin{itemize}
+                            \item NetLayer was correctly included.
+                            \item A dispatch table was created.
+                            \item A tunnel type was chosen.
+                        \end{itemize}
+
+                    \paragraph{Flow of events}
+                        \begin{itemize}
+                            \item
+                        \end{itemize}
+
+                    \paragraph{Post-conditions}
+                        \begin{itemize}
+                            \item An usable context host was defined.
+                            \item A previously defined dispatch table is now bound to the context host.
+                            \item The context host can now send/receive bound payload types.
+                        \end{itemize}
+
+
 
                 \subsubsection{Handling incoming payloads}
                     ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Developer.
+                            \item Networking layer developer.
+                            \item Application layer developer.
+                            \item NetLayer library.
+                        \end{itemize}
+
+                    \paragraph{Pre-conditions}
+                        \begin{itemize}
+                            \item NetLayer was correctly included.
+                            \item A context host was defined.
+                            \item Payload types were bound to dispatch table.
                         \end{itemize}
 
                     \paragraph{Flow of events}
@@ -348,14 +398,25 @@
 
                     \paragraph{Post-conditions}
                         \begin{itemize}
-                            \item 
+                            \item Incoming payloads were handled or an error occurred.
                         \end{itemize}
+
+
                 \subsubsection{Handling outgoing payloads}
                     ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Developer.
-                        \end{itemize}            
+                            \item Networking layer developer.
+                            \item Application layer developer.
+                            \item NetLayer library.
+                        \end{itemize}
+
+                    \paragraph{Pre-conditions}
+                        \begin{itemize}
+                            \item NetLayer was correctly included.
+                            \item A context host was defined.
+                            \item Payload types were bound to dispatch table.
+                        \end{itemize}
 
                     \paragraph{Flow of events}
                         \begin{itemize}
@@ -364,10 +425,12 @@
 
                     \paragraph{Post-conditions}
                         \begin{itemize}
-                            \item 
+                            \item Outgoing payloads were sent or an error occurred.
                         \end{itemize}
-            %    \newpage
-            
+
+
+            \newpage
+
             \subsection{Non-functional requirements}
                 Functional requirements are supported by \emph{non-functional requirements} (also known as quality requirements), which impose constraints on the design or implementation (such as performance requirements, security, or reliability).
 
@@ -394,11 +457,11 @@
                     The code layer will be carefully designed and organized to allow easy maintenance, bugfixing and feature addition.
 
                     To ensure maximum portability, the product will be designed to work on the most popular \emph{GNU/Linux} distributions and will be thoroughly tested on different platforms.
-        
+
         \section{Analysis models}
             \subsection{Activity diagrams}
-                Activity diagrams are graphical representations of workflows of stepwise activities and actions with support for choice, iteration and concurrency. 
-                In the Unified Modeling Language, activity diagrams are intended to model both computational and organisational processes (i.e. workflows). 
+                Activity diagrams are graphical representations of workflows of stepwise activities and actions with support for choice, iteration and concurrency.
+                In the Unified Modeling Language, activity diagrams are intended to model both computational and organisational processes (i.e. workflows).
                 Activity diagrams show the overall flow of control.
 
                 \newpage
@@ -495,7 +558,7 @@
                 \emph{Class diagrams} are created using UML.
 
                 The \emph{Unified Modeling Language} (UML) is a general-purpose modeling language in the field of software engineering, which is designed to provide a standard way to visualize the design of a system.
-                
+
                 It offers a way to visualize a system's architectural blueprints in a diagram, including elements such as:
 
                 \begin{itemize}
@@ -506,7 +569,7 @@
                     \item How entities interact with others (components and interfaces).
                     \item External user interface.
                 \end{itemize}
-                
+
                 \begin{figure}[H]
                 \caption{Database entities UML diagram.}
                 \centering
@@ -524,7 +587,7 @@
                 \newpage
                 \newpage
 
-            \subsection{Sequence diagrams}                    
+            \subsection{Sequence diagrams}
 
                 The following diagram shows the interaction between \emph{forum users}, the \emph{subscription broker} and the \emph{content management} systen in order to manage subscriptions and generate notifications.
 
@@ -572,7 +635,7 @@
 
                 A \emph{deployment diagram} in the Unified Modeling Language models the physical deployment of artifacts on nodes.
 
-                The nodes appear as boxes, and the artifacts allocated to each node appear as rectangles within the boxes. Nodes may have subnodes, which appear as nested boxes. Device nodes are physical computing resources with processing memory and services to execute software, such as typical computers or mobile phones. 
+                The nodes appear as boxes, and the artifacts allocated to each node appear as rectangles within the boxes. Nodes may have subnodes, which appear as nested boxes. Device nodes are physical computing resources with processing memory and services to execute software, such as typical computers or mobile phones.
 
                 \begin{figure}[H]
                 \caption{Deployment diagram for veeForum.}

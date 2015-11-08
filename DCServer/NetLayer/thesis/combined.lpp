@@ -334,136 +334,162 @@
                 Functional requirements may be \emph{calculations}, \emph{technical details}, \emph{data manipulation and processing} and other specific functionality that define what a system is supposed to accomplish.
 
                 Behavioral requirements describing all the cases where the system uses the functional requirements are captured in \emph{use cases}.
-%%% TODO %%%
-                \subsubsection{User/group management}
+
+                \subsubsection{Packet management}
                     \begin{itemize}
-                        \item \emph{Users}: users will be managed by the system. Users can register (or be manually added by an administrator). Registration can be configured to require a confirmation email or not.
-                        \item \emph{Groups}: every user will be part of at least one group at all times. Groups are part of an hierarchy: they can inherit from each other. Groups can have permissions specific to sections and system-wide permissions.
+                        \item \emph{Payloads and thread-safe queue}: an abstraction consisting of an address and data is provided, along with a thread-safe queue that is used for sending/receiving data to/from the network in managed buffers.
+                        \item \emph{Managed buffers}: payloads will be enqueued and dequeued in managed buffers, that allow to asynchronously access the contents of their queue.
                     \end{itemize}
 
-                    \begin{figure}[!htb]
-                    \caption{User/group hierarchy example.}
-                    \centering
-                    \includegraphics[width=0.5\textwidth]{ed/hier_user}
-                    \end{figure}
+                    %%% TODO
+                    %\begin{figure}[!htb]
+                    %\caption{User/group hierarchy example.}
+                    %\centering
+                    %\includegraphics[width=0.5\textwidth]{ed/hier_user}
+                    %\end{figure}
 
-                 \subsubsection{Content hierarchy}
+                 \subsubsection{Data serialization}
                     \begin{itemize}
-                        \item \emph{Posts}: posts will be the base of the content hierarchy. They will contain HTML-enabled text and any number of attachments.
-                        Posts can be edited and deleted by the original owner.
-                        \item \emph{Threads}: threads are groups of posts. Users with the correct permissions can create a thread in a specific section and have other users add posts or subscribe to it.
-                        Threads can be edited and deleted by the original owner.
-                        \item \emph{Sections}: sections are content containers intended to group threads related to the same subject. Forum administrators and moderators can create sections and give users permissions to view or edit them.
-                        \item \emph{Attachments}: users with the correct permissions can upload files and attach any number of them to one of their posts.
+                        \item \emph{Fundamental types}: fundamental C++ type serialization will automatically be provided by the library.                        
+                        \item \emph{Common C++ classes}: serialization for commonly used C++ classes, such as \mintinline{cpp}{std::vector} and \mintinline{cpp}{std::array}, is provided by default.                         
+                        \item \emph{Extensible serialization}: library user will be able to extend the serialization system with their own types, using simple class inheritance or macros for convenience.
                     \end{itemize}
 
-                    \begin{figure}[!htb]
-                    \caption{Content hierarchy example.}
-                    \centering
-                    \includegraphics[width=1\textwidth]{ed/hier_sec}
-                    \end{figure}
+                    %%% TODO
+                    %\begin{figure}[!htb]
+                    %\caption{Content hierarchy example.}
+                    %\centering
+                    %\includegraphics[width=1\textwidth]{ed/hier_sec}
+                    %\end{figure}
 
-                  \subsubsection{Content tracking system}
+                  \subsubsection{Tunnel management}
                     \begin{itemize}
-                        \item \emph{Creation data}: user-created content (posts, threads,attachments, etc) will have some data specific to its creation that can be extended by forum administrators. Basic predefined data will consist of creation date and time. It will be possible to run statistical queries on content creation data.
-                        \item \emph{Subscriptions}: users and moderators will be able to subscribe to specific sections, threads or user to track their contents. They will receive real-time notifications upon addition/editing of tracked content.
+                        \item \emph{Default tunnel: UDP}: a tunnel implementation, wrapping an UDP socket, is provided by default.
+                        \item \emph{Default tunnel: mock}: a mock tunnel, for unit-testing purposes, is provided by default.
+                        \item \emph{Tunnel interface}: an extensible tunnel interface is provided, allowing the users of the library to implement their own network tunnels.
                     \end{itemize}
 
-                    \begin{figure}[!htb]
-                    \caption{Subscription/notification architecture example.}
-                    \centering
-                    \includegraphics[width=1\textwidth]{ed/hier_sub}
-                    \end{figure}
+                    %%% TODO
+                    %\begin{figure}[!htb]
+                    %\caption{Subscription/notification architecture example.}
+                    %\centering
+                    %\includegraphics[width=1\textwidth]{ed/hier_sub}
+                    %\end{figure}
+
+                \subsubsection{Context binding}
+                 \begin{itemize}
+                        \item \emph{Managed hosts}: abstraction consisting of a send managed buffer and a receive managed buffer. Allows the user to add processing threads and to poll the buffers for received data.
+                        \item \emph{Dispatch table}: an extensible table, configurable at compile-time, is provided to allow the user to define functions which will automatically handle specific packet types. 
+                        \item \emph{Context host}: union of a managed host and a dispatch table. Provides a convenient interface to quickly develop a server/client architecture capable of sending and receiving payloads.
+                    \end{itemize}
 
             \newpage
 
+%%% TODO %%%
             \subsection{Example use cases}
                 In software and systems engineering, a \emph{use case} is a list of steps, typically defining interactions between one or more actors and a system, to achieve a goal.
 
-                \subsubsection{Mobile game forum}
-                    A company developed a popular mobile game, with a wide audience.
-                    The company uses the \emph{veeForum framework} to give users a place to discuss game strategy, give feedback on the quality of their product and receive technical support.
-
+                \subsubsection{Defining tunnel types}
+                    ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Game developers.
-                            \item Game players.
-                            \item Forum management team.
-                            \item Technical support team.
-                            \item Feedback (PR) team.
+                            \item Developer.
                         \end{itemize}
 
                     \paragraph{Pre-conditions}
                         \begin{itemize}
-                            \item Release of a popular product with a wide audience.
-                            \item Game users need to register on the forum.
+                            \item
                         \end{itemize}
 
                     \paragraph{Flow of events}
                         \begin{itemize}
-                            \item Installation and configuration of a veeForum-enabled forum system by the forum management team.
-                            \item Creation of the sections and permission hierarchies by the forum management team and the developers.
-                            \item Registration and content creation by the game developers and game players.
+                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
                         \begin{itemize}
-                            \item Game players will be able to share their strategies and thoughts on the product.
-                            \item The technical support team will find all technical issues grouped in a convenient way and will be able to track individual issues. Technical support members will be able to communicate with each other in a private section.
-                            \item The feedback team will be able to track user suggestions and forward potential product improvements to the developer team.
+                            \item 
                         \end{itemize}
 
-                    \begin{figure}[!htb]
-                    \caption{Basic forum usage use case diagram.}
-                    \centering
-                    \includegraphics[width=1\textwidth]{uc/uc1}
-                    \end{figure}
-
-                    \begin{figure}[!htb]
-                    \caption{Technical support and feedback use case diagram.}
-                    \centering
-                    \includegraphics[width=1\textwidth]{uc/uc2}
-                    \end{figure}
-
-                \newpage
-                \subsubsection{Local city GNU/Linux usergroup forum}
-                    Some GNU/Linux users from the same city decide to start a local usergroup to discuss the GNU/Linux ecosystem and make new friends. In spirit with the open-source nature of the system, collaboration is extremely important. They require to easily assign specific permissions to users and groups to allow the forum to grow and be well-organized.
-
+                \subsubsection{Defining serializable types}
+                    ...
                     \paragraph{Actors}
                         \begin{itemize}
-                            \item Usergroup creators.
-                            \item Usergroup members.
-                            \item External visitors.
+                            \item Developer.
                         \end{itemize}
 
                     \paragraph{Pre-conditions}
                         \begin{itemize}
-                            \item Interest in a local GNU/Linux usergroup.
-                            \item Availability of people willing to collaborate.
+                            
                         \end{itemize}
 
                     \paragraph{Flow of events}
                         \begin{itemize}
-                            \item Installation and configuration of a veeForum-enabled forum system by the usergroup creators.
-                            \item Creation of the initial sections and permission hierarchies by the usergroup creators.
-                            \item Registration of usergroup members and external visitors.
-                            \item The usergroup creators give other usergroup members permissions to create and manage sections and users, starting a chain of collaborative forum content development.
-                            \item Usergroup members and external visitors contribute and make use of the content.
+                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
                         \begin{itemize}
-                            \item Local city usergroup members will be able to get to know and speak to each other.
-                            \item Usergroups members willing to contribute will be able to easily manage sections and write posts/articles.
-                            \item External visitors will be able to make use of the public content.
+                            \item 
                         \end{itemize}
 
-                    \begin{figure}[!htb]
-                    \caption{Usergroup forum use case diagram.}
-                    \centering
-                    \includegraphics[width=1\textwidth]{uc/uc3}
-                    \end{figure}
+                \subsubsection{Binding types to dispatch table}
+                    ...
+                    \paragraph{Actors}
+                        \begin{itemize}
+                            \item Developer.
+                        \end{itemize}
 
+                    \paragraph{Flow of events}
+                        \begin{itemize}
+                            \item
+                        \end{itemize}
+
+                    \paragraph{Post-conditions}
+                        \begin{itemize}
+                            \item 
+                        \end{itemize}
+                \subsubsection{Defining a context host}
+                    ...
+                    \paragraph{Actors}
+                        \begin{itemize}
+                            \item Developer.
+                        \end{itemize}
+
+                \subsubsection{Handling incoming payloads}
+                    ...
+                    \paragraph{Actors}
+                        \begin{itemize}
+                            \item Developer.
+                        \end{itemize}
+
+                    \paragraph{Flow of events}
+                        \begin{itemize}
+                            \item
+                        \end{itemize}
+
+                    \paragraph{Post-conditions}
+                        \begin{itemize}
+                            \item 
+                        \end{itemize}
+                \subsubsection{Handling outgoing payloads}
+                    ...
+                    \paragraph{Actors}
+                        \begin{itemize}
+                            \item Developer.
+                        \end{itemize}            
+
+                    \paragraph{Flow of events}
+                        \begin{itemize}
+                            \item
+                        \end{itemize}
+
+                    \paragraph{Post-conditions}
+                        \begin{itemize}
+                            \item 
+                        \end{itemize}
+            %    \newpage
+            
             \subsection{Non-functional requirements}
                 Functional requirements are supported by \emph{non-functional requirements} (also known as quality requirements), which impose constraints on the design or implementation (such as performance requirements, security, or reliability).
 
