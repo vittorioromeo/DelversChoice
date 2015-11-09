@@ -3,10 +3,8 @@
 #include <array>
 #include "../Common/Common.hpp"
 #include "../Architecture/Architecture.hpp"
-#include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
+// #include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
 #include "../Serialization/Serialization.hpp"
-
-namespace MPL = ::ecs::MPL;
 
 namespace experiment
 {
@@ -62,7 +60,7 @@ namespace experiment
                             return fnToCall(pt_addr, FWD(xs)...);
                         });
 
-                    ecs::Utils::tupleApply(boundfn, obj.fields);
+                    ssvu::explode(boundfn, obj.fields);
                 });
         }
 

@@ -666,60 +666,11 @@
                 \end{figure}
 
                 \newpage
-                \newpage
 
-            \subsection{Sequence diagrams}
+                \begin{figure}[H]
+                \caption{Dispatch table collaboration diagram.}
+                \centering
+                \includegraphics[width=0.9\textwidth]{d/coll/coll_disptab.png}
+                \end{figure}
 
-                The following diagram shows the interaction between \emph{forum users}, the \emph{subscription broker} and the \emph{content management} systen in order to manage subscriptions and generate notifications.
-
-                %\begin{figure}[H]
-                %\caption{Subscription/notification system sequence diagram.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{uc/s1}
-                %\end{figure}
-
-                \newpage
-
-                The following diagram shows the interaction between the backend and the database.
-
-                %\begin{figure}[H]
-                %\caption{Backend-database interaction sequence diagram.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{di/0}
-                %\end{figure}
-
-                \newpage
-
-                The following diagram shows the interaction between the backend and database stored procedures.
-
-                %\begin{figure}[H]
-                %\caption{Backend-stored procedures interaction sequence diagram.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{di/4}
-                %\end{figure}
-
-                \newpage
-
-                The following diagram shows the interaction between the authentication system and the database.
-
-                %\begin{figure}[H]
-                %\caption{Authentication system-database interaction sequence diagram.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{di/7}
-                %\end{figure}
-
-                \newpage
-
-                \newpage
-
-            \subsection{Deployment diagram}
-
-                A \emph{deployment diagram} in the Unified Modeling Language models the physical deployment of artifacts on nodes.
-
-                The nodes appear as boxes, and the artifacts allocated to each node appear as rectangles within the boxes. Nodes may have subnodes, which appear as nested boxes. Device nodes are physical computing resources with processing memory and services to execute software, such as typical computers or mobile phones.
-
-                %\begin{figure}[H]
-                %\caption{Deployment diagram for veeForum.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{deployment}
-                %\end{figure}
+                \newpage                

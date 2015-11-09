@@ -6,7 +6,7 @@
 //#include "/home/vittorioromeo/OHWorkspace/cppcon2015/Other/Other.hpp"
 #include "../Serialization/Serialization.hpp"
 
-namespace MPL = ::ecs::MPL;
+// namespace MPL = ::ecs::MPL;
 
 namespace experiment
 {
