@@ -1,0 +1,19 @@
+@startuml
+start
+
+:Instantiate target address;
+
+if (Object instance already exists?) then (yes)
+  
+  :Instantiate empty payload;
+  :Set payload.address;
+  :nl::serialize(object, payload.data);;
+
+else (no)
+  
+  :nl::make_payload(address, object);;
+
+endif
+
+stop
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+start
+
+:Instantiate current host's address;
+:Create and bind dispatch table.
+:Attach callbacks dispatch table.
+
+while (host.busy()) is (true)
+  :Process received payload;
+  :Send outgoing payloads;
+endwhile (false)
+
+stop
+@enduml

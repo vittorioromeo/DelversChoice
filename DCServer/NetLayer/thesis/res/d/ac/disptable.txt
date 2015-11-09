@@ -1,0 +1,14 @@
+@startuml
+start
+
+:Create compile-time settings configuration;
+:Create compile-time bind list;
+
+:Instantiate dispatch table;
+
+while (more payload types to bind?) is (true)
+  :Add callback function to dispatch table;
+endwhile (false)
+
+stop
+@enduml

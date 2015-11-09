@@ -336,12 +336,12 @@
                         \item \emph{Managed buffers}: payloads will be enqueued and dequeued in managed buffers, that allow to asynchronously access the contents of their queue.
                     \end{itemize}
 
-                    %%% TODO
-                    %\begin{figure}[!htb]
-                    %\caption{User/group hierarchy example.}
-                    %\centering
-                    %\includegraphics[width=0.5\textwidth]{ed/hier_user}
-                    %\end{figure}
+                    
+                    \begin{figure}[!htb]
+                    \caption{Managed buffer example diagram.}
+                    \centering
+                    \includegraphics[width=0.85\textwidth]{d/other/managedbuf.png}
+                    \end{figure}
 
                  \subsubsection{Data serialization}
                     \begin{itemize}
@@ -350,12 +350,12 @@
                         \item \emph{Extensible serialization}: library user will be able to extend the serialization system with their own types, using simple class inheritance or macros for convenience.
                     \end{itemize}
 
-                    %%% TODO
-                    %\begin{figure}[!htb]
-                    %\caption{Content hierarchy example.}
-                    %\centering
-                    %\includegraphics[width=1\textwidth]{ed/hier_sec}
-                    %\end{figure}
+                    
+                    \begin{figure}[!htb]
+                    \caption{Automatic serialization hierarchy.}
+                    \centering
+                    \includegraphics[width=1\textwidth]{d/other/serialization.png}
+                    \end{figure}
 
                   \subsubsection{Tunnel management}
                     \begin{itemize}
@@ -364,12 +364,11 @@
                         \item \emph{Tunnel interface}: an extensible tunnel interface is provided, allowing the users of the library to implement their own network tunnels.
                     \end{itemize}
 
-                    %%% TODO
-                    %\begin{figure}[!htb]
-                    %\caption{Subscription/notification architecture example.}
-                    %\centering
-                    %\includegraphics[width=1\textwidth]{ed/hier_sub}
-                    %\end{figure}
+                    \begin{figure}[!htb]
+                    \caption{Tunnel example diagram.}
+                    \centering
+                    \includegraphics[width=0.85\textwidth]{d/other/tunnel.png}
+                    \end{figure}
 
                 \subsubsection{Context binding}
                  \begin{itemize}
@@ -378,14 +377,28 @@
                         \item \emph{Context host}: union of a managed host and a dispatch table. Provides a convenient interface to quickly develop a server/client architecture capable of sending and receiving payloads.
                     \end{itemize}
 
+                \begin{figure}[!htb]
+                    \caption{Context host diagram.}
+                    \centering
+                    \includegraphics[width=0.85\textwidth]{d/other/ctxhost.png}
+                    \end{figure}
+
             \newpage
 
-%%% TODO %%%
             \subsection{Example use cases}
                 In software and systems engineering, a \emph{use case} is a list of steps, typically defining interactions between one or more actors and a system, to achieve a goal.
 
+                In the following examples, we'll cover possible use cases for two different developer types using NetLayer:
+
+                \begin{itemize}
+                            \item \emph{Networking layer developer}: developer managing packet types, tunnel types and their bindings.
+                            \item \emph{Application layer developer}: developer managing application logic, making use of existing NetLayer bindings.
+                        \end{itemize}
+
                 \subsubsection{Defining tunnel types}
-                    ...
+                    
+                    Defining tunnel types is a low-level operation done by networking layer developers. It allows NetLayer users to implement their own protocols or mock payload providers/receivers.
+
                     \paragraph{Actors}
                         \begin{itemize}
                             \item Networking layer developer.
@@ -395,11 +408,6 @@
                     \paragraph{Pre-conditions}
                         \begin{itemize}
                             \item NetLayer was correctly included.
-                        \end{itemize}
-
-                    \paragraph{Flow of events}
-                        \begin{itemize}
-                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
@@ -414,7 +422,10 @@
                     \end{figure}
 
                 \subsubsection{Defining serializable types}
-                    ...
+                    
+                    Serializable types will be usually defined by networking layer developers and used by both types of developers. 
+                    Fundamental types are automatically serializable. Tuples of fundamental types can be marked as serializable and wrapped in custom interfaces using either compile-time inheritance or helper preprocessor macros.
+
                     \paragraph{Actors}
                         \begin{itemize}
                             \item Networking layer developer.
@@ -425,11 +436,6 @@
                     \paragraph{Pre-conditions}
                         \begin{itemize}
                             \item NetLayer was correctly included.
-                        \end{itemize}
-
-                    \paragraph{Flow of events}
-                        \begin{itemize}
-                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
@@ -447,7 +453,9 @@
 
 
                 \subsubsection{Binding types to dispatch table}
-                    ...
+                    
+                    The creation and management of a dispatch table is usually handled by networking layer developers. They will define and bind all packet types that can be received and sent by the application.
+
                     \paragraph{Actors}
                         \begin{itemize}
                             \item Networking layer developer.
@@ -457,11 +465,6 @@
                     \paragraph{Pre-conditions}
                         \begin{itemize}
                             \item NetLayer was correctly included.
-                        \end{itemize}
-
-                    \paragraph{Flow of events}
-                        \begin{itemize}
-                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
@@ -478,7 +481,9 @@
 
 
                 \subsubsection{Defining a context host}
-                    ...
+                    
+                    After the creation of a dispatch table, the definition of a context host is required. A context host is the union of a dispatch table and a managed host.
+
                     \paragraph{Actors}
                         \begin{itemize}
                             \item Networking layer developer.
@@ -490,11 +495,6 @@
                             \item NetLayer was correctly included.
                             \item A dispatch table was created.
                             \item A tunnel type was chosen.
-                        \end{itemize}
-
-                    \paragraph{Flow of events}
-                        \begin{itemize}
-                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
@@ -512,7 +512,10 @@
 
 
                 \subsubsection{Handling incoming payloads}
-                    ...
+                    
+                    Incoming payloads can be either handled by managed hosts, bypassing the dispatch table, or by context hosts. 
+                    Context hosts automatically call a bound function depending on the type of the received payload.
+
                     \paragraph{Actors}
                         \begin{itemize}
                             \item Networking layer developer.
@@ -546,7 +549,9 @@
 
 
                 \subsubsection{Handling outgoing payloads}
-                    ...
+                    
+                    Outgoing packets can be sent both by managed hosts and context hosts. Context hosts provide functionality to mark the type of the packet, so that receivers can handle it thanks to dispatch tables.
+
                     \paragraph{Actors}
                         \begin{itemize}
                             \item Networking layer developer.
@@ -559,11 +564,6 @@
                             \item NetLayer was correctly included.
                             \item A context host was defined.
                             \item Payload types were bound to dispatch table.
-                        \end{itemize}
-
-                    \paragraph{Flow of events}
-                        \begin{itemize}
-                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
@@ -585,21 +585,23 @@
                 Functional requirements are supported by \emph{non-functional requirements} (also known as quality requirements), which impose constraints on the design or implementation (such as performance requirements, security, or reliability).
 
                 \subsubsection{Performance}
-                    The system will be designed from the ground-up with emphasis on performance. As the forum may have huge amounts of contents and concurrent usage after its deployment, optimizing is a must.
+                    The system will be designed from the ground-up with emphasis on performance. 
 
-                    When possible, functions will be implemented \emph{directly in the database}, for maximum performance.
+                    The layered architecture will allow users to follow the \emph{pay only what you use} principle, which is one of C++'s biggest selling points.
 
-                    Web backend functions will also be carefully \emph{optimized both for memory and speed}.
+                    NetLayer tries to do as much as possible during compilation, avoiding unnecessary run-time polymorphism overhead.
 
                 \subsubsection{Reliability}
                     The system will have to be reliable and keep working in case of errors.
 
-                    Database queries and functions will be executed in \emph{safe wrappers} that catch and handle errors carefully.
+                    Since NetLayer is a general-purpose library, intended for use in multiple domains, \emph{exceptions are not used} throughout the library. 
+                    Real-time simulation and game development industries prefer avoiding using exceptions because they unfortunately always bring a small amount of runtime overhead, even when rarely used throughout the program.
+
+                    NetLayer will allow users to define and use their preferred error handling systems.
 
                 \subsubsection{Security}
-                    veeForum needs to guarantee privacy and security for users and administrator of the system.
 
-                    Well-tested and well-received \emph{security idioms} and \emph{encryption algorithms} will have to be used throughout the implementation of the whole system.
+                    Encryption and other security features are out of NetLayer's scope - users can implement them on top of the library if necessary.
 
                 \subsubsection{Maintainability and portability}
                     Being an open-source project, \emph{maintainability}, \emph{extensibility} and \emph{portability} are key.
@@ -616,7 +618,7 @@
 
                 \newpage
 
-                The following diagram shows the steps that the \emph{forum management team} must take in order to setup and initialize a veeForum-enabled forum.
+                The following diagram shows the required steps to define a serializable type.
 
                 %\begin{figure}[H]
                 %\caption{Forum setup and initialization activity diagram.}

@@ -1,0 +1,16 @@
+@startuml
+start
+
+:Create a custom tunnel class T.;
+
+partition Define methods {
+ 
+    :Define T::receive_payload(Payload&);;
+    :Define T::send_payload(Payload&);;
+    :Define T::bind();;
+}
+
+:Use T as a template parameter for managed hosts.
+
+stop
+@enduml

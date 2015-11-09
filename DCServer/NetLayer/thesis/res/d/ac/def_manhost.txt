@@ -1,0 +1,19 @@
+@startuml
+start
+
+:Instantiate current host's address;
+
+if (Object instance already exists?) then (yes)
+    :Instantiate desired tunnel type;
+endif
+
+:Attach callback to host.on_recv;
+:Attach callback to host.on_send;
+
+while (host.busy()) is (true)
+  :Process received payload;
+  :Send outgoing payloads;
+endwhile (false)
+
+stop
+@enduml

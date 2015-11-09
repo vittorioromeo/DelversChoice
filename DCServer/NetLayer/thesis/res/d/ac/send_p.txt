@@ -1,0 +1,20 @@
+@startuml
+start
+
+:Instantiate context host;
+
+while (host.busy()) is (true)
+    :Outgoing payload is now in buffer;
+    :Send payload to tunnel;
+
+    while (Tunnel could not send payload) is (true)
+        :Sleep;
+        if (Sleep timed out) then (yes)
+            :Set host to not busy;
+        endif
+    endwhile (false)
+
+endwhile (false)
+
+stop
+@enduml
