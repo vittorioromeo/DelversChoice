@@ -646,7 +646,7 @@
                 \begin{figure}[H]
                 \caption{Managed buffer collaboration diagram.}
                 \centering
-                \includegraphics[width=0.9\textwidth]{d/coll/coll_pcktbuf.png}
+                \includegraphics[width=0.4\textwidth]{d/coll/coll_pcktbuf.png}
                 \end{figure}
 
                 \newpage
@@ -654,7 +654,7 @@
                 \begin{figure}[H]
                 \caption{Managed host collaboration diagram.}
                 \centering
-                \includegraphics[width=0.9\textwidth]{d/coll/coll_manhost.png}
+                \includegraphics[width=0.4\textwidth]{d/coll/coll_manhost.png}
                 \end{figure}
 
                 \newpage
@@ -662,7 +662,7 @@
                 \begin{figure}[H]
                 \caption{Context host collaboration diagram.}
                 \centering
-                \includegraphics[width=0.9\textwidth]{d/coll/coll_ctxhost.png}
+                \includegraphics[width=0.4\textwidth]{d/coll/coll_ctxhost.png}
                 \end{figure}
 
                 \newpage
@@ -670,7 +670,7 @@
                 \begin{figure}[H]
                 \caption{Dispatch table collaboration diagram.}
                 \centering
-                \includegraphics[width=0.9\textwidth]{d/coll/coll_disptab.png}
+                \includegraphics[width=0.4\textwidth]{d/coll/coll_disptab.png}
                 \end{figure}
 
                 \newpage                

@@ -1,0 +1,271 @@
+\part{Technical analysis}
+        The following part of the thesis will cover all implementation choices and details for NetLayer in depth.
+
+        Firstly, the \emph{development environment and tools} and \emph{chosen technologies} will be described and motivated.
+
+        Afterwards, the technical details, including code examples and APIs, will be described for the two modules of the application: the \emph{database} and the \emph{web application}.
+
+        Every \emph{table} of the database will be analyzed in detail, directly showing commented \emph{DDL} code. The database also contains important \emph{stored procedures} and \emph{triggers} that are core part of the system's logic and that need to be explained in depth - the related \emph{DML} code will be shown and commented.
+
+        The web application itself is divided in multiple modules:
+        \begin{itemize}
+            \item A \emph{database interface backend module}, that interfaces with the database and wraps its tables and stored procedures.
+            \item A \emph{HTML5 generation module}, that greatly simplifies the creation of dynamic forum web pages by wrapping HTML5 controls in \emph{object-oriented wrappers} that can be easily bound to callbacks and database events.
+            \item A \emph{modern responsive AJAX frontend} that allows users and interact with the backend module from multiple device, limiting postbacks and page refreshes.
+        \end{itemize}
+
+        \chapter{Development process}
+
+            \section{Environment and tools}
+                All modules of veeForum have been developed on \emph{Arch Linux x64}, a lightweight GNU/Linux distribution.
+
+                Arch is installed as a minimal base system, configured by the user upon which their own ideal environment is assembled by installing only what is required or desired for their unique purposes. GUI configuration utilities are not officially provided, and most system configuration is performed from the shell and a text editor. Based on a rolling-release model, Arch strives to stay bleeding edge, and typically offers the latest stable versions of most software.
+
+                No particular integrated development environments (IDEs) were used during the development - a modern graphical text editor, \emph{Sublime Text 3}, was used instead.
+
+            \section{Docker}
+                Docker is an open-source project that \emph{automates the deployment of applications} inside software containers, by providing an additional layer of abstraction and automation of operating-system-level virtualization on Linux.
+
+                Docker uses resource isolation features of the Linux kernel such as \emph{cgroups} and \emph{kernel namespaces} to allow independent containers to run within a single Linux instance.
+
+                This technology has been used since the beginning of the development process to \emph{separate veeForum data and packages} from the host system and to dramatically increase \emph{portability} and \emph{ease of testing}.
+
+                Docker is also used for the installation of the product on target systems - with a single command it is possible to \emph{retrieve all required dependencies}, correctly \emph{configure the system} and \emph{automatically install veeForum}.
+
+            \section{Version control system}
+                Version control systems (VCSs) allow the \emph{management of changes} to documents, computer programs, large web sites, and other collections of information.
+
+                Nowadays, a version control system is \emph{essential} for the development of any project.
+                Being able to track changes, develop features in separate \emph{branches}, have multiple programmers work on the same code base without conflicts and much more is extremely important for projects of any scope and size.
+
+                The chosen VCS is \emph{Git}, a distributed revision control system with an emphasis on \emph{speed}, \emph{data integrity}, and support for \emph{distributed, non-linear workflows}.
+
+                Git is widely appreciated in the private and open-source programming communities - it was initially designed and developed by \emph{Linus Torvalds} for Linux kernel development in 2005, and has since become the most widely adopted version control system for software development.
+
+                The veeForum project is \emph{open-source} and \emph{appreciates feedback and contributions}. It is hosted on \emph{GitHub}, a web-based Git repository hosting service, which offers all of the distributed revision control and source code management (SCM) functionality of Git, while adding \emph{additional features} that make collaboration and public contributions easy and accessible.
+
+%%% TODO %%% 
+            \section{Technologies used}
+            C++14, which is the latest official C++ standard, released in 2 March 2014 \emph{(paper N3936)}, is the language of choice for AutoSyncGen.
+            Like C++11, this newer standard is a huge step forward for the language. \emph{Smarter memory managament}, \emph{automatic type deduction}, and countless new programming and metaprogramming features allow developers to write much safer and powerful code.
+            C++11 and C++14 features are what make AutoSyncGen possible and its syntax cleaner and easier to use.
+
+            On top of C++14 and its standard library, the \emph{SSV framework} is being used as well. This framework was written completely from scratch by me, \emph{Vittorio Romeo}, and is available under the open-source AFL3.0 license on GitHub.
+
+            The \emph{SSVUtils} library, used throughout the whole program, features many heterogeneous self-contained modules: an efficient and modern handwritten JSON parser, a preprocessor metaprogramming module, a template metaprogramming module, automatic console formatted output for containers and user-defined types, efficient data structures (bimap, handle vector, growable arrays), advanced memory management facilities, type-safe variadic unions, handwritten templating system, filesystem management, easy benchmarking of portions of code, and much more.
+
+            Two additional dependencies for AutoSyncGen are the \emph{SFML} library, which offers lightweight abstraction over sockets and packets, and the \emph{SSVStart} library, part of the SSV framework, which extends the functionality of SFML and wraps some of its C++03 abstractions with modern and safer C++14 constructs.
+
+            \section{LAMP stack}
+                The server and web application run on a \emph{LAMP stack}, on a GNU/Linux machine.
+
+                A LAMP stack is composed by the following technologies:
+
+                \begin{itemize}
+                    \item \emph{L}: GNU/Linux machine.
+                    \item \emph{A}: Apache HTTP server.
+
+                     The Apache HTTP server is the world's most widely used web server software.
+
+                     Apache has been under open-source development for about 20 years - it supports all modern server-side technologies and programming languages, and also is \emph{extremely reliable} and \emph{secure}.
+
+                    \item \emph{M}: Stands for MySQL server, but \emph{MariaDB}, a modern drop-in replacement for MySQL is used as the DBMS. 
+
+                    MariaDB is fully compliant with the MySQL standard and language, but it is more performant and has additional features. It is the default DBMS in the Arch Linux distribution.
+
+                    By default, MariaDB uses the \emph{XtraDB} storage engine, a performance enhanced fork of the InnoDB storage engine.
+
+                    Percona XtraDB includes all of InnoDB's robust, reliable ACID-compliant design and advanced MVCC architecture, and builds on that solid foundation with more features, more tunability, more metrics, and more scalability. In particular, it is designed to scale better on many cores, to use memory more efficiently, and to be more convenient and useful. 
+
+                    \item \emph{P}: PHP5, the server backend language. 
+
+                    HTML5, PHP5 and JavaScript conformant to the 5.1 ECMAScript specification (along with the JQuery library) are used for the development of the web application. 
+
+                    The \emph{AJAX} (Asynchronous JavaScript and XML) paradigm will be used to ensure that the application feels responsive and that user interaction is immediately reflected on the web application.
+
+                \end{itemize}
+               
+            \section{Thesis}
+                The current document was written using \LaTeX{}, an high-quality typesetting system; it includes features designed for the production of \emph{technical and scientific documentation}.
+
+                \LaTeX{} was chosen for the current document because of the visually pleasant typography, its extensibility features and its abilities to include and highlight source code.
+
+                \subsection{LatexPP}
+                    A small \emph{C++14} \LaTeX{} preprocessor named \emph{LatexPP} was developed for the composition of this thesis.
+
+                    LatexPP allows to use an intuitive syntax that avoids markup repetition for code highlighting and macros.
+
+                    Preprocessing and compiling a \LaTeX{} document using LatexPP is simple and can be automated using a simple \emph{bash} script.
+
+!!(bash)
+!!{
+    #!/bin/bash
+
+    latexpp ./thesis.lpp > ./thesis.tex
+    pdflatex -shell-escape ./thesis.tex && chromium ./thesis.pdf
+!!}
+
+                    LatexPP is available as an open-source project on GitHub:
+
+                    \url{https://github.com/SuperV1234/Experiments/Random}
+
+
+        \chapter{Project structure}
+            The project folder and file structure is organized as such:
+
+            \begin{itemize}
+                \item \emph{./doc/}
+
+                    Folder containing the documentation of the project.
+                    \begin{itemize}
+                        \item \emph{./latex/}
+
+                        LatexPP and \LaTeX{}  source and output files.
+                    \end{itemize}
+
+                \item \emph{./sql/}
+
+                    Folder containing the SQL DDL scripts.
+                    \begin{itemize}
+                        \item \emph{./scripts/}
+
+                        Contains all the parts that make up the complete SQL initialization script.
+
+                        \item \emph{./mkScript.sh}
+
+                        Builds the complete SQL initialization scripts from the files in ./scripts/.
+
+                        \item \emph{./script.sql}
+
+                        Complete SQL initialization scripts that sets up a database suitable veeForum.
+                    \end{itemize}
+
+                \item \emph{./exe/}
+
+                    Folder containing executable scripts to setup the system.
+                    \begin{itemize}
+                        \item \emph{./docker/}
+
+                        Docker-related scripts.
+                        \begin{itemize}
+                            \item \emph{./start.sh}
+
+                            Starts a Docker instance containing veeForum.
+
+                            \item \emph{./cleanup.sh}
+
+                            Cleans any running veeForum Docker instance.
+
+                            \item \emph{./shell.sh}
+
+                            Starts a Docker instance containing veeForum, controlling an instance of bash inside it.
+
+                            \item \emph{./httpdLog.sh}
+
+                            Prints the Apache error log of the current running veeForum Docker instance.
+                        \end{itemize}
+
+                    \end{itemize}
+
+                \item \emph{./www/}
+
+                    Folder containing web application data.
+                    \begin{itemize}
+
+                        \item \emph{./css/}
+
+                        CSS3 stylesheets.
+
+                        \item \emph{./js/}
+
+                        ECMAScript 5 script files.
+
+                        \item \emph{./json/}
+
+                        Non-relational data storage files, in JSON format.
+
+                        \item \emph{./php/}
+
+                        PHP backend code.
+                        \begin{itemize}
+                            \item \emph{./lib/}
+
+                            Backend to database interface library and HTML5 generation library.
+
+                            \item \emph{./core/}
+
+                            PHP frontend files that generate the responsive HTML5 web application user interface.
+                        \end{itemize}
+
+                    \end{itemize}
+
+            \end{itemize}
+
+ %       \chapter{Hierarchical Index}
+%\input{hierarchy}
+%\chapter{Class Index}
+%\input{annotated}
+
+\chapter{Library structure}
+
+\begin{figure}[!htb]
+\caption{NetLayer modules.}
+\centering
+\includegraphics[width=0.85\textwidth]{inc/0.png}
+\end{figure}
+
+\begin{figure}[!htb]
+\caption{NetLayer module dependencies.}
+\centering
+\includegraphics[width=0.75\textwidth]{inc/deps.png}
+\end{figure}
+
+\begin{figure}[!htb]
+\caption{Serialization dependency graph.}
+\centering
+\includegraphics[width=0.9\textwidth]{inc/dep_ser.png}
+\end{figure}
+
+\begin{figure}[!htb]
+\caption{Tunnel dependency graph.}
+\centering
+\includegraphics[width=1\textwidth]{inc/dep_tunnel.png}
+\end{figure}
+
+\begin{figure}[!htb]
+\caption{Payload dependency graph.}
+\centering
+\includegraphics[width=1\textwidth]{inc/dep_paylod.png}
+\end{figure}
+
+\begin{figure}[!htb]
+\caption{Packet types dependency graph.}
+\centering
+\includegraphics[width=0.95\textwidth]{inc/dep_pckt.png}
+\end{figure}
+
+\begin{figure}[!htb]
+\caption{Architecture dependency graph.}
+\centering
+\includegraphics[width=1\textwidth]{inc/dep_archi.png}
+\end{figure}
+
+\chapter{Class documentation}
+\input{d5/db9/classnl_1_1impl_1_1busy__loop}
+%\input{da/d11/structexperiment_1_1Config}
+\input{de/d57/classexperiment_1_1ContextHost}
+\input{db/d90/classexperiment_1_1DispatchTable}
+%\input{db/dba/structnl_1_1impl_1_1Tunnel_1_1Fake}
+%\input{df/d24/structnl_1_1init__fields}
+\input{d3/db6/classnl_1_1ManagedHostImpl}
+\input{df/dda/classnl_1_1impl_1_1ManagedPcktBuf}
+\input{de/d06/classnl_1_1impl_1_1ManagedRecvBuf}
+\input{d7/dca/classnl_1_1impl_1_1ManagedSendBuf}
+\input{db/dc7/structnl_1_1PAddress}
+\input{d4/d26/structnl_1_1Payload}
+\input{df/da7/structnl_1_1impl_1_1Pckt}
+%\input{d9/df3/structexperiment_1_1impl_1_1pckt__bind__type}
+%\input{dc/d5a/structnl_1_1impl_1_1PcktBase}
+%\input{dc/d22/structexperiment_1_1Settings}
+\input{da/d3d/classnl_1_1impl_1_1ThreadSafeQueue}
+\input{d5/dbb/classnl_1_1impl_1_1Tunnel_1_1UDPSckt}
