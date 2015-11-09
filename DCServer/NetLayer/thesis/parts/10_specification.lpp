@@ -503,34 +503,117 @@
                 The following diagram shows the required steps to define a serializable type.
 
                 \begin{figure}[H]
-                \caption{Forum setup and initialization activity diagram.}
+                %\caption{}
                 \centering
-                \includegraphics[width=1\textwidth]{uc/a1}
+                \includegraphics[width=0.7\textwidth]{d/ac/def_ser.png}
                 \end{figure}
+
+
 
                 \newpage
                 The following diagram shows the required steps to serialize an object into a payload.
 
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/def_ser_obj.png}
+                \end{figure}
+
+
+
+
+
                 \newpage
                 The following diagram shows the required steps to deserialize a payload into an object.
+
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/def_deserialize_obj.png}
+                \end{figure}
+
+
+
+
 
                 \newpage
                 The following diagram shows the required steps to define a tunnel.
 
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/def_tunnel.png}
+                \end{figure}
+
+
+
+
+
+
                 \newpage
                 The following diagram shows the required steps to create a managed host.
+
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/def_manhost.png}
+                \end{figure}
+
+
+
+
 
                 \newpage
                 The following diagram shows the required steps to create and bind a dispatch table.
 
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/disptable.png}
+                \end{figure}
+
+
+
+
+
                 \newpage
                 The following diagram shows the required steps to create a context host.
+
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/conthost.png}
+                \end{figure}
+
+
+
+
 
                 \newpage
                 The following diagram shows the required steps to receive a bound payload.
 
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/send_p.png}
+                \end{figure}
+
+
+
+
+
                 \newpage
                 The following diagram shows the required steps to send a bound payload.
+
+                \begin{figure}[H]
+                %\caption{}
+                \centering
+                \includegraphics[width=0.7\textwidth]{d/ac/recv_p.png}
+                \end{figure}
+
+
+
+
 
                 \newpage
                 \newpage
@@ -552,19 +635,35 @@
                     \item External user interface.
                 \end{itemize}
 
-                %\begin{figure}[H]
-                %\caption{Database entities UML diagram.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{uml/umldb}
-                %\end{figure}
+                \begin{figure}[H]
+                \caption{NetLayer complete class diagram.}
+                \centering
+                \includegraphics[width=0.9\textwidth]{d/coll/src.png}
+                \end{figure}
 
                 \newpage
 
-                %\begin{figure}[H]
-                %\caption{Server backend UML diagram.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{uml/umlphp}
-                %\end{figure}
+                \begin{figure}[H]
+                \caption{Managed buffer collaboration diagram.}
+                \centering
+                \includegraphics[width=0.9\textwidth]{d/coll/coll_pcktbuf.png}
+                \end{figure}
+
+                \newpage
+
+                \begin{figure}[H]
+                \caption{Managed host collaboration diagram.}
+                \centering
+                \includegraphics[width=0.9\textwidth]{d/coll/coll_manhost.png}
+                \end{figure}
+
+                \newpage
+
+                \begin{figure}[H]
+                \caption{Context host collaboration diagram.}
+                \centering
+                \includegraphics[width=0.9\textwidth]{d/coll/coll_ctxhost.png}
+                \end{figure}
 
                 \newpage
                 \newpage
