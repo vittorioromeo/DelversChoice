@@ -901,6 +901,18 @@
 
                 The veeForum project is \emph{open-source} and \emph{appreciates feedback and contributions}. It is hosted on \emph{GitHub}, a web-based Git repository hosting service, which offers all of the distributed revision control and source code management (SCM) functionality of Git, while adding \emph{additional features} that make collaboration and public contributions easy and accessible.
 
+%%% TODO %%% 
+            \section{Technologies used}
+            C++14, which is the latest official C++ standard, released in 2 March 2014 \emph{(paper N3936)}, is the language of choice for AutoSyncGen.
+            Like C++11, this newer standard is a huge step forward for the language. \emph{Smarter memory managament}, \emph{automatic type deduction}, and countless new programming and metaprogramming features allow developers to write much safer and powerful code.
+            C++11 and C++14 features are what make AutoSyncGen possible and its syntax cleaner and easier to use.
+
+            On top of C++14 and its standard library, the \emph{SSV framework} is being used as well. This framework was written completely from scratch by me, \emph{Vittorio Romeo}, and is available under the open-source AFL3.0 license on GitHub.
+
+            The \emph{SSVUtils} library, used throughout the whole program, features many heterogeneous self-contained modules: an efficient and modern handwritten JSON parser, a preprocessor metaprogramming module, a template metaprogramming module, automatic console formatted output for containers and user-defined types, efficient data structures (bimap, handle vector, growable arrays), advanced memory management facilities, type-safe variadic unions, handwritten templating system, filesystem management, easy benchmarking of portions of code, and much more.
+
+            Two additional dependencies for AutoSyncGen are the \emph{SFML} library, which offers lightweight abstraction over sockets and packets, and the \emph{SSVStart} library, part of the SSV framework, which extends the functionality of SFML and wraps some of its C++03 abstractions with modern and safer C++14 constructs.
+
             \section{LAMP stack}
                 The server and web application run on a \emph{LAMP stack}, on a GNU/Linux machine.
 
@@ -1062,7 +1074,7 @@
 \begin{figure}[!htb]
 \caption{NetLayer module dependencies.}
 \centering
-\includegraphics[width=0.35\textwidth]{inc/deps.png}
+\includegraphics[width=0.75\textwidth]{inc/deps.png}
 \end{figure}
 
 \begin{figure}[!htb]
