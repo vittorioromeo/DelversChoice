@@ -502,11 +502,11 @@
                 \newpage
                 The following diagram shows the required steps to define a serializable type.
 
-                %\begin{figure}[H]
-                %\caption{Forum setup and initialization activity diagram.}
-                %\centering
-                %\includegraphics[width=1\textwidth]{uc/a1}
-                %\end{figure}
+                \begin{figure}[H]
+                \caption{Forum setup and initialization activity diagram.}
+                \centering
+                \includegraphics[width=1\textwidth]{uc/a1}
+                \end{figure}
 
                 \newpage
                 The following diagram shows the required steps to serialize an object into a payload.
