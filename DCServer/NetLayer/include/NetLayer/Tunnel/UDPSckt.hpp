@@ -5,43 +5,41 @@
 
 namespace nl
 {
-    namespace impl
+    namespace Tunnel
     {
-        namespace Tunnel
+        class UDPSckt
         {
-            class UDPSckt
+        private:
+            ScktUdp sckt;
+
+        public:
+            UDPSckt(const UDPSckt&) = delete;
+            UDPSckt& operator=(const UDPSckt&) = delete;
+
+            UDPSckt(UDPSckt&&) = default;
+            UDPSckt& operator=(UDPSckt&&) = default;
+
+            template <typename... Ts>
+            UDPSckt(Ts&&... xs)
+                : sckt{FWD(xs)...}
             {
-            private:
-                ScktUdp sckt;
+                sckt.setBlocking(false);
+            }
 
-            public:
-                UDPSckt(const UDPSckt&) = delete;
-                UDPSckt& operator=(const UDPSckt&) = delete;
+            ~UDPSckt() { sckt.unbind(); }
 
-                UDPSckt(UDPSckt&&) = default;
-                UDPSckt& operator=(UDPSckt&&) = default;
+            bool bind(Port x) { return sckt.bind(x) == sf::Socket::Done; }
+            bool bound() const noexcept { return sckt.getLocalPort() != 0; }
 
-                template <typename... Ts>
-                UDPSckt(Ts&&... xs)
-                    : sckt{FWD(xs)...}
-                {
-                    sckt.setBlocking(false);
-                }
+            auto receive_payload(Payload& p)
+            {
+                return scktRecv(sckt, p) == sf::Socket::Done;
+            }
 
-                ~UDPSckt() { sckt.unbind(); }
-
-                bool bind(Port x) { return sckt.bind(x) == sf::Socket::Done; }
-
-                auto receive_payload(Payload& p)
-                {
-                    return scktRecv(sckt, p) == sf::Socket::Done;
-                }
-
-                auto send_payload(Payload& p)
-                {
-                    return scktSend(sckt, p) == sf::Socket::Done;
-                }
-            };
-        }
+            auto send_payload(Payload& p)
+            {
+                return scktSend(sckt, p) == sf::Socket::Done;
+            }
+        };
     }
 }

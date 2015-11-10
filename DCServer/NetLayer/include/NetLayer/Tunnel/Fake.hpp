@@ -5,30 +5,29 @@
 
 namespace nl
 {
-    namespace impl
+
+    // TODO
+    namespace Tunnel
     {
-        // TODO
-        namespace Tunnel
+        struct Fake
         {
-            struct Fake
+            std::function<void(Payload&)> on_recv;
+            std::function<void(Payload&)> on_send;
+
+            bool bind(Port) { return true; }
+            bool bound() const noexcept { return true; }
+
+            auto receive_payload(Payload& p)
             {
-                std::function<void(Payload&)> on_recv;
-                std::function<void(Payload&)> on_send;
+                on_recv(p);
+                return true;
+            }
 
-                bool bind(Port) { return true; }
-
-                auto receive_payload(Payload& p)
-                {
-                    on_recv(p);
-                    return true;
-                }
-
-                auto send_payload(Payload& p)
-                {
-                    on_send(p);
-                    return true;
-                }
-            };
-        }
+            auto send_payload(Payload& p)
+            {
+                on_send(p);
+                return true;
+            }
+        };
     }
 }

@@ -18,9 +18,10 @@ namespace experiment
         using MyDispatchTable = DispatchTable<Config>;
         using Payload = nl::Payload;
         using PAddress = nl::PAddress;
+        using Tunnel = typename Config::Tunnel;
 
         MyDispatchTable _dispatch_table;
-        nl::ManagedHost _host;
+        nl::ManagedHostImpl<Tunnel> _host;
 
         template <typename T, typename TDuration, typename TPckt>
         auto try_send_pckt_with_header_for(
@@ -45,6 +46,14 @@ namespace experiment
 
     public:
         ContextHost(nl::Port port) : _host(port) {}
+
+        template<typename... Ts>
+        auto try_bind_tunnel(Ts&&... xs)
+        {
+            return _host.try_bind_tunnel(FWD(xs)...);
+        }
+
+        auto bound() const noexcept { return _host.bound(); }
 
         void stop() { _host.stop(); }
 

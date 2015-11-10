@@ -9,8 +9,10 @@ using namespace nl;
 void test_send()
 {
     PAddress a{IpAddr::getLocalAddress(), 10000};
-    nl::impl::Tunnel::Fake t;
-    nl::impl::ManagedSendBuf<nl::impl::Tunnel::Fake> b{t};
+    nl::Tunnel::Fake t;
+    nl::impl::ManagedSendBuf<nl::Tunnel::Fake> b{t};
+
+    TEST_ASSERT(t.bound());
 
     int orig_acc = 0;
     int res_acc = 0;

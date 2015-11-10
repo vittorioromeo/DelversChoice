@@ -3,6 +3,8 @@
 #include <sqlpp11/mysql/mysql.h>
 #include "../sql/ddl_definition.h"
 
+#define EXAMPLE_USE_UDP 0
+
 namespace mysql = sqlpp::mysql;
 namespace ddl = example_ddl;
 
@@ -327,10 +329,23 @@ namespace example
             to_s::ChannelList, to_s::Subscribe, to_s::Logout, to_c::Outcome,
             to_c::Messages, to_c::Notify, to_c::Channels, to_c::TimedOut>());
 
-    constexpr auto my_config(nle::make_config<MySettings>(my_pckt_binds));
+#if EXAMPLE_USE_UDP
+    constexpr auto my_server_tunnel(nle::tunnel_type<nl::Tunnel::UDPSckt>{});
+    constexpr auto my_client_tunnel(nle::tunnel_type<nl::Tunnel::UDPSckt>{});
+#else
+    constexpr auto my_server_tunnel(nle::tunnel_type<nl::Tunnel::TCPListener>{});
+    constexpr auto my_client_tunnel(nle::tunnel_type<nl::Tunnel::TCPSckt>{});
 
-    using MyConfig = decltype(my_config);
-    using MyContextHost = nle::ContextHost<MyConfig>;
+#endif
+
+    constexpr auto my_server_config(nle::make_config<MySettings>(my_pckt_binds, my_server_tunnel));
+    constexpr auto my_client_config(nle::make_config<MySettings>(my_pckt_binds, my_client_tunnel));
+
+    using MyServerConfig = decltype(my_server_config);
+    using MyClientConfig = decltype(my_client_config);
+
+    using MyCtxServer = nle::ContextHost<MyServerConfig>;
+    using MyCtxClient = nle::ContextHost<MyClientConfig>;
 }
 
 namespace example
@@ -451,7 +466,13 @@ namespace example
         using namespace to_s;
 
         server_state s;
-        MyContextHost h{27015};
+        MyCtxServer h{27015};
+
+#if EXAMPLE_USE_UDP
+        h.try_bind_tunnel(27015);
+#else
+        h.try_bind_tunnel(27015);
+#endif
 
         auto print_success([&](bool x, const auto& msg)
             {
@@ -658,14 +679,21 @@ namespace example
         cs s{cs::unlogged};
     };
 
-    void startClient()
+    void startClient(nl::Port port)
     {
         using namespace to_c;
 
-        MyContextHost h{27016};
+        nl::PAddress serveraddr(nl::IpAddr::getLocalAddress(), 27015);
+        MyCtxClient h{port};
+
+#if EXAMPLE_USE_UDP
+        h.try_bind_tunnel(port);
+#else
+        h.try_bind_tunnel(serveraddr.ip, serveraddr.port);
+#endif
+
         client_state s;
 
-        nl::PAddress serveraddr(nl::IpAddr::getLocalAddress(), 27015);
 
         h.on_d<Outcome>([&](const auto&, const auto& valid, const auto& otv)
             {
@@ -851,7 +879,9 @@ int main()
     }
     else if(choice == 1)
     {
-        example::startClient();
+        std::cout << "Port?:\n";
+        auto port(getInput<nl::Port>("Port"));
+        example::startClient(port);
     }
     else
     {

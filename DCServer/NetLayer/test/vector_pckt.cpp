@@ -60,7 +60,7 @@ int main()
         PAddress a{IpAddr::getLocalAddress(), 10000};
 
         std::vector<LineCollection> fake_data;
-        impl::Tunnel::Fake t;
+        Tunnel::Fake t;
         t.on_send = [&](auto&& x)
         {
             fake_data.emplace_back(
@@ -69,7 +69,7 @@ int main()
             std::cout << "test\n";
         };
 
-        impl::ManagedSendBuf<impl::Tunnel::Fake> b{t};
+        impl::ManagedSendBuf<Tunnel::Fake> b{t};
 
         for(auto i = 0; i < test_count; ++i)
         {

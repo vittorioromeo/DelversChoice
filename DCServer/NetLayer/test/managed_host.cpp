@@ -15,9 +15,9 @@ int main()
     PAddress some_address(nl::IpAddr::getLocalAddress(), 27015);
     PAddress some_sender_addr(nl::IpAddr::getLocalAddress(), 17015);
 
-    ManagedHostImpl<nl::impl::Tunnel::Fake>* cp;
+    ManagedHostImpl<nl::Tunnel::Fake>* cp;
 
-    nl::impl::Tunnel::Fake t;
+    nl::Tunnel::Fake t;
     t.on_recv = [&](auto& p)
     {
         if(!cp->busy()) return false;
@@ -39,8 +39,9 @@ int main()
         return true;
     };
 
-    ManagedHostImpl<nl::impl::Tunnel::Fake> client{27016, t};
+    ManagedHostImpl<nl::Tunnel::Fake> client{27016, t};
     cp = &client;
+    client.try_bind_tunnel(27016);
 
     auto fnProcess([&](auto& data, const PAddress& a)
         {

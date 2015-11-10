@@ -34,33 +34,8 @@ namespace nl
         // Threads:
         std::vector<std::unique_ptr<impl::busy_loop>> _busy_loops;
 
-        bool try_bind_tunnel()
+        void emplace_default_busy_loops()
         {
-            if(retry(5, [this]
-                   {
-                       return _tunnel.bind(_port);
-                   }))
-            {
-                ssvu::lo() << "Socket successfully bound to port " << _port
-                           << "\n";
-
-                return true;
-            }
-
-            return false;
-        }
-
-    public:
-        template <typename... TTunnelArgs>
-        ManagedHostImpl(Port port, TTunnelArgs&&... ts)
-            : _ip{IpAddr::getLocalAddress()}, _port{port}, _tunnel{FWD(ts)...}
-        {
-            if(!try_bind_tunnel())
-            {
-                std::cout << "Could not bind socket/tunnel.\n";
-                std::terminate();
-            }
-
             emplace_busy_loop([this]
                 {
                     _mpb_send.send_step();
@@ -70,6 +45,36 @@ namespace nl
                 {
                     _mpb_recv.recv_step();
                 });
+        }
+
+    public:
+        template <typename... Ts>
+        bool try_bind_tunnel(Ts&&... xs)
+        {
+            bool retry_res = retry(5, [&]
+                {
+                    return _tunnel.bind(FWD(xs)...);
+                });
+
+            if(retry_res)
+            {
+                nl::debugLo() << "Tunnel successfully bound.\n";
+
+                emplace_default_busy_loops();
+                return true;
+            }
+
+            std::cout << "Could not bind socket/tunnel.\n";
+            std::terminate();
+            return false;
+        }
+
+        auto bound() const noexcept { return _tunnel.bound(); }
+
+        template <typename... TTunnelArgs>
+        ManagedHostImpl(Port port, TTunnelArgs&&... ts)
+            : _ip{IpAddr::getLocalAddress()}, _port{port}, _tunnel{FWD(ts)...}
+        {
         }
 
         ~ManagedHostImpl()
@@ -145,5 +150,5 @@ namespace nl
         }
     };
 
-    using ManagedHost = ManagedHostImpl<impl::Tunnel::UDPSckt>;
+    using ManagedHost = ManagedHostImpl<Tunnel::UDPSckt>;
 }

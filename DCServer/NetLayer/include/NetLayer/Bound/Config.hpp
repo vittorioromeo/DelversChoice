@@ -8,12 +8,13 @@ namespace MPL = ::ecs::MPL;
 
 namespace experiment
 {
-    template <typename TSettings, typename TBindList>
+    template <typename TSettings, typename TBindList, typename TTunnel>
     struct Config
     {
         using IDType = typename TSettings::IDType;
         using Settings = TSettings;
         using PcktBinds = TBindList;
+        using Tunnel = TTunnel;
 
         // static_assert validity of settings
         // static_assert validity of packet binds
@@ -33,9 +34,15 @@ namespace experiment
         }
     };
 
-    template <typename TSettings, typename TBindList>
-    constexpr auto make_config(TBindList)
+    template <typename T>
+    struct tunnel_type
     {
-        return Config<TSettings, TBindList>{};
+        using type = T;
+    };
+
+    template <typename TSettings, typename TBindList, typename TTunnelWrapper>
+    constexpr auto make_config(TBindList, TTunnelWrapper)
+    {
+        return Config<TSettings, TBindList, typename TTunnelWrapper::type>{};
     }
 }

@@ -7,6 +7,8 @@ namespace nl
     using IpAddr = sf::IpAddress;
     using PcktBuf = sf::Packet;
     using ScktUdp = sf::UdpSocket;
+    using ScktTcp = sf::TcpSocket;
+    using ListenerTcp = sf::TcpListener;
     using Port = unsigned short;
 
     using Int = int;
