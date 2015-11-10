@@ -1,0 +1,83 @@
+%%% TODO %%% 
+
+\part{Example application: NLBroadcast}
+    
+    \chapter{Project specifications}    
+
+        \section{Client request}
+            The client requests a command-line persistent chat application, allowing users to register, login, create channels and broadcast messages.
+            The application should be able to run both in server mode and client mode. 
+
+            The messages must be saved and users must be able to retrieve them by specifying a date range.
+
+            Users registered to the system can subscribe to any number of channels. When users are logged in, and a message is broadcasted to one of the channels they're subscribed to, they must receive a notification with the broadcast content.
+
+        \section{Scope}
+
+                \subsection{Identity}
+                    The software that will be designed and produced will be called \emph{NLBroadcast}.
+
+                \subsection{Feature extents}
+
+                    The complete product will:
+
+                    \begin{itemize}
+                        \item Allow users to deploy and run a server with the following capabilities:
+
+                            \begin{itemize}
+                                \item Manage user credentials.
+                                \item Listen to incoming broadcasts and send notifications to users.
+                            \end{itemize}
+
+                        \item Allow users to connect to an existing server to perform the following actions:
+                            \begin{itemize}
+                                \item Registration to the server.
+                                \item Login and logout.
+                                \item Create and delete channels.
+                                \item Subscribe and unsubscribe from channels.
+                                \item Send broadcasts to channels.
+                                \item Retrieve broadcast from channels in a specific date range.
+                            \end{itemize}
+
+                    \end{itemize}
+
+        \section{Glossary}
+
+            \begin{itemize}
+                \item \emph{User}: registered user to a NLBroadcast server. Has an associated username and password.
+                \item \emph{Channel}: possible target for broadcast messages. Can be created and removed by users. Users can subscribe and unsubscribe to channels.
+                \item \emph{Broadcast}: text-based message that can target a specific channel. To send a broadcast to a specific channel, users must be subscribed to it.
+            \end{itemize}
+
+    \chapter{Technical analysis}
+
+        \section{Dependencies}
+
+            The completed product will depend on \emph{NetLayer} and \emph{sqlpp11}. The sqlpp11 library is an open-source project that allows developers to use a type-safe embedded C++ domain specific language for SQL queries.
+
+            \emph{MariaDB}, a modern drop-in replacement for MySQL is used as the DBMS. 
+
+            MariaDB is fully compliant with the MySQL standard and language, but it is more performant and has additional features. It is the default DBMS in the Arch Linux distribution.
+
+            By default, MariaDB uses the \emph{XtraDB} storage engine, a performance enhanced fork of the InnoDB storage engine.
+
+            Percona XtraDB includes all of InnoDB's robust, reliable ACID-compliant design and advanced MVCC architecture, and builds on that solid foundation with more features, more tunability, more metrics, and more scalability. In particular, it is designed to scale better on many cores, to use memory more efficiently, and to be more convenient and useful. 
+
+            To connect \emph{sqlpp11} to \emph{MariaDB}, the additional small \emph{sqlpp11-connector-mysql} library will be used.
+        
+        \section{Namespace Documentation}
+            \input{dd/df0/namespacedb__actions}
+            \input{de/d05/namespacedb__actions_1_1impl}
+            \input{d3/daf/namespaceexample}
+            \input{d0/d20/namespaceexample_1_1to__c}
+            \input{d0/d4e/namespaceexample_1_1to__s}
+
+        \section{Class Documentation}
+            \input{dc/d3a/structexample_1_1client__state}
+            \input{d2/dd2/classexample_1_1connection__state}
+            \input{d0/d71/classexample_1_1server__state}
+
+        \section{File Documentation}
+            \input{df/d0a/main_8cpp}
+        
+        \section{Screenshots}
