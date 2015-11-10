@@ -1,0 +1,26 @@
+%%% TODO %%% 
+
+\part{References}
+   
+        
+        Listed below are the references used during the development of \emph{veeForum} and the writing of this thesis.
+
+        \begin{itemize}
+            \item veeForum GitHub repository: \url{https://github.com/SuperV1234/veeForum}
+            \item LatexPP GitHub repository: \url{https://github.com/SuperV1234/Experiments}
+            \item UNIME website: \url{http://unime.it}
+            \item My personal website: \url{https://vittorioromeo.info}
+
+            \item ShareLaTeX learn: \url{https://www.sharelatex.com/learn}
+            \item Wikipedia - Software engineering: \url{http://en.wikipedia.org/wiki/Software_engineering}
+            \item Software engineering vs Programming: \url{http://www.ics.uci.edu/~ziv/ooad/intro_to_se/tsld008.htm}
+            \item IEEE SRS guidelines: \url{home.agh.edu.pl/~jsw/io/IEEE830.doc}
+            \item MariaDB documentation: \url{https://mariadb.org/docs/}
+            \item PHP documentation: \url{http://php.net/docs.php}
+        
+            \item Git documentation: \url{https://git-scm.com/documentation}
+            \item Docker documentation: \url{https://docs.docker.com/}
+            \item GitHub: \url{https://github.com/}
+            \item Arch Linux wiki: \url{https://wiki.archlinux.org/}
+        \end{itemize}
+
