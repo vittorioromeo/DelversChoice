@@ -136,6 +136,8 @@ namespace example
             if(c == nullptr) return false;
 
             f(c);
+            c->reset_life();
+
             return true;
         };
 
