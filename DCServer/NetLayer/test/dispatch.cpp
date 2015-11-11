@@ -25,7 +25,8 @@ int main()
     constexpr auto my_binds = nle::pckt_binds<int, float, TestPckt>();
     constexpr auto my_tunnel(nle::tunnel_type<nl::Tunnel::UDPSckt>{});
 
-    using MyConfig = decltype(nle::make_config<MySettings>(my_binds, my_tunnel));
+    using MyConfig =
+        decltype(nle::make_config<MySettings>(my_binds, my_tunnel));
 
     using MyDispatchTable = nle::DispatchTable<MyConfig>;
 

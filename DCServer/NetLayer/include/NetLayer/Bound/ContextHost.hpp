@@ -47,7 +47,7 @@ namespace experiment
     public:
         ContextHost(nl::Port port) : _host(port) {}
 
-        template<typename... Ts>
+        template <typename... Ts>
         auto try_bind_tunnel(Ts&&... xs)
         {
             return _host.try_bind_tunnel(FWD(xs)...);
