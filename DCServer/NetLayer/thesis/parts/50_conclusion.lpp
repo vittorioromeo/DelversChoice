@@ -3,30 +3,49 @@
 \part{Conclusion}
     \chapter{Learning experience}
 
-        Creating the \emph{veeForum} framework was an incredible learning experience. Many new technologies had to be used and integrated in the project to achieve a satisfactory final result.
+        Creating the \emph{NetLayer} library was a very useful learning experience.
 
         \begin{itemize}
-            \item \emph{Planning and design}: using Software Engineering guidelines and design processes was extremely educational and contributed to the quality of the project.
+            \item \emph{Planning and design}: using Software Engineering guidelines and design processes was extremely educational and contributed to the quality of the project. 
+            
             \item \emph{GNU/Linux containers}: using Docker containers for the database and the web application was beneficial in understanding the advantages of containers and allowed a decoupled and highly portable final result.
-            \item \emph{\LaTeX{} and LatexPP}: using \LaTeX{} and writing a simple preprocessor for it was a very education thesis-writing and typesetting experience and definitely resulted in a high-quality document.
-            \item \emph{Complex database design}: having to deal with 20+ tables, 30+ triggers and 15+ stored procedures for the correct functioning of the system was a very educational experience in complex SQL coding and database design practices. Making everything work toghether, safely and efficiently, required learning complex SQL constructs such as \emph{cursors} and \emph{imperative loops} and spending a lot of time on table/relationship design beforehand.
-            \item \emph{Complex PHP framework}: having two feature-rich PHP modules that needed to conveniently expose functionality to communicate with the database to the developer was a great learning experience in \emph{object-oriented development} and \emph{library design}. Generating HTML using polymorphic PHP class hierarchies was also extremely beneficial in the understanding of dynamic HTML page generation processes and tree-like syntactic structures.
+            
+            \item \emph{\LaTeX{} and LatexPP}: using \LaTeX{} and writing a simple preprocessor for it was a very education thesis-writing and typesetting experience and definitely resulted in a higher quality final document.        
         \end{itemize}
 
     \chapter{Future}
         
-        \emph{veeForum} can be greatly improved, and will probably be expanded upon and used as the forum framework for some future projects.
+        \emph{NetLayer} can be greatly improved, and will probably be expanded upon and used as the forum framework for some future projects.
 
-            Here are some possible improvements:
+        Here are some possible improvements for the library modules:
 
-            \begin{itemize}
-                \item \emph{Theming and customization}: add theming capabilities and user-friendly graphical customization options to the default web application.
-                \item \emph{Private messaging}: add synchronous and asynchronous private messaging capabilities between users (and/or groups), along with new permissions and privileges.
-                \item \emph{RSS feed}: add the possibility to subscribe to sections/threads/users and receive an RSS feed.
-                \item \emph{Public JSON API}: add a public RESTful JSON API that can be used to retrieve the forum contents and display them in custom clients.
-                \item \emph{Personal user profiles}: add personal user profile customization options, such as avatars, biographies, interests, contact information, etc...
-                \item \emph{Email notifications}: allow users to receive notification alerts as emails.
-                \item \emph{Dashboard}: add a dashboard displaying the most popular threads and users in the main page.
-                \item \emph{Real-time statistics}: show the real-time number of users viewing a particular section or thread directly in the web interface.
-                \item \emph{Mailing list support}: add a mailing bot that can be used to interact with the forum contents directly from the user's favorite email client.
-            \end{itemize}
+        \begin{itemize}
+            \item \emph{Busy loops}: instead of using loops continously running in a separate thread until a condition is met, condition variable threading primitives and more efficient construct may be used.
+            
+            \item \emph{Payloads}: some protocols, such as TCP, are connection-based. Having a template-based payload type may allow memory savings and performance improvements by avoiding the unnecessary specification of the sender/target address.
+            
+            \item \emph{Additional abstractions}: the current context host and managed host abstractions allow developers to easily create server-client architectures. Creating more distributed architectures, such as P2P, is possible in the current state of the library, but it is not as convenient. Future versions of NetLayer should have easy-to-use abstractions for P2P architectures.
+            
+            \item \emph{"Fixed" serialization}: when packet size is not dynamic and known in advance (at compile-time), more efficient fixed-size serialization constructs should be implemented to avoid dynaic buffer resizing while sending and receiving packets.
+
+            \item \emph{AutoSyncGen integration}: one of my other projects, AutoSyncGen, is a networking library that allows users to automatically synchronize data structures using delta compression. Since this is a very widely used compression method, it would be convenient for developers to be able to easily integrate AutoSyncGen with NetLayer.
+
+            \item \emph{Removing SFML dependency}: 
+
+            \item \emph{Lock-free data structures}:
+
+            \item \emph{Encrypted tunnels}:  
+
+            \item \emph{Composable tunnels}:
+
+            \item \emph{boost::hana}:
+
+            \item \emph{Monadic error handling}: 
+
+            \item \emph{Avoid std::function overhead}:
+
+            \item \emph{Connection abstractions}: %% TODO: use TCP if available, or simulate it %%
+
+            \item \emph{Customizable packet reliability}:          
+        \end{itemize}
+

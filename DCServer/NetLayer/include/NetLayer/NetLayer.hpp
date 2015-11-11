@@ -38,19 +38,3 @@
 // * Metaprogramming facilities for data serialization
 // * User-interface macros.
 #include "./Bound/Bound.hpp"
-
-
-
-// TODO:
-// Thesis:
-// * TDD development
-// * Layered architecture
-// * Doxygen + doxygraph for UML
-// * Use AutoSyncGen as thesis template
-// * Dependencies
-// * AutoSyncGen integration possibility?
-// * Why C++, why C++14
-// * User freedom
-// * dependencies: ssvu, vrm_pp, vrm_core? ecs?
-// * polling mode
-// * non-polling mode

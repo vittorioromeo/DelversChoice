@@ -1,26 +1,34 @@
 %%% TODO %%% 
 
 \part{References}
-   
-        
-        Listed below are the references used during the development of \emph{veeForum} and the writing of this thesis.
+    Listed below are the references used during the development of \emph{NetLayer} and the writing of this thesis.
 
-        \begin{itemize}
-            \item veeForum GitHub repository: \url{https://github.com/SuperV1234/veeForum}
-            \item LatexPP GitHub repository: \url{https://github.com/SuperV1234/Experiments}
-            \item UNIME website: \url{http://unime.it}
-            \item My personal website: \url{https://vittorioromeo.info}
+    \begin{itemize}
+        \item NetLayer GitHub repository: \url{https://github.com/SuperV1234/DelversChoice/tree/master/DCServer/NetLayer}
+        \item NLBroadcast GitHub repository: \url{https://github.com/SuperV1234/DelversChoice/tree/master/DCServer/NetLayer/src}
+        \item LatexPP GitHub repository: \url{https://github.com/SuperV1234/latexpp}
+        \item SSVUtils GitHub repository: \url{https://github.com/SuperV1234/SSVUtils}
+        \item UNIME website: \url{http://unime.it}
+        \item My personal website: \url{https://vittorioromeo.info}
 
-            \item ShareLaTeX learn: \url{https://www.sharelatex.com/learn}
-            \item Wikipedia - Software engineering: \url{http://en.wikipedia.org/wiki/Software_engineering}
-            \item Software engineering vs Programming: \url{http://www.ics.uci.edu/~ziv/ooad/intro_to_se/tsld008.htm}
-            \item IEEE SRS guidelines: \url{home.agh.edu.pl/~jsw/io/IEEE830.doc}
-            \item MariaDB documentation: \url{https://mariadb.org/docs/}
-            \item PHP documentation: \url{http://php.net/docs.php}
-        
-            \item Git documentation: \url{https://git-scm.com/documentation}
-            \item Docker documentation: \url{https://docs.docker.com/}
-            \item GitHub: \url{https://github.com/}
-            \item Arch Linux wiki: \url{https://wiki.archlinux.org/}
-        \end{itemize}
+        \item sqlpp11 GitHub repository: \url{https://github.com/rbock/sqlpp11}
+        \item sqlpp11-connector-mysql GitHub repository: \url{https://github.com/rbock/sqlpp11-connector-mysql}
+
+        \item SFML website: \url{http://www.sfml-dev.org/}
+        \item SFML GitHub repository: \url{http://github.com/LaurentGomila/SFML}
+
+        \item ShareLaTeX learn: \url{https://www.sharelatex.com/learn}
+        \item Wikipedia - Software engineering: \url{http://en.wikipedia.org/wiki/Software_engineering}
+        \item Software engineering vs Programming: \url{http://www.ics.uci.edu/~ziv/ooad/intro_to_se/tsld008.htm}
+        \item IEEE SRS guidelines: \url{home.agh.edu.pl/~jsw/io/IEEE830.doc}
+        \item MariaDB documentation: \url{https://mariadb.org/docs/}
+
+        \item PlantUML website: \url{http://plantuml.com/}
+        \item Doxygen website: \url{http://www.stack.nl/~dimitri/doxygen/}
+    
+        \item Git documentation: \url{https://git-scm.com/documentation}
+        \item Docker documentation: \url{https://docs.docker.com/}
+        \item GitHub: \url{https://github.com/}
+        \item Arch Linux wiki: \url{https://wiki.archlinux.org/}
+    \end{itemize}
 
