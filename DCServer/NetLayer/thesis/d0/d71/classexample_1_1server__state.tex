@@ -1,0 +1,136 @@
+\hypertarget{classexample_1_1server__state}{}\section{example\+:\+:server\+\_\+state Class Reference}
+\label{classexample_1_1server__state}\index{example\+::server\+\_\+state@{example\+::server\+\_\+state}}
+
+
+Collaboration diagram for example\+:\+:server\+\_\+state\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=193pt]{de/de7/classexample_1_1server__state__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classexample_1_1server__state_a4944de09277fd8f8153796cc3f6af8bb}{server\+\_\+state} ()=default
+\item 
+bool \hyperlink{classexample_1_1server__state_a143802493be3fab58d9b021949a268a3}{logout} (const \hyperlink{structnl_1_1PAddress}{nl\+::\+P\+Address} \&x)
+\item 
+\hyperlink{classexample_1_1connection__state}{connection\+\_\+state} $\ast$ \hyperlink{classexample_1_1server__state_af608eb02609e229d0e750b7e04432821}{conn\+\_\+by\+\_\+addr} (const \hyperlink{structnl_1_1PAddress}{nl\+::\+P\+Address} \&x)
+\item 
+\hyperlink{classexample_1_1connection__state}{connection\+\_\+state} $\ast$ \hyperlink{classexample_1_1server__state_a2ddcf829df5e8bdc8686d8982cefa8af}{conn\+\_\+by\+\_\+id} (int id)
+\item 
+void \hyperlink{classexample_1_1server__state_a65913ae9492758a1452a13c8a6fac4e8}{connect\+\_\+or\+\_\+reset} (int id, const \hyperlink{structnl_1_1PAddress}{nl\+::\+P\+Address} \&x)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\void \hyperlink{classexample_1_1server__state_adbe03db51f7d3275f9620b2bccf3589e}{decrease\+\_\+life} (T\+F \&\&f)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classexample_1_1server__state_a4944de09277fd8f8153796cc3f6af8bb}{}\index{example\+::server\+\_\+state@{example\+::server\+\_\+state}!server\+\_\+state@{server\+\_\+state}}
+\index{server\+\_\+state@{server\+\_\+state}!example\+::server\+\_\+state@{example\+::server\+\_\+state}}
+\subsubsection[{server\+\_\+state()=default}]{\setlength{\rightskip}{0pt plus 5cm}example\+::server\+\_\+state\+::server\+\_\+state (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [default]}}\label{classexample_1_1server__state_a4944de09277fd8f8153796cc3f6af8bb}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classexample_1_1server__state_af608eb02609e229d0e750b7e04432821}{}\index{example\+::server\+\_\+state@{example\+::server\+\_\+state}!conn\+\_\+by\+\_\+addr@{conn\+\_\+by\+\_\+addr}}
+\index{conn\+\_\+by\+\_\+addr@{conn\+\_\+by\+\_\+addr}!example\+::server\+\_\+state@{example\+::server\+\_\+state}}
+\subsubsection[{conn\+\_\+by\+\_\+addr(const nl\+::\+P\+Address \&x)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf connection\+\_\+state}$\ast$ example\+::server\+\_\+state\+::conn\+\_\+by\+\_\+addr (
+\begin{DoxyParamCaption}
+\item[{const {\bf nl\+::\+P\+Address} \&}]{x}
+\end{DoxyParamCaption}
+)}\label{classexample_1_1server__state_af608eb02609e229d0e750b7e04432821}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d0/d71/classexample_1_1server__state_af608eb02609e229d0e750b7e04432821_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{classexample_1_1server__state_a2ddcf829df5e8bdc8686d8982cefa8af}{}\index{example\+::server\+\_\+state@{example\+::server\+\_\+state}!conn\+\_\+by\+\_\+id@{conn\+\_\+by\+\_\+id}}
+\index{conn\+\_\+by\+\_\+id@{conn\+\_\+by\+\_\+id}!example\+::server\+\_\+state@{example\+::server\+\_\+state}}
+\subsubsection[{conn\+\_\+by\+\_\+id(int id)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf connection\+\_\+state}$\ast$ example\+::server\+\_\+state\+::conn\+\_\+by\+\_\+id (
+\begin{DoxyParamCaption}
+\item[{int}]{id}
+\end{DoxyParamCaption}
+)}\label{classexample_1_1server__state_a2ddcf829df5e8bdc8686d8982cefa8af}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d0/d71/classexample_1_1server__state_a2ddcf829df5e8bdc8686d8982cefa8af_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{classexample_1_1server__state_a65913ae9492758a1452a13c8a6fac4e8}{}\index{example\+::server\+\_\+state@{example\+::server\+\_\+state}!connect\+\_\+or\+\_\+reset@{connect\+\_\+or\+\_\+reset}}
+\index{connect\+\_\+or\+\_\+reset@{connect\+\_\+or\+\_\+reset}!example\+::server\+\_\+state@{example\+::server\+\_\+state}}
+\subsubsection[{connect\+\_\+or\+\_\+reset(int id, const nl\+::\+P\+Address \&x)}]{\setlength{\rightskip}{0pt plus 5cm}void example\+::server\+\_\+state\+::connect\+\_\+or\+\_\+reset (
+\begin{DoxyParamCaption}
+\item[{int}]{id, }
+\item[{const {\bf nl\+::\+P\+Address} \&}]{x}
+\end{DoxyParamCaption}
+)}\label{classexample_1_1server__state_a65913ae9492758a1452a13c8a6fac4e8}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d0/d71/classexample_1_1server__state_a65913ae9492758a1452a13c8a6fac4e8_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{classexample_1_1server__state_adbe03db51f7d3275f9620b2bccf3589e}{}\index{example\+::server\+\_\+state@{example\+::server\+\_\+state}!decrease\+\_\+life@{decrease\+\_\+life}}
+\index{decrease\+\_\+life@{decrease\+\_\+life}!example\+::server\+\_\+state@{example\+::server\+\_\+state}}
+\subsubsection[{decrease\+\_\+life(\+T\+F \&\&f)}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T\+F $>$ void example\+::server\+\_\+state\+::decrease\+\_\+life (
+\begin{DoxyParamCaption}
+\item[{T\+F \&\&}]{f}
+\end{DoxyParamCaption}
+)}\label{classexample_1_1server__state_adbe03db51f7d3275f9620b2bccf3589e}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d0/d71/classexample_1_1server__state_adbe03db51f7d3275f9620b2bccf3589e_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{classexample_1_1server__state_a143802493be3fab58d9b021949a268a3}{}\index{example\+::server\+\_\+state@{example\+::server\+\_\+state}!logout@{logout}}
+\index{logout@{logout}!example\+::server\+\_\+state@{example\+::server\+\_\+state}}
+\subsubsection[{logout(const nl\+::\+P\+Address \&x)}]{\setlength{\rightskip}{0pt plus 5cm}bool example\+::server\+\_\+state\+::logout (
+\begin{DoxyParamCaption}
+\item[{const {\bf nl\+::\+P\+Address} \&}]{x}
+\end{DoxyParamCaption}
+)}\label{classexample_1_1server__state_a143802493be3fab58d9b021949a268a3}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d0/d71/classexample_1_1server__state_a143802493be3fab58d9b021949a268a3_icgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\hyperlink{main_8cpp}{main.\+cpp}\end{DoxyCompactItemize}

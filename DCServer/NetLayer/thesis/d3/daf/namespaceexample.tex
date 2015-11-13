@@ -1,0 +1,208 @@
+\hypertarget{namespaceexample}{}\section{example Namespace Reference}
+\label{namespaceexample}\index{example@{example}}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespaceexample_1_1to__c}{to\+\_\+c}
+\item 
+ \hyperlink{namespaceexample_1_1to__s}{to\+\_\+s}
+\end{DoxyCompactItemize}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structexample_1_1client__state}{client\+\_\+state}
+\item 
+class \hyperlink{classexample_1_1connection__state}{connection\+\_\+state}
+\item 
+class \hyperlink{classexample_1_1server__state}{server\+\_\+state}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \hyperlink{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}{My\+Settings} = \hyperlink{structexperiment_1_1Settings}{nle\+::\+Settings}$<$ \hyperlink{namespacenl_a5a2105bdb0a0734402590ce0805d7e31}{nl\+::\+U\+Int32} $>$
+\item 
+using \hyperlink{namespaceexample_af793395d62fc2b1e6ffb8fa73d751c26}{My\+Server\+Config} = decltype(\hyperlink{namespaceexample_ac04453c909e716e9769692290761b844}{my\+\_\+server\+\_\+config})
+\item 
+using \hyperlink{namespaceexample_a1d0fadf5159e96dd9c1f2c1d645ed430}{My\+Client\+Config} = decltype(\hyperlink{namespaceexample_a2e75dd524031f59d04a53e5073228ac0}{my\+\_\+client\+\_\+config})
+\item 
+using \hyperlink{namespaceexample_a691724c505d8b776cc3d6e6ecdd86c30}{My\+Ctx\+Server} = \hyperlink{classexperiment_1_1ContextHost}{nle\+::\+Context\+Host}$<$ \hyperlink{namespaceexample_af793395d62fc2b1e6ffb8fa73d751c26}{My\+Server\+Config} $>$
+\item 
+using \hyperlink{namespaceexample_a15f26e1f0bedfa575b4f5832a2b679b5}{My\+Ctx\+Client} = \hyperlink{classexperiment_1_1ContextHost}{nle\+::\+Context\+Host}$<$ \hyperlink{namespaceexample_a1d0fadf5159e96dd9c1f2c1d645ed430}{My\+Client\+Config} $>$
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0}{cs} \{ \\*
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a4a36cb415836aac2347936579383dcf4}{cs\+::unlogged}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad688c4ccd7e20183b67f80d8816a2126}{cs\+::logged}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a8eaec4759daa38fd837a17e49bbbc3e4}{cs\+::awaiting\+\_\+channel\+\_\+list}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a9a33fad9e59a1d8e6912dc3509873487}{cs\+::selecting\+\_\+channel}, 
+\\*
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a99c4ab692021ecaed7eb12e45e47a55a}{cs\+::awaiting\+\_\+login\+\_\+response}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad1e6a64ad538fae0a705a18763af9db4}{cs\+::awaiting\+\_\+create\+\_\+channel\+\_\+response}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0ab81f4f2d5c43a5238dd9f28bf5028e48}{cs\+::awaiting\+\_\+registration\+\_\+response}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a0ce1208f71b22e41554fcb3cc3e68368}{cs\+::awaiting\+\_\+create\+\_\+message\+\_\+response}, 
+\\*
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0aa4a4aaf73f45f312479a56bbdeed79c3}{cs\+::awaiting\+\_\+subscribe\+\_\+response}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+constexpr auto \hyperlink{namespaceexample_ac2cef3a58375e350f325130a9ed9e346}{my\+\_\+pckt\+\_\+binds} (nle\+::pckt\+\_\+binds$<$ to\+\_\+s\+::\+Registration, to\+\_\+s\+::\+Login, to\+\_\+s\+::\+Create\+Channel, to\+\_\+s\+::\+Delete\+Channel, to\+\_\+s\+::\+Send\+Message, to\+\_\+s\+::\+Get\+Messages, to\+\_\+s\+::\+Channel\+List, to\+\_\+s\+::\+Subscribe, to\+\_\+s\+::\+Logout, to\+\_\+c\+::\+Outcome, to\+\_\+c\+::\+Messages, to\+\_\+c\+::\+Notify, to\+\_\+c\+::\+Channels, to\+\_\+c\+::\+Timed\+Out $>$())
+\item 
+constexpr auto \hyperlink{namespaceexample_a86eab8c8648c370d8dbf00cf2f841fd9}{my\+\_\+server\+\_\+tunnel} (\hyperlink{structexperiment_1_1tunnel__type}{nle\+::tunnel\+\_\+type}$<$ \hyperlink{classnl_1_1Tunnel_1_1TCPListener}{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener} $>$\{\})
+\item 
+constexpr auto \hyperlink{namespaceexample_a0c17778857fd8a16e970c1fcf2050f02}{my\+\_\+client\+\_\+tunnel} (\hyperlink{structexperiment_1_1tunnel__type}{nle\+::tunnel\+\_\+type}$<$ \hyperlink{classnl_1_1Tunnel_1_1TCPSckt}{nl\+::\+Tunnel\+::\+T\+C\+P\+Sckt} $>$\{\})
+\item 
+constexpr auto \hyperlink{namespaceexample_ac04453c909e716e9769692290761b844}{my\+\_\+server\+\_\+config} (nle\+::make\+\_\+config$<$ \hyperlink{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}{My\+Settings} $>$(\hyperlink{namespaceexample_ac2cef3a58375e350f325130a9ed9e346}{my\+\_\+pckt\+\_\+binds}, \hyperlink{namespaceexample_a86eab8c8648c370d8dbf00cf2f841fd9}{my\+\_\+server\+\_\+tunnel}))
+\item 
+constexpr auto \hyperlink{namespaceexample_a2e75dd524031f59d04a53e5073228ac0}{my\+\_\+client\+\_\+config} (nle\+::make\+\_\+config$<$ \hyperlink{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}{My\+Settings} $>$(\hyperlink{namespaceexample_ac2cef3a58375e350f325130a9ed9e346}{my\+\_\+pckt\+\_\+binds}, \hyperlink{namespaceexample_a0c17778857fd8a16e970c1fcf2050f02}{my\+\_\+client\+\_\+tunnel}))
+\item 
+void \hyperlink{namespaceexample_ab71cf8c7d29ccb4a44b67da2d34aa00d}{start\+Server} ()
+\item 
+void \hyperlink{namespaceexample_ad4a8834efe793f3decd11753886aedc9}{start\+Client} (\hyperlink{namespacenl_a12899c87e239db66809da0a71fcc9129}{nl\+::\+Port} port)
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{namespaceexample_a1d0fadf5159e96dd9c1f2c1d645ed430}{}\index{example@{example}!My\+Client\+Config@{My\+Client\+Config}}
+\index{My\+Client\+Config@{My\+Client\+Config}!example@{example}}
+\subsubsection[{My\+Client\+Config}]{\setlength{\rightskip}{0pt plus 5cm}using {\bf example\+::\+My\+Client\+Config} = typedef decltype({\bf my\+\_\+client\+\_\+config})}\label{namespaceexample_a1d0fadf5159e96dd9c1f2c1d645ed430}
+\hypertarget{namespaceexample_a15f26e1f0bedfa575b4f5832a2b679b5}{}\index{example@{example}!My\+Ctx\+Client@{My\+Ctx\+Client}}
+\index{My\+Ctx\+Client@{My\+Ctx\+Client}!example@{example}}
+\subsubsection[{My\+Ctx\+Client}]{\setlength{\rightskip}{0pt plus 5cm}using {\bf example\+::\+My\+Ctx\+Client} = typedef {\bf nle\+::\+Context\+Host}$<${\bf My\+Client\+Config}$>$}\label{namespaceexample_a15f26e1f0bedfa575b4f5832a2b679b5}
+\hypertarget{namespaceexample_a691724c505d8b776cc3d6e6ecdd86c30}{}\index{example@{example}!My\+Ctx\+Server@{My\+Ctx\+Server}}
+\index{My\+Ctx\+Server@{My\+Ctx\+Server}!example@{example}}
+\subsubsection[{My\+Ctx\+Server}]{\setlength{\rightskip}{0pt plus 5cm}using {\bf example\+::\+My\+Ctx\+Server} = typedef {\bf nle\+::\+Context\+Host}$<${\bf My\+Server\+Config}$>$}\label{namespaceexample_a691724c505d8b776cc3d6e6ecdd86c30}
+\hypertarget{namespaceexample_af793395d62fc2b1e6ffb8fa73d751c26}{}\index{example@{example}!My\+Server\+Config@{My\+Server\+Config}}
+\index{My\+Server\+Config@{My\+Server\+Config}!example@{example}}
+\subsubsection[{My\+Server\+Config}]{\setlength{\rightskip}{0pt plus 5cm}using {\bf example\+::\+My\+Server\+Config} = typedef decltype({\bf my\+\_\+server\+\_\+config})}\label{namespaceexample_af793395d62fc2b1e6ffb8fa73d751c26}
+\hypertarget{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}{}\index{example@{example}!My\+Settings@{My\+Settings}}
+\index{My\+Settings@{My\+Settings}!example@{example}}
+\subsubsection[{My\+Settings}]{\setlength{\rightskip}{0pt plus 5cm}using {\bf example\+::\+My\+Settings} = typedef {\bf nle\+::\+Settings}$<${\bf nl\+::\+U\+Int32}$>$}\label{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0}{}\index{example@{example}!cs@{cs}}
+\index{cs@{cs}!example@{example}}
+\subsubsection[{cs}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf example\+::cs}\hspace{0.3cm}{\ttfamily [strong]}}\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{unlogged@{unlogged}!example@{example}}\index{example@{example}!unlogged@{unlogged}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0a4a36cb415836aac2347936579383dcf4}{}unlogged\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0a4a36cb415836aac2347936579383dcf4}
+}]\index{logged@{logged}!example@{example}}\index{example@{example}!logged@{logged}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad688c4ccd7e20183b67f80d8816a2126}{}logged\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad688c4ccd7e20183b67f80d8816a2126}
+}]\index{awaiting\+\_\+channel\+\_\+list@{awaiting\+\_\+channel\+\_\+list}!example@{example}}\index{example@{example}!awaiting\+\_\+channel\+\_\+list@{awaiting\+\_\+channel\+\_\+list}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0a8eaec4759daa38fd837a17e49bbbc3e4}{}awaiting\+\_\+channel\+\_\+list\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0a8eaec4759daa38fd837a17e49bbbc3e4}
+}]\index{selecting\+\_\+channel@{selecting\+\_\+channel}!example@{example}}\index{example@{example}!selecting\+\_\+channel@{selecting\+\_\+channel}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0a9a33fad9e59a1d8e6912dc3509873487}{}selecting\+\_\+channel\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0a9a33fad9e59a1d8e6912dc3509873487}
+}]\index{awaiting\+\_\+login\+\_\+response@{awaiting\+\_\+login\+\_\+response}!example@{example}}\index{example@{example}!awaiting\+\_\+login\+\_\+response@{awaiting\+\_\+login\+\_\+response}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0a99c4ab692021ecaed7eb12e45e47a55a}{}awaiting\+\_\+login\+\_\+response\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0a99c4ab692021ecaed7eb12e45e47a55a}
+}]\index{awaiting\+\_\+create\+\_\+channel\+\_\+response@{awaiting\+\_\+create\+\_\+channel\+\_\+response}!example@{example}}\index{example@{example}!awaiting\+\_\+create\+\_\+channel\+\_\+response@{awaiting\+\_\+create\+\_\+channel\+\_\+response}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad1e6a64ad538fae0a705a18763af9db4}{}awaiting\+\_\+create\+\_\+channel\+\_\+response\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad1e6a64ad538fae0a705a18763af9db4}
+}]\index{awaiting\+\_\+registration\+\_\+response@{awaiting\+\_\+registration\+\_\+response}!example@{example}}\index{example@{example}!awaiting\+\_\+registration\+\_\+response@{awaiting\+\_\+registration\+\_\+response}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0ab81f4f2d5c43a5238dd9f28bf5028e48}{}awaiting\+\_\+registration\+\_\+response\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0ab81f4f2d5c43a5238dd9f28bf5028e48}
+}]\index{awaiting\+\_\+create\+\_\+message\+\_\+response@{awaiting\+\_\+create\+\_\+message\+\_\+response}!example@{example}}\index{example@{example}!awaiting\+\_\+create\+\_\+message\+\_\+response@{awaiting\+\_\+create\+\_\+message\+\_\+response}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0a0ce1208f71b22e41554fcb3cc3e68368}{}awaiting\+\_\+create\+\_\+message\+\_\+response\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0a0ce1208f71b22e41554fcb3cc3e68368}
+}]\index{awaiting\+\_\+subscribe\+\_\+response@{awaiting\+\_\+subscribe\+\_\+response}!example@{example}}\index{example@{example}!awaiting\+\_\+subscribe\+\_\+response@{awaiting\+\_\+subscribe\+\_\+response}}\item[{\em 
+\hypertarget{namespaceexample_a229123c56827091122d3cc29bf73a6c0aa4a4aaf73f45f312479a56bbdeed79c3}{}awaiting\+\_\+subscribe\+\_\+response\label{namespaceexample_a229123c56827091122d3cc29bf73a6c0aa4a4aaf73f45f312479a56bbdeed79c3}
+}]\end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\hypertarget{namespaceexample_a2e75dd524031f59d04a53e5073228ac0}{}\index{example@{example}!my\+\_\+client\+\_\+config@{my\+\_\+client\+\_\+config}}
+\index{my\+\_\+client\+\_\+config@{my\+\_\+client\+\_\+config}!example@{example}}
+\subsubsection[{my\+\_\+client\+\_\+config(nle\+::make\+\_\+config$<$ My\+Settings $>$(my\+\_\+pckt\+\_\+binds, my\+\_\+client\+\_\+tunnel))}]{\setlength{\rightskip}{0pt plus 5cm}constexpr auto example\+::my\+\_\+client\+\_\+config (
+\begin{DoxyParamCaption}
+\item[{nle\+::make\+\_\+config$<$ {\bf My\+Settings} $>$}]{my\+\_\+pckt\+\_\+binds, my\+\_\+client\+\_\+tunnel}
+\end{DoxyParamCaption}
+)}\label{namespaceexample_a2e75dd524031f59d04a53e5073228ac0}
+\hypertarget{namespaceexample_a0c17778857fd8a16e970c1fcf2050f02}{}\index{example@{example}!my\+\_\+client\+\_\+tunnel@{my\+\_\+client\+\_\+tunnel}}
+\index{my\+\_\+client\+\_\+tunnel@{my\+\_\+client\+\_\+tunnel}!example@{example}}
+\subsubsection[{my\+\_\+client\+\_\+tunnel(nle\+::tunnel\+\_\+type$<$ nl\+::\+Tunnel\+::\+T\+C\+P\+Sckt $>$\lcurly{}\rcurly{})}]{\setlength{\rightskip}{0pt plus 5cm}constexpr auto example\+::my\+\_\+client\+\_\+tunnel (
+\begin{DoxyParamCaption}
+\item[{{\bf nle\+::tunnel\+\_\+type}$<$ {\bf nl\+::\+Tunnel\+::\+T\+C\+P\+Sckt} $>$\{\}}]{}
+\end{DoxyParamCaption}
+)}\label{namespaceexample_a0c17778857fd8a16e970c1fcf2050f02}
+\hypertarget{namespaceexample_ac2cef3a58375e350f325130a9ed9e346}{}\index{example@{example}!my\+\_\+pckt\+\_\+binds@{my\+\_\+pckt\+\_\+binds}}
+\index{my\+\_\+pckt\+\_\+binds@{my\+\_\+pckt\+\_\+binds}!example@{example}}
+\subsubsection[{my\+\_\+pckt\+\_\+binds(nle\+::pckt\+\_\+binds$<$ to\+\_\+s\+::\+Registration, to\+\_\+s\+::\+Login, to\+\_\+s\+::\+Create\+Channel, to\+\_\+s\+::\+Delete\+Channel, to\+\_\+s\+::\+Send\+Message, to\+\_\+s\+::\+Get\+Messages, to\+\_\+s\+::\+Channel\+List, to\+\_\+s\+::\+Subscribe, to\+\_\+s\+::\+Logout, to\+\_\+c\+::\+Outcome, to\+\_\+c\+::\+Messages, to\+\_\+c\+::\+Notify, to\+\_\+c\+::\+Channels, to\+\_\+c\+::\+Timed\+Out $>$())}]{\setlength{\rightskip}{0pt plus 5cm}constexpr auto example\+::my\+\_\+pckt\+\_\+binds (
+\begin{DoxyParamCaption}
+\item[{nle\+::pckt\+\_\+binds$<$ to\+\_\+s\+::\+Registration, to\+\_\+s\+::\+Login, to\+\_\+s\+::\+Create\+Channel, to\+\_\+s\+::\+Delete\+Channel, to\+\_\+s\+::\+Send\+Message, to\+\_\+s\+::\+Get\+Messages, to\+\_\+s\+::\+Channel\+List, to\+\_\+s\+::\+Subscribe, to\+\_\+s\+::\+Logout, to\+\_\+c\+::\+Outcome, to\+\_\+c\+::\+Messages, to\+\_\+c\+::\+Notify, to\+\_\+c\+::\+Channels, to\+\_\+c\+::\+Timed\+Out $>$}]{()}
+\end{DoxyParamCaption}
+)}\label{namespaceexample_ac2cef3a58375e350f325130a9ed9e346}
+\hypertarget{namespaceexample_ac04453c909e716e9769692290761b844}{}\index{example@{example}!my\+\_\+server\+\_\+config@{my\+\_\+server\+\_\+config}}
+\index{my\+\_\+server\+\_\+config@{my\+\_\+server\+\_\+config}!example@{example}}
+\subsubsection[{my\+\_\+server\+\_\+config(nle\+::make\+\_\+config$<$ My\+Settings $>$(my\+\_\+pckt\+\_\+binds, my\+\_\+server\+\_\+tunnel))}]{\setlength{\rightskip}{0pt plus 5cm}constexpr auto example\+::my\+\_\+server\+\_\+config (
+\begin{DoxyParamCaption}
+\item[{nle\+::make\+\_\+config$<$ {\bf My\+Settings} $>$}]{my\+\_\+pckt\+\_\+binds, my\+\_\+server\+\_\+tunnel}
+\end{DoxyParamCaption}
+)}\label{namespaceexample_ac04453c909e716e9769692290761b844}
+\hypertarget{namespaceexample_a86eab8c8648c370d8dbf00cf2f841fd9}{}\index{example@{example}!my\+\_\+server\+\_\+tunnel@{my\+\_\+server\+\_\+tunnel}}
+\index{my\+\_\+server\+\_\+tunnel@{my\+\_\+server\+\_\+tunnel}!example@{example}}
+\subsubsection[{my\+\_\+server\+\_\+tunnel(nle\+::tunnel\+\_\+type$<$ nl\+::\+Tunnel\+::\+T\+C\+P\+Listener $>$\lcurly{}\rcurly{})}]{\setlength{\rightskip}{0pt plus 5cm}constexpr auto example\+::my\+\_\+server\+\_\+tunnel (
+\begin{DoxyParamCaption}
+\item[{{\bf nle\+::tunnel\+\_\+type}$<$ {\bf nl\+::\+Tunnel\+::\+T\+C\+P\+Listener} $>$\{\}}]{}
+\end{DoxyParamCaption}
+)}\label{namespaceexample_a86eab8c8648c370d8dbf00cf2f841fd9}
+\hypertarget{namespaceexample_ad4a8834efe793f3decd11753886aedc9}{}\index{example@{example}!start\+Client@{start\+Client}}
+\index{start\+Client@{start\+Client}!example@{example}}
+\subsubsection[{start\+Client(nl\+::\+Port port)}]{\setlength{\rightskip}{0pt plus 5cm}void example\+::start\+Client (
+\begin{DoxyParamCaption}
+\item[{{\bf nl\+::\+Port}}]{port}
+\end{DoxyParamCaption}
+)}\label{namespaceexample_ad4a8834efe793f3decd11753886aedc9}
+
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d3/daf/namespaceexample_ad4a8834efe793f3decd11753886aedc9_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{d3/daf/namespaceexample_ad4a8834efe793f3decd11753886aedc9_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{namespaceexample_ab71cf8c7d29ccb4a44b67da2d34aa00d}{}\index{example@{example}!start\+Server@{start\+Server}}
+\index{start\+Server@{start\+Server}!example@{example}}
+\subsubsection[{start\+Server()}]{\setlength{\rightskip}{0pt plus 5cm}void example\+::start\+Server (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{namespaceexample_ab71cf8c7d29ccb4a44b67da2d34aa00d}
+
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{d3/daf/namespaceexample_ab71cf8c7d29ccb4a44b67da2d34aa00d_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=261pt]{d3/daf/namespaceexample_ab71cf8c7d29ccb4a44b67da2d34aa00d_icgraph}
+\end{center}
+\end{figure}
+
+

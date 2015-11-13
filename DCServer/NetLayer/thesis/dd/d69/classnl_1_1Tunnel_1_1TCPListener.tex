@@ -1,0 +1,131 @@
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener}{}\section{nl\+:\+:Tunnel\+:\+:T\+C\+P\+Listener Class Reference}
+\label{classnl_1_1Tunnel_1_1TCPListener}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+
+
+{\ttfamily \#include $<$T\+C\+P\+Sckt.\+hpp$>$}
+
+
+
+Collaboration diagram for nl\+:\+:Tunnel\+:\+:T\+C\+P\+Listener\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=200pt]{d5/d10/classnl_1_1Tunnel_1_1TCPListener__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classnl_1_1Tunnel_1_1TCPListener_a93593c58fcc83eefc031ca7f416c9490}{T\+C\+P\+Listener} (const \hyperlink{classnl_1_1Tunnel_1_1TCPListener}{T\+C\+P\+Listener} \&)=delete
+\item 
+\hyperlink{classnl_1_1Tunnel_1_1TCPListener}{T\+C\+P\+Listener} \& \hyperlink{classnl_1_1Tunnel_1_1TCPListener_a116f9664351c8409c0a3f86c24b12fc2}{operator=} (const \hyperlink{classnl_1_1Tunnel_1_1TCPListener}{T\+C\+P\+Listener} \&)=delete
+\item 
+\hyperlink{classnl_1_1Tunnel_1_1TCPListener_ac584ae7b3fd4d64c6d089bd0278957cc}{T\+C\+P\+Listener} (\hyperlink{classnl_1_1Tunnel_1_1TCPListener}{T\+C\+P\+Listener} \&\&)=default
+\item 
+\hyperlink{classnl_1_1Tunnel_1_1TCPListener}{T\+C\+P\+Listener} \& \hyperlink{classnl_1_1Tunnel_1_1TCPListener_a110e943140627b5e22d237bb4ceee685}{operator=} (\hyperlink{classnl_1_1Tunnel_1_1TCPListener}{T\+C\+P\+Listener} \&\&)=default
+\item 
+{\footnotesize template$<$typename... Ts$>$ }\\\hyperlink{classnl_1_1Tunnel_1_1TCPListener_a5c1a91c9e6f121def748376b620c9f30}{T\+C\+P\+Listener} (Ts \&\&...xs)
+\item 
+auto \hyperlink{classnl_1_1Tunnel_1_1TCPListener_a218b5d6841a32264367d6af3fe177df7}{bound} () const  noexcept
+\item 
+\hyperlink{classnl_1_1Tunnel_1_1TCPListener_acdfa4bf08207b322d79b0cfbd4cdbdb4}{$\sim$\+T\+C\+P\+Listener} ()
+\item 
+bool \hyperlink{classnl_1_1Tunnel_1_1TCPListener_afa3de0ad1daad4f2615faeb7ef02f678}{bind} (\hyperlink{namespacenl_a12899c87e239db66809da0a71fcc9129}{Port} port)
+\item 
+auto \hyperlink{classnl_1_1Tunnel_1_1TCPListener_a757c8fa8dcd2e0f3f1eef3ea955ad577}{receive\+\_\+payload} (\hyperlink{structnl_1_1Payload}{Payload} \&p)
+\item 
+auto \hyperlink{classnl_1_1Tunnel_1_1TCPListener_a0c5b0d9ac10e98538bd3bd6f3d60e6ce}{send\+\_\+payload} (\hyperlink{structnl_1_1Payload}{Payload} \&p)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_a93593c58fcc83eefc031ca7f416c9490}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!T\+C\+P\+Listener@{T\+C\+P\+Listener}}
+\index{T\+C\+P\+Listener@{T\+C\+P\+Listener}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{T\+C\+P\+Listener(const T\+C\+P\+Listener \&)=delete}]{\setlength{\rightskip}{0pt plus 5cm}nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::\+T\+C\+P\+Listener (
+\begin{DoxyParamCaption}
+\item[{const {\bf T\+C\+P\+Listener} \&}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [delete]}}\label{classnl_1_1Tunnel_1_1TCPListener_a93593c58fcc83eefc031ca7f416c9490}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_ac584ae7b3fd4d64c6d089bd0278957cc}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!T\+C\+P\+Listener@{T\+C\+P\+Listener}}
+\index{T\+C\+P\+Listener@{T\+C\+P\+Listener}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{T\+C\+P\+Listener(\+T\+C\+P\+Listener \&\&)=default}]{\setlength{\rightskip}{0pt plus 5cm}nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::\+T\+C\+P\+Listener (
+\begin{DoxyParamCaption}
+\item[{{\bf T\+C\+P\+Listener} \&\&}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [default]}}\label{classnl_1_1Tunnel_1_1TCPListener_ac584ae7b3fd4d64c6d089bd0278957cc}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_a5c1a91c9e6f121def748376b620c9f30}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!T\+C\+P\+Listener@{T\+C\+P\+Listener}}
+\index{T\+C\+P\+Listener@{T\+C\+P\+Listener}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{T\+C\+P\+Listener(\+Ts \&\&...\+xs)}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename... Ts$>$ nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::\+T\+C\+P\+Listener (
+\begin{DoxyParamCaption}
+\item[{Ts \&\&...}]{xs}
+\end{DoxyParamCaption}
+)}\label{classnl_1_1Tunnel_1_1TCPListener_a5c1a91c9e6f121def748376b620c9f30}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_acdfa4bf08207b322d79b0cfbd4cdbdb4}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!````~T\+C\+P\+Listener@{$\sim$\+T\+C\+P\+Listener}}
+\index{````~T\+C\+P\+Listener@{$\sim$\+T\+C\+P\+Listener}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{$\sim$\+T\+C\+P\+Listener()}]{\setlength{\rightskip}{0pt plus 5cm}nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::$\sim$\+T\+C\+P\+Listener (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{classnl_1_1Tunnel_1_1TCPListener_acdfa4bf08207b322d79b0cfbd4cdbdb4}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_afa3de0ad1daad4f2615faeb7ef02f678}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!bind@{bind}}
+\index{bind@{bind}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{bind(\+Port port)}]{\setlength{\rightskip}{0pt plus 5cm}bool nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::bind (
+\begin{DoxyParamCaption}
+\item[{{\bf Port}}]{port}
+\end{DoxyParamCaption}
+)}\label{classnl_1_1Tunnel_1_1TCPListener_afa3de0ad1daad4f2615faeb7ef02f678}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_a218b5d6841a32264367d6af3fe177df7}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!bound@{bound}}
+\index{bound@{bound}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{bound() const  noexcept}]{\setlength{\rightskip}{0pt plus 5cm}auto nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::bound (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [noexcept]}}\label{classnl_1_1Tunnel_1_1TCPListener_a218b5d6841a32264367d6af3fe177df7}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_a116f9664351c8409c0a3f86c24b12fc2}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!operator=@{operator=}}
+\index{operator=@{operator=}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{operator=(const T\+C\+P\+Listener \&)=delete}]{\setlength{\rightskip}{0pt plus 5cm}{\bf T\+C\+P\+Listener}\& nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::operator= (
+\begin{DoxyParamCaption}
+\item[{const {\bf T\+C\+P\+Listener} \&}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [delete]}}\label{classnl_1_1Tunnel_1_1TCPListener_a116f9664351c8409c0a3f86c24b12fc2}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_a110e943140627b5e22d237bb4ceee685}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!operator=@{operator=}}
+\index{operator=@{operator=}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{operator=(\+T\+C\+P\+Listener \&\&)=default}]{\setlength{\rightskip}{0pt plus 5cm}{\bf T\+C\+P\+Listener}\& nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::operator= (
+\begin{DoxyParamCaption}
+\item[{{\bf T\+C\+P\+Listener} \&\&}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [default]}}\label{classnl_1_1Tunnel_1_1TCPListener_a110e943140627b5e22d237bb4ceee685}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_a757c8fa8dcd2e0f3f1eef3ea955ad577}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!receive\+\_\+payload@{receive\+\_\+payload}}
+\index{receive\+\_\+payload@{receive\+\_\+payload}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{receive\+\_\+payload(\+Payload \&p)}]{\setlength{\rightskip}{0pt plus 5cm}auto nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::receive\+\_\+payload (
+\begin{DoxyParamCaption}
+\item[{{\bf Payload} \&}]{p}
+\end{DoxyParamCaption}
+)}\label{classnl_1_1Tunnel_1_1TCPListener_a757c8fa8dcd2e0f3f1eef3ea955ad577}
+\hypertarget{classnl_1_1Tunnel_1_1TCPListener_a0c5b0d9ac10e98538bd3bd6f3d60e6ce}{}\index{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}!send\+\_\+payload@{send\+\_\+payload}}
+\index{send\+\_\+payload@{send\+\_\+payload}!nl\+::\+Tunnel\+::\+T\+C\+P\+Listener@{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener}}
+\subsubsection[{send\+\_\+payload(\+Payload \&p)}]{\setlength{\rightskip}{0pt plus 5cm}auto nl\+::\+Tunnel\+::\+T\+C\+P\+Listener\+::send\+\_\+payload (
+\begin{DoxyParamCaption}
+\item[{{\bf Payload} \&}]{p}
+\end{DoxyParamCaption}
+)}\label{classnl_1_1Tunnel_1_1TCPListener_a0c5b0d9ac10e98538bd3bd6f3d60e6ce}
+
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=303pt]{dd/d69/classnl_1_1Tunnel_1_1TCPListener_a0c5b0d9ac10e98538bd3bd6f3d60e6ce_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\+Net\+Layer/\+Tunnel/\hyperlink{TCPSckt_8hpp}{T\+C\+P\+Sckt.\+hpp}\end{DoxyCompactItemize}

@@ -1,0 +1,261 @@
+\hypertarget{namespaceddl2cpp}{}\section{ddl2cpp Namespace Reference}
+\label{namespaceddl2cpp}\index{ddl2cpp@{ddl2cpp}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespaceddl2cpp_aad55b7fd8f0b28a11c7292ff79a7afde}{get\+\_\+include\+\_\+guard\+\_\+name} (\hyperlink{namespaceddl2cpp_ab0de067ca1d9cc93a2d1e548bb283bb8}{namespace}, inputfile)
+\item 
+def \hyperlink{namespaceddl2cpp_a2c04bb14c0451cf5e6abb4d0bf0e6a52}{repl\+\_\+func} (m)
+\item 
+def \hyperlink{namespaceddl2cpp_a171a1c72b1455718e3fcfb822535f3ed}{to\+Class\+Name} (s)
+\item 
+def \hyperlink{namespaceddl2cpp_a72093c250c34f27e4fc18e8374c7b1d8}{to\+Member\+Name} (s)
+\item 
+def \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddl\+Word} (string)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+string \hyperlink{namespaceddl2cpp_afa346ef1079f78460941e4254c61fd1a}{I\+N\+C\+L\+U\+D\+E} = \textquotesingle{}sqlpp11\textquotesingle{}
+\item 
+string \hyperlink{namespaceddl2cpp_a650881e2d9dfa08f94412038f5e7cc46}{N\+A\+M\+E\+S\+P\+A\+C\+E} = \textquotesingle{}sqlpp\textquotesingle{}
+\item 
+tuple \hyperlink{namespaceddl2cpp_ac99a10e162c5dca8118f8f0a0661e378}{ddl\+String} = Or(\mbox{[}Quoted\+String(\char`\"{}\textquotesingle{}\char`\"{}), Quoted\+String(\char`\"{}\textbackslash{}\char`\"{}\char`\"{}, esc\+Quote=\textquotesingle{}\char`\"{}\char`\"{}\textquotesingle{}), Quoted\+String(\char`\"{}`\char`\"{})\mbox{]})
+\item 
+tuple \hyperlink{namespaceddl2cpp_a4200c1285ee30e3c5069a13092e36b7b}{ddl\+Num} = Word(nums + \char`\"{}.\char`\"{})
+\item 
+tuple \hyperlink{namespaceddl2cpp_afdb0a60da961822931aa989528d42409}{ddl\+Term} = Word(alphas, alphanums + \char`\"{}\+\_\+\$\char`\"{})
+\item 
+string \hyperlink{namespaceddl2cpp_ae9ff0a4f026c9fd16644a14821c6ab34}{ddl\+Arguments} = \char`\"{}(\char`\"{}
+\item 
+tuple \hyperlink{namespaceddl2cpp_a1b17bb7ebb70fb38c91d5e21923602f9}{ddl\+Not\+Null} = Group(\hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddl\+Word}(\char`\"{}N\+O\+T\char`\"{}) + ddl\+Word(\char`\"{}N\+U\+L\+L\char`\"{}))
+\item 
+tuple \hyperlink{namespaceddl2cpp_a4952a8806e1ea497a7d3cf22334247ac}{ddl\+Default\+Value} = \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddl\+Word}(\char`\"{}D\+E\+F\+A\+U\+L\+T\char`\"{})
+\item 
+tuple \hyperlink{namespaceddl2cpp_adfd7af04711f00ee8c041d1a9dc8a5ff}{ddl\+Auto\+Value} = \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddl\+Word}(\char`\"{}A\+U\+T\+O\+\_\+\+I\+N\+C\+R\+E\+M\+E\+N\+T\char`\"{})
+\item 
+tuple \hyperlink{namespaceddl2cpp_acd5cc6bf8c3155c1d9b5c96f837a56da}{ddl\+Column\+Comment} = Group(\hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddl\+Word}(\char`\"{}C\+O\+M\+M\+E\+N\+T\char`\"{}) + ddl\+String)
+\item 
+tuple \hyperlink{namespaceddl2cpp_a97e4713ef26f221c7a6e84b47053bb04}{ddl\+Constraint}
+\item 
+tuple \hyperlink{namespaceddl2cpp_a0b84b33d051fb3679933a73f07862855}{ddl\+Column} = Group(Optional(\hyperlink{namespaceddl2cpp_a97e4713ef26f221c7a6e84b47053bb04}{ddl\+Constraint}).set\+Results\+Name(\char`\"{}is\+Constraint\char`\"{}) + One\+Or\+More(Match\+First(\mbox{[}\hyperlink{namespaceddl2cpp_a1b17bb7ebb70fb38c91d5e21923602f9}{ddl\+Not\+Null}, \hyperlink{namespaceddl2cpp_adfd7af04711f00ee8c041d1a9dc8a5ff}{ddl\+Auto\+Value}, \hyperlink{namespaceddl2cpp_a4952a8806e1ea497a7d3cf22334247ac}{ddl\+Default\+Value}, \hyperlink{namespaceddl2cpp_afdb0a60da961822931aa989528d42409}{ddl\+Term}, \hyperlink{namespaceddl2cpp_a4200c1285ee30e3c5069a13092e36b7b}{ddl\+Num}, \hyperlink{namespaceddl2cpp_acd5cc6bf8c3155c1d9b5c96f837a56da}{ddl\+Column\+Comment}, \hyperlink{namespaceddl2cpp_ac99a10e162c5dca8118f8f0a0661e378}{ddl\+String}, \hyperlink{namespaceddl2cpp_ae9ff0a4f026c9fd16644a14821c6ab34}{ddl\+Arguments}\mbox{]})))
+\item 
+tuple \hyperlink{namespaceddl2cpp_ac9fca86626a318c74c5ef09470e320e3}{create\+Table} = Group(\hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddl\+Word}(\char`\"{}C\+R\+E\+A\+T\+E\char`\"{}) + ddl\+Word(\char`\"{}T\+A\+B\+L\+E\char`\"{}) + ddl\+Term.\+set\+Results\+Name(\char`\"{}table\+Name\char`\"{}) + \char`\"{}(\char`\"{} + Group(delimited\+List(\hyperlink{namespaceddl2cpp_a0b84b33d051fb3679933a73f07862855}{ddl\+Column})).set\+Results\+Name(\char`\"{}columns\char`\"{}) + \char`\"{})\char`\"{})
+\item 
+tuple \hyperlink{namespaceddl2cpp_ab4c4618946f516072a777b7c1f154366}{ddl} = Zero\+Or\+More(Skip\+To(\hyperlink{namespaceddl2cpp_ac9fca86626a318c74c5ef09470e320e3}{create\+Table}, True))
+\item 
+tuple \hyperlink{namespaceddl2cpp_a353ef6fb26a14fe2a057372cee430a52}{ddl\+Comment} = one\+Of(\mbox{[}\char`\"{}-\/-\/\char`\"{}, \char`\"{}\#\char`\"{}\mbox{]})
+\item 
+dictionary \hyperlink{namespaceddl2cpp_aa60a82f28e1ca899d699db901e2de22b}{types}
+\item 
+list \hyperlink{namespaceddl2cpp_a21ffb333ce42da19ce242bfe204b34cc}{path\+To\+Ddl} = sys.\+argv\mbox{[}1\mbox{]}
+\item 
+list \hyperlink{namespaceddl2cpp_a9098aa495b84a1827935d4d3068775dd}{path\+To\+Header} = sys.\+argv\mbox{[}2\mbox{]}
+\item 
+list \hyperlink{namespaceddl2cpp_ab0de067ca1d9cc93a2d1e548bb283bb8}{namespace} = sys.\+argv\mbox{[}3\mbox{]}
+\item 
+tuple \hyperlink{namespaceddl2cpp_a6a08f77749b6af650691eaa476716dbf}{ddl\+File} = open(\hyperlink{namespaceddl2cpp_a21ffb333ce42da19ce242bfe204b34cc}{path\+To\+Ddl}, \textquotesingle{}r\textquotesingle{})
+\item 
+tuple \hyperlink{namespaceddl2cpp_af8987a7b7aa171a62a294d565d63504f}{header} = open(\hyperlink{namespaceddl2cpp_a9098aa495b84a1827935d4d3068775dd}{path\+To\+Header}, \textquotesingle{}w\textquotesingle{})
+\item 
+tuple \hyperlink{namespaceddl2cpp_a776ec4c34c9e0a9657d5bf69b48d7af8}{table\+Creations} = ddl.\+parse\+File(\hyperlink{namespaceddl2cpp_a21ffb333ce42da19ce242bfe204b34cc}{path\+To\+Ddl})
+\item 
+\hyperlink{namespaceddl2cpp_ab7475b2e13b9191674fa194059e34fd3}{sql\+Table\+Name} = table\+Creation.\+create.\+table\+Name
+\item 
+tuple \hyperlink{namespaceddl2cpp_a02f88bd22a70bc696974c61fb718a231}{table\+Class} = \hyperlink{namespaceddl2cpp_a171a1c72b1455718e3fcfb822535f3ed}{to\+Class\+Name}(\hyperlink{namespaceddl2cpp_ab7475b2e13b9191674fa194059e34fd3}{sql\+Table\+Name})
+\item 
+tuple \hyperlink{namespaceddl2cpp_af01677d026a7e6ca36b20121ad0a3c80}{table\+Member} = \hyperlink{namespaceddl2cpp_a72093c250c34f27e4fc18e8374c7b1d8}{to\+Member\+Name}(\hyperlink{namespaceddl2cpp_ab7475b2e13b9191674fa194059e34fd3}{sql\+Table\+Name})
+\item 
+string \hyperlink{namespaceddl2cpp_a1b72644ae79adb19e5e0fc6134cf375b}{table\+Namespace} = \hyperlink{namespaceddl2cpp_a02f88bd22a70bc696974c61fb718a231}{table\+Class}+\textquotesingle{}\+\_\+\textquotesingle{}
+\item 
+\hyperlink{namespaceddl2cpp_a191322d8af5b19a0af69d0eaa33436ee}{table\+Template\+Parameters} = \hyperlink{namespaceddl2cpp_a02f88bd22a70bc696974c61fb718a231}{table\+Class}
+\item 
+list \hyperlink{namespaceddl2cpp_a4172a520f4c7f16bb27ba4cdc3a440e6}{sql\+Column\+Name} = column\mbox{[}0\mbox{]}
+\item 
+tuple \hyperlink{namespaceddl2cpp_a888fd7048ed5ce41168263718a5d713a}{column\+Class} = \hyperlink{namespaceddl2cpp_a171a1c72b1455718e3fcfb822535f3ed}{to\+Class\+Name}(\hyperlink{namespaceddl2cpp_a4172a520f4c7f16bb27ba4cdc3a440e6}{sql\+Column\+Name})
+\item 
+tuple \hyperlink{namespaceddl2cpp_a2772f4aa8123b99ace6d69e5ad9fea51}{column\+Member} = \hyperlink{namespaceddl2cpp_a72093c250c34f27e4fc18e8374c7b1d8}{to\+Member\+Name}(\hyperlink{namespaceddl2cpp_a4172a520f4c7f16bb27ba4cdc3a440e6}{sql\+Column\+Name})
+\item 
+list \hyperlink{namespaceddl2cpp_ae949d2e11a19fd77dcbdc26edd72cf53}{sql\+Column\+Type} = column\mbox{[}1\mbox{]}
+\item 
+\hyperlink{namespaceddl2cpp_a669467afdfb79955b3194f12af1e296d}{column\+Can\+Be\+Null} = notcolumn.\+not\+Null
+\item 
+list \hyperlink{namespaceddl2cpp_ae4617ceb48a964dcaa04cbdd62e515ea}{traitslist} = \mbox{[}\hyperlink{namespaceddl2cpp_a650881e2d9dfa08f94412038f5e7cc46}{N\+A\+M\+E\+S\+P\+A\+C\+E} + \textquotesingle{}\+::\textquotesingle{} + \hyperlink{namespaceddl2cpp_aa60a82f28e1ca899d699db901e2de22b}{types}\mbox{[}\hyperlink{namespaceddl2cpp_ae949d2e11a19fd77dcbdc26edd72cf53}{sql\+Column\+Type}\mbox{]}\mbox{]}
+\item 
+\hyperlink{namespaceddl2cpp_a75c29f60267723996d9ac4b698e16692}{require\+Insert} = True
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Word@{ddl\+Word}}
+\index{ddl\+Word@{ddl\+Word}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Word(string)}]{\setlength{\rightskip}{0pt plus 5cm}def ddl2cpp.\+ddl\+Word (
+\begin{DoxyParamCaption}
+\item[{}]{string}
+\end{DoxyParamCaption}
+)}\label{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}
+\hypertarget{namespaceddl2cpp_aad55b7fd8f0b28a11c7292ff79a7afde}{}\index{ddl2cpp@{ddl2cpp}!get\+\_\+include\+\_\+guard\+\_\+name@{get\+\_\+include\+\_\+guard\+\_\+name}}
+\index{get\+\_\+include\+\_\+guard\+\_\+name@{get\+\_\+include\+\_\+guard\+\_\+name}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{get\+\_\+include\+\_\+guard\+\_\+name(namespace, inputfile)}]{\setlength{\rightskip}{0pt plus 5cm}def ddl2cpp.\+get\+\_\+include\+\_\+guard\+\_\+name (
+\begin{DoxyParamCaption}
+\item[{}]{namespace, }
+\item[{}]{inputfile}
+\end{DoxyParamCaption}
+)}\label{namespaceddl2cpp_aad55b7fd8f0b28a11c7292ff79a7afde}
+\hypertarget{namespaceddl2cpp_a2c04bb14c0451cf5e6abb4d0bf0e6a52}{}\index{ddl2cpp@{ddl2cpp}!repl\+\_\+func@{repl\+\_\+func}}
+\index{repl\+\_\+func@{repl\+\_\+func}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{repl\+\_\+func(m)}]{\setlength{\rightskip}{0pt plus 5cm}def ddl2cpp.\+repl\+\_\+func (
+\begin{DoxyParamCaption}
+\item[{}]{m}
+\end{DoxyParamCaption}
+)}\label{namespaceddl2cpp_a2c04bb14c0451cf5e6abb4d0bf0e6a52}
+\hypertarget{namespaceddl2cpp_a171a1c72b1455718e3fcfb822535f3ed}{}\index{ddl2cpp@{ddl2cpp}!to\+Class\+Name@{to\+Class\+Name}}
+\index{to\+Class\+Name@{to\+Class\+Name}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{to\+Class\+Name(s)}]{\setlength{\rightskip}{0pt plus 5cm}def ddl2cpp.\+to\+Class\+Name (
+\begin{DoxyParamCaption}
+\item[{}]{s}
+\end{DoxyParamCaption}
+)}\label{namespaceddl2cpp_a171a1c72b1455718e3fcfb822535f3ed}
+\hypertarget{namespaceddl2cpp_a72093c250c34f27e4fc18e8374c7b1d8}{}\index{ddl2cpp@{ddl2cpp}!to\+Member\+Name@{to\+Member\+Name}}
+\index{to\+Member\+Name@{to\+Member\+Name}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{to\+Member\+Name(s)}]{\setlength{\rightskip}{0pt plus 5cm}def ddl2cpp.\+to\+Member\+Name (
+\begin{DoxyParamCaption}
+\item[{}]{s}
+\end{DoxyParamCaption}
+)}\label{namespaceddl2cpp_a72093c250c34f27e4fc18e8374c7b1d8}
+
+
+\subsection{Variable Documentation}
+\hypertarget{namespaceddl2cpp_a669467afdfb79955b3194f12af1e296d}{}\index{ddl2cpp@{ddl2cpp}!column\+Can\+Be\+Null@{column\+Can\+Be\+Null}}
+\index{column\+Can\+Be\+Null@{column\+Can\+Be\+Null}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{column\+Can\+Be\+Null}]{\setlength{\rightskip}{0pt plus 5cm}ddl2cpp.\+column\+Can\+Be\+Null = notcolumn.\+not\+Null}\label{namespaceddl2cpp_a669467afdfb79955b3194f12af1e296d}
+\hypertarget{namespaceddl2cpp_a888fd7048ed5ce41168263718a5d713a}{}\index{ddl2cpp@{ddl2cpp}!column\+Class@{column\+Class}}
+\index{column\+Class@{column\+Class}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{column\+Class}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+column\+Class = {\bf to\+Class\+Name}({\bf sql\+Column\+Name})}\label{namespaceddl2cpp_a888fd7048ed5ce41168263718a5d713a}
+\hypertarget{namespaceddl2cpp_a2772f4aa8123b99ace6d69e5ad9fea51}{}\index{ddl2cpp@{ddl2cpp}!column\+Member@{column\+Member}}
+\index{column\+Member@{column\+Member}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{column\+Member}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+column\+Member = {\bf to\+Member\+Name}({\bf sql\+Column\+Name})}\label{namespaceddl2cpp_a2772f4aa8123b99ace6d69e5ad9fea51}
+\hypertarget{namespaceddl2cpp_ac9fca86626a318c74c5ef09470e320e3}{}\index{ddl2cpp@{ddl2cpp}!create\+Table@{create\+Table}}
+\index{create\+Table@{create\+Table}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{create\+Table}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+create\+Table = Group({\bf ddl\+Word}(\char`\"{}C\+R\+E\+A\+T\+E\char`\"{}) + ddl\+Word(\char`\"{}T\+A\+B\+L\+E\char`\"{}) + ddl\+Term.\+set\+Results\+Name(\char`\"{}table\+Name\char`\"{}) + \char`\"{}(\char`\"{} + Group(delimited\+List({\bf ddl\+Column})).set\+Results\+Name(\char`\"{}columns\char`\"{}) + \char`\"{})\char`\"{})}\label{namespaceddl2cpp_ac9fca86626a318c74c5ef09470e320e3}
+\hypertarget{namespaceddl2cpp_ab4c4618946f516072a777b7c1f154366}{}\index{ddl2cpp@{ddl2cpp}!ddl@{ddl}}
+\index{ddl@{ddl}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl = Zero\+Or\+More(Skip\+To({\bf create\+Table}, True))}\label{namespaceddl2cpp_ab4c4618946f516072a777b7c1f154366}
+\hypertarget{namespaceddl2cpp_ae9ff0a4f026c9fd16644a14821c6ab34}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Arguments@{ddl\+Arguments}}
+\index{ddl\+Arguments@{ddl\+Arguments}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Arguments}]{\setlength{\rightskip}{0pt plus 5cm}string ddl2cpp.\+ddl\+Arguments = \char`\"{}(\char`\"{}}\label{namespaceddl2cpp_ae9ff0a4f026c9fd16644a14821c6ab34}
+\hypertarget{namespaceddl2cpp_adfd7af04711f00ee8c041d1a9dc8a5ff}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Auto\+Value@{ddl\+Auto\+Value}}
+\index{ddl\+Auto\+Value@{ddl\+Auto\+Value}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Auto\+Value}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Auto\+Value = {\bf ddl\+Word}(\char`\"{}A\+U\+T\+O\+\_\+\+I\+N\+C\+R\+E\+M\+E\+N\+T\char`\"{})}\label{namespaceddl2cpp_adfd7af04711f00ee8c041d1a9dc8a5ff}
+\hypertarget{namespaceddl2cpp_a0b84b33d051fb3679933a73f07862855}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Column@{ddl\+Column}}
+\index{ddl\+Column@{ddl\+Column}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Column}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Column = Group(Optional({\bf ddl\+Constraint}).set\+Results\+Name(\char`\"{}is\+Constraint\char`\"{}) + One\+Or\+More(Match\+First(\mbox{[}{\bf ddl\+Not\+Null}, {\bf ddl\+Auto\+Value}, {\bf ddl\+Default\+Value}, {\bf ddl\+Term}, {\bf ddl\+Num}, {\bf ddl\+Column\+Comment}, {\bf ddl\+String}, {\bf ddl\+Arguments}\mbox{]})))}\label{namespaceddl2cpp_a0b84b33d051fb3679933a73f07862855}
+\hypertarget{namespaceddl2cpp_acd5cc6bf8c3155c1d9b5c96f837a56da}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Column\+Comment@{ddl\+Column\+Comment}}
+\index{ddl\+Column\+Comment@{ddl\+Column\+Comment}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Column\+Comment}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Column\+Comment = Group({\bf ddl\+Word}(\char`\"{}C\+O\+M\+M\+E\+N\+T\char`\"{}) + ddl\+String)}\label{namespaceddl2cpp_acd5cc6bf8c3155c1d9b5c96f837a56da}
+\hypertarget{namespaceddl2cpp_a353ef6fb26a14fe2a057372cee430a52}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Comment@{ddl\+Comment}}
+\index{ddl\+Comment@{ddl\+Comment}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Comment}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Comment = one\+Of(\mbox{[}\char`\"{}-\/-\/\char`\"{}, \char`\"{}\#\char`\"{}\mbox{]})}\label{namespaceddl2cpp_a353ef6fb26a14fe2a057372cee430a52}
+\hypertarget{namespaceddl2cpp_a97e4713ef26f221c7a6e84b47053bb04}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Constraint@{ddl\+Constraint}}
+\index{ddl\+Constraint@{ddl\+Constraint}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Constraint}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Constraint}\label{namespaceddl2cpp_a97e4713ef26f221c7a6e84b47053bb04}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+1 = Or([
+2         \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddlWord}(\textcolor{stringliteral}{"CONSTRAINT"}), 
+3         \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddlWord}(\textcolor{stringliteral}{"PRIMARY"}), 
+4         \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddlWord}(\textcolor{stringliteral}{"FOREIGN"}), 
+5         \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddlWord}(\textcolor{stringliteral}{"KEY"}),
+6         \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddlWord}(\textcolor{stringliteral}{"INDEX"}), 
+7         \hyperlink{namespaceddl2cpp_aef0136dc79fef19dc9bcece9a6fd2396}{ddlWord}(\textcolor{stringliteral}{"UNIQUE"}), 
+8         ])
+\end{DoxyCode}
+\hypertarget{namespaceddl2cpp_a4952a8806e1ea497a7d3cf22334247ac}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Default\+Value@{ddl\+Default\+Value}}
+\index{ddl\+Default\+Value@{ddl\+Default\+Value}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Default\+Value}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Default\+Value = {\bf ddl\+Word}(\char`\"{}D\+E\+F\+A\+U\+L\+T\char`\"{})}\label{namespaceddl2cpp_a4952a8806e1ea497a7d3cf22334247ac}
+\hypertarget{namespaceddl2cpp_a6a08f77749b6af650691eaa476716dbf}{}\index{ddl2cpp@{ddl2cpp}!ddl\+File@{ddl\+File}}
+\index{ddl\+File@{ddl\+File}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+File}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+File = open({\bf path\+To\+Ddl}, \textquotesingle{}r\textquotesingle{})}\label{namespaceddl2cpp_a6a08f77749b6af650691eaa476716dbf}
+\hypertarget{namespaceddl2cpp_a1b17bb7ebb70fb38c91d5e21923602f9}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Not\+Null@{ddl\+Not\+Null}}
+\index{ddl\+Not\+Null@{ddl\+Not\+Null}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Not\+Null}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Not\+Null = Group({\bf ddl\+Word}(\char`\"{}N\+O\+T\char`\"{}) + ddl\+Word(\char`\"{}N\+U\+L\+L\char`\"{}))}\label{namespaceddl2cpp_a1b17bb7ebb70fb38c91d5e21923602f9}
+\hypertarget{namespaceddl2cpp_a4200c1285ee30e3c5069a13092e36b7b}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Num@{ddl\+Num}}
+\index{ddl\+Num@{ddl\+Num}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Num}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Num = Word(nums + \char`\"{}.\char`\"{})}\label{namespaceddl2cpp_a4200c1285ee30e3c5069a13092e36b7b}
+\hypertarget{namespaceddl2cpp_ac99a10e162c5dca8118f8f0a0661e378}{}\index{ddl2cpp@{ddl2cpp}!ddl\+String@{ddl\+String}}
+\index{ddl\+String@{ddl\+String}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+String}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+String = Or(\mbox{[}Quoted\+String(\char`\"{}\textquotesingle{}\char`\"{}), Quoted\+String(\char`\"{}\textbackslash{}\char`\"{}\char`\"{}, esc\+Quote=\textquotesingle{}\char`\"{}\char`\"{}\textquotesingle{}), Quoted\+String(\char`\"{}`\char`\"{})\mbox{]})}\label{namespaceddl2cpp_ac99a10e162c5dca8118f8f0a0661e378}
+\hypertarget{namespaceddl2cpp_afdb0a60da961822931aa989528d42409}{}\index{ddl2cpp@{ddl2cpp}!ddl\+Term@{ddl\+Term}}
+\index{ddl\+Term@{ddl\+Term}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{ddl\+Term}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+ddl\+Term = Word(alphas, alphanums + \char`\"{}\+\_\+\$\char`\"{})}\label{namespaceddl2cpp_afdb0a60da961822931aa989528d42409}
+\hypertarget{namespaceddl2cpp_af8987a7b7aa171a62a294d565d63504f}{}\index{ddl2cpp@{ddl2cpp}!header@{header}}
+\index{header@{header}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{header}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+header = open({\bf path\+To\+Header}, \textquotesingle{}w\textquotesingle{})}\label{namespaceddl2cpp_af8987a7b7aa171a62a294d565d63504f}
+\hypertarget{namespaceddl2cpp_afa346ef1079f78460941e4254c61fd1a}{}\index{ddl2cpp@{ddl2cpp}!I\+N\+C\+L\+U\+D\+E@{I\+N\+C\+L\+U\+D\+E}}
+\index{I\+N\+C\+L\+U\+D\+E@{I\+N\+C\+L\+U\+D\+E}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{I\+N\+C\+L\+U\+D\+E}]{\setlength{\rightskip}{0pt plus 5cm}string ddl2cpp.\+I\+N\+C\+L\+U\+D\+E = \textquotesingle{}sqlpp11\textquotesingle{}}\label{namespaceddl2cpp_afa346ef1079f78460941e4254c61fd1a}
+\hypertarget{namespaceddl2cpp_a650881e2d9dfa08f94412038f5e7cc46}{}\index{ddl2cpp@{ddl2cpp}!N\+A\+M\+E\+S\+P\+A\+C\+E@{N\+A\+M\+E\+S\+P\+A\+C\+E}}
+\index{N\+A\+M\+E\+S\+P\+A\+C\+E@{N\+A\+M\+E\+S\+P\+A\+C\+E}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{N\+A\+M\+E\+S\+P\+A\+C\+E}]{\setlength{\rightskip}{0pt plus 5cm}string ddl2cpp.\+N\+A\+M\+E\+S\+P\+A\+C\+E = \textquotesingle{}sqlpp\textquotesingle{}}\label{namespaceddl2cpp_a650881e2d9dfa08f94412038f5e7cc46}
+\hypertarget{namespaceddl2cpp_ab0de067ca1d9cc93a2d1e548bb283bb8}{}\index{ddl2cpp@{ddl2cpp}!namespace@{namespace}}
+\index{namespace@{namespace}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{namespace}]{\setlength{\rightskip}{0pt plus 5cm}list ddl2cpp.\+namespace = sys.\+argv\mbox{[}3\mbox{]}}\label{namespaceddl2cpp_ab0de067ca1d9cc93a2d1e548bb283bb8}
+\hypertarget{namespaceddl2cpp_a21ffb333ce42da19ce242bfe204b34cc}{}\index{ddl2cpp@{ddl2cpp}!path\+To\+Ddl@{path\+To\+Ddl}}
+\index{path\+To\+Ddl@{path\+To\+Ddl}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{path\+To\+Ddl}]{\setlength{\rightskip}{0pt plus 5cm}list ddl2cpp.\+path\+To\+Ddl = sys.\+argv\mbox{[}1\mbox{]}}\label{namespaceddl2cpp_a21ffb333ce42da19ce242bfe204b34cc}
+\hypertarget{namespaceddl2cpp_a9098aa495b84a1827935d4d3068775dd}{}\index{ddl2cpp@{ddl2cpp}!path\+To\+Header@{path\+To\+Header}}
+\index{path\+To\+Header@{path\+To\+Header}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{path\+To\+Header}]{\setlength{\rightskip}{0pt plus 5cm}list ddl2cpp.\+path\+To\+Header = sys.\+argv\mbox{[}2\mbox{]}}\label{namespaceddl2cpp_a9098aa495b84a1827935d4d3068775dd}
+\hypertarget{namespaceddl2cpp_a75c29f60267723996d9ac4b698e16692}{}\index{ddl2cpp@{ddl2cpp}!require\+Insert@{require\+Insert}}
+\index{require\+Insert@{require\+Insert}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{require\+Insert}]{\setlength{\rightskip}{0pt plus 5cm}ddl2cpp.\+require\+Insert = True}\label{namespaceddl2cpp_a75c29f60267723996d9ac4b698e16692}
+\hypertarget{namespaceddl2cpp_a4172a520f4c7f16bb27ba4cdc3a440e6}{}\index{ddl2cpp@{ddl2cpp}!sql\+Column\+Name@{sql\+Column\+Name}}
+\index{sql\+Column\+Name@{sql\+Column\+Name}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{sql\+Column\+Name}]{\setlength{\rightskip}{0pt plus 5cm}list ddl2cpp.\+sql\+Column\+Name = column\mbox{[}0\mbox{]}}\label{namespaceddl2cpp_a4172a520f4c7f16bb27ba4cdc3a440e6}
+\hypertarget{namespaceddl2cpp_ae949d2e11a19fd77dcbdc26edd72cf53}{}\index{ddl2cpp@{ddl2cpp}!sql\+Column\+Type@{sql\+Column\+Type}}
+\index{sql\+Column\+Type@{sql\+Column\+Type}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{sql\+Column\+Type}]{\setlength{\rightskip}{0pt plus 5cm}list ddl2cpp.\+sql\+Column\+Type = column\mbox{[}1\mbox{]}}\label{namespaceddl2cpp_ae949d2e11a19fd77dcbdc26edd72cf53}
+\hypertarget{namespaceddl2cpp_ab7475b2e13b9191674fa194059e34fd3}{}\index{ddl2cpp@{ddl2cpp}!sql\+Table\+Name@{sql\+Table\+Name}}
+\index{sql\+Table\+Name@{sql\+Table\+Name}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{sql\+Table\+Name}]{\setlength{\rightskip}{0pt plus 5cm}ddl2cpp.\+sql\+Table\+Name = table\+Creation.\+create.\+table\+Name}\label{namespaceddl2cpp_ab7475b2e13b9191674fa194059e34fd3}
+\hypertarget{namespaceddl2cpp_a02f88bd22a70bc696974c61fb718a231}{}\index{ddl2cpp@{ddl2cpp}!table\+Class@{table\+Class}}
+\index{table\+Class@{table\+Class}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{table\+Class}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+table\+Class = {\bf to\+Class\+Name}({\bf sql\+Table\+Name})}\label{namespaceddl2cpp_a02f88bd22a70bc696974c61fb718a231}
+\hypertarget{namespaceddl2cpp_a776ec4c34c9e0a9657d5bf69b48d7af8}{}\index{ddl2cpp@{ddl2cpp}!table\+Creations@{table\+Creations}}
+\index{table\+Creations@{table\+Creations}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{table\+Creations}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+table\+Creations = ddl.\+parse\+File({\bf path\+To\+Ddl})}\label{namespaceddl2cpp_a776ec4c34c9e0a9657d5bf69b48d7af8}
+\hypertarget{namespaceddl2cpp_af01677d026a7e6ca36b20121ad0a3c80}{}\index{ddl2cpp@{ddl2cpp}!table\+Member@{table\+Member}}
+\index{table\+Member@{table\+Member}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{table\+Member}]{\setlength{\rightskip}{0pt plus 5cm}tuple ddl2cpp.\+table\+Member = {\bf to\+Member\+Name}({\bf sql\+Table\+Name})}\label{namespaceddl2cpp_af01677d026a7e6ca36b20121ad0a3c80}
+\hypertarget{namespaceddl2cpp_a1b72644ae79adb19e5e0fc6134cf375b}{}\index{ddl2cpp@{ddl2cpp}!table\+Namespace@{table\+Namespace}}
+\index{table\+Namespace@{table\+Namespace}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{table\+Namespace}]{\setlength{\rightskip}{0pt plus 5cm}string ddl2cpp.\+table\+Namespace = {\bf table\+Class}+\textquotesingle{}\+\_\+\textquotesingle{}}\label{namespaceddl2cpp_a1b72644ae79adb19e5e0fc6134cf375b}
+\hypertarget{namespaceddl2cpp_a191322d8af5b19a0af69d0eaa33436ee}{}\index{ddl2cpp@{ddl2cpp}!table\+Template\+Parameters@{table\+Template\+Parameters}}
+\index{table\+Template\+Parameters@{table\+Template\+Parameters}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{table\+Template\+Parameters}]{\setlength{\rightskip}{0pt plus 5cm}ddl2cpp.\+table\+Template\+Parameters = {\bf table\+Class}}\label{namespaceddl2cpp_a191322d8af5b19a0af69d0eaa33436ee}
+\hypertarget{namespaceddl2cpp_ae4617ceb48a964dcaa04cbdd62e515ea}{}\index{ddl2cpp@{ddl2cpp}!traitslist@{traitslist}}
+\index{traitslist@{traitslist}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{traitslist}]{\setlength{\rightskip}{0pt plus 5cm}list ddl2cpp.\+traitslist = \mbox{[}{\bf N\+A\+M\+E\+S\+P\+A\+C\+E} + \textquotesingle{}\+::\textquotesingle{} + {\bf types}\mbox{[}{\bf sql\+Column\+Type}\mbox{]}\mbox{]}}\label{namespaceddl2cpp_ae4617ceb48a964dcaa04cbdd62e515ea}
+\hypertarget{namespaceddl2cpp_aa60a82f28e1ca899d699db901e2de22b}{}\index{ddl2cpp@{ddl2cpp}!types@{types}}
+\index{types@{types}!ddl2cpp@{ddl2cpp}}
+\subsubsection[{types}]{\setlength{\rightskip}{0pt plus 5cm}dictionary ddl2cpp.\+types}\label{namespaceddl2cpp_aa60a82f28e1ca899d699db901e2de22b}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+1 = \{
+2     \textcolor{stringliteral}{'tinyint'}: \textcolor{stringliteral}{'tinyint'},
+3     \textcolor{stringliteral}{'smallint'}: \textcolor{stringliteral}{'smallint'},
+4     \textcolor{stringliteral}{'integer'}: \textcolor{stringliteral}{'integer'},
+5     \textcolor{stringliteral}{'int'}: \textcolor{stringliteral}{'integer'},
+6     \textcolor{stringliteral}{'bigint'}: \textcolor{stringliteral}{'bigint'},
+7     \textcolor{stringliteral}{'char'}: \textcolor{stringliteral}{'char\_'},
+8     \textcolor{stringliteral}{'varchar'}: \textcolor{stringliteral}{'varchar'},
+9     \textcolor{stringliteral}{'text'}: \textcolor{stringliteral}{'text'},
+10     \textcolor{stringliteral}{'tinyblob'}: \textcolor{stringliteral}{'blob'},
+11     \textcolor{stringliteral}{'blob'}: \textcolor{stringliteral}{'blob'},
+12     \textcolor{stringliteral}{'mediumblob'}: \textcolor{stringliteral}{'blob'},
+13     \textcolor{stringliteral}{'longblob'}: \textcolor{stringliteral}{'blob'},
+14     \textcolor{stringliteral}{'bool'}: \textcolor{stringliteral}{'boolean'},
+15     \textcolor{stringliteral}{'double'}: \textcolor{stringliteral}{'floating\_point'},
+16     \textcolor{stringliteral}{'float'}: \textcolor{stringliteral}{'floating\_point'},
+17     \}
+\end{DoxyCode}

@@ -1,0 +1,68 @@
+\hypertarget{01__serialization__ops_8hpp}{}\section{thesis/res/intf/01\+\_\+serialization\+\_\+ops.hpp File Reference}
+\label{01__serialization__ops_8hpp}\index{thesis/res/intf/01\+\_\+serialization\+\_\+ops.\+hpp@{thesis/res/intf/01\+\_\+serialization\+\_\+ops.\+hpp}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+auto \& \hyperlink{01__serialization__ops_8hpp_a2cb15a415f13d840a9bfc0ef9aea2e16}{operator$<$$<$} (\hyperlink{namespacenl_a789b828a23e37a113433c2838e7c8e28}{nl\+::\+Pckt\+Buf} \&m\+P, const char \&m\+X)
+\item 
+auto \& \hyperlink{01__serialization__ops_8hpp_a76d92ada6eb02225a40da1093db8e143}{operator$>$$>$} (\hyperlink{namespacenl_a789b828a23e37a113433c2838e7c8e28}{nl\+::\+Pckt\+Buf} \&m\+P, char \&m\+X)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \& \hyperlink{01__serialization__ops_8hpp_a0caf5559641788ca1d1fd6a6ce4ff908}{operator$<$$<$} (\hyperlink{namespacenl_a789b828a23e37a113433c2838e7c8e28}{nl\+::\+Pckt\+Buf} \&m\+P, const std\+::vector$<$ T $>$ \&m\+X)
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \& \hyperlink{01__serialization__ops_8hpp_a4bdc83e7851ab39edce8a7f302fc6cff}{operator$>$$>$} (\hyperlink{namespacenl_a789b828a23e37a113433c2838e7c8e28}{nl\+::\+Pckt\+Buf} \&m\+P, std\+::vector$<$ T $>$ \&m\+X)
+\item 
+{\footnotesize template$<$typename... Ts$>$ }\\auto \& \hyperlink{01__serialization__ops_8hpp_a6bc6e6f8943daa9fb2993544085cc154}{operator$<$$<$} (\hyperlink{namespacenl_a789b828a23e37a113433c2838e7c8e28}{nl\+::\+Pckt\+Buf} \&m\+P, const ssvu\+::\+Tpl$<$ Ts... $>$ \&m\+X)
+\item 
+{\footnotesize template$<$typename... Ts$>$ }\\auto \& \hyperlink{01__serialization__ops_8hpp_af05d1462ccf84b83f0ef90f93a82b556}{operator$>$$>$} (\hyperlink{namespacenl_a789b828a23e37a113433c2838e7c8e28}{nl\+::\+Pckt\+Buf} \&m\+P, ssvu\+::\+Tpl$<$ Ts... $>$ \&m\+X)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{01__serialization__ops_8hpp_a2cb15a415f13d840a9bfc0ef9aea2e16}{}\index{01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}}
+\subsubsection[{operator$<$$<$(nl\+::\+Pckt\+Buf \&m\+P, const char \&m\+X)}]{\setlength{\rightskip}{0pt plus 5cm}auto\& operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{{\bf nl\+::\+Pckt\+Buf} \&}]{m\+P, }
+\item[{const char \&}]{m\+X}
+\end{DoxyParamCaption}
+)}\label{01__serialization__ops_8hpp_a2cb15a415f13d840a9bfc0ef9aea2e16}
+\hypertarget{01__serialization__ops_8hpp_a0caf5559641788ca1d1fd6a6ce4ff908}{}\index{01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}}
+\subsubsection[{operator$<$$<$(nl\+::\+Pckt\+Buf \&m\+P, const std\+::vector$<$ T $>$ \&m\+X)}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ auto\& operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{{\bf nl\+::\+Pckt\+Buf} \&}]{m\+P, }
+\item[{const std\+::vector$<$ T $>$ \&}]{m\+X}
+\end{DoxyParamCaption}
+)}\label{01__serialization__ops_8hpp_a0caf5559641788ca1d1fd6a6ce4ff908}
+\hypertarget{01__serialization__ops_8hpp_a6bc6e6f8943daa9fb2993544085cc154}{}\index{01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}}
+\subsubsection[{operator$<$$<$(nl\+::\+Pckt\+Buf \&m\+P, const ssvu\+::\+Tpl$<$ Ts... $>$ \&m\+X)}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename... Ts$>$ auto\& operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{{\bf nl\+::\+Pckt\+Buf} \&}]{m\+P, }
+\item[{const ssvu\+::\+Tpl$<$ Ts... $>$ \&}]{m\+X}
+\end{DoxyParamCaption}
+)}\label{01__serialization__ops_8hpp_a6bc6e6f8943daa9fb2993544085cc154}
+\hypertarget{01__serialization__ops_8hpp_a76d92ada6eb02225a40da1093db8e143}{}\index{01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}}
+\subsubsection[{operator$>$$>$(nl\+::\+Pckt\+Buf \&m\+P, char \&m\+X)}]{\setlength{\rightskip}{0pt plus 5cm}auto\& operator$>$$>$ (
+\begin{DoxyParamCaption}
+\item[{{\bf nl\+::\+Pckt\+Buf} \&}]{m\+P, }
+\item[{char \&}]{m\+X}
+\end{DoxyParamCaption}
+)}\label{01__serialization__ops_8hpp_a76d92ada6eb02225a40da1093db8e143}
+\hypertarget{01__serialization__ops_8hpp_a4bdc83e7851ab39edce8a7f302fc6cff}{}\index{01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}}
+\subsubsection[{operator$>$$>$(nl\+::\+Pckt\+Buf \&m\+P, std\+::vector$<$ T $>$ \&m\+X)}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ auto\& operator$>$$>$ (
+\begin{DoxyParamCaption}
+\item[{{\bf nl\+::\+Pckt\+Buf} \&}]{m\+P, }
+\item[{std\+::vector$<$ T $>$ \&}]{m\+X}
+\end{DoxyParamCaption}
+)}\label{01__serialization__ops_8hpp_a4bdc83e7851ab39edce8a7f302fc6cff}
+\hypertarget{01__serialization__ops_8hpp_af05d1462ccf84b83f0ef90f93a82b556}{}\index{01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!01\+\_\+serialization\+\_\+ops.\+hpp@{01\+\_\+serialization\+\_\+ops.\+hpp}}
+\subsubsection[{operator$>$$>$(nl\+::\+Pckt\+Buf \&m\+P, ssvu\+::\+Tpl$<$ Ts... $>$ \&m\+X)}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename... Ts$>$ auto\& operator$>$$>$ (
+\begin{DoxyParamCaption}
+\item[{{\bf nl\+::\+Pckt\+Buf} \&}]{m\+P, }
+\item[{ssvu\+::\+Tpl$<$ Ts... $>$ \&}]{m\+X}
+\end{DoxyParamCaption}
+)}\label{01__serialization__ops_8hpp_af05d1462ccf84b83f0ef90f93a82b556}

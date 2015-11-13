@@ -1,0 +1,297 @@
+\hypertarget{main_8cpp}{}\section{src/main.cpp File Reference}
+\label{main_8cpp}\index{src/main.\+cpp@{src/main.\+cpp}}
+{\ttfamily \#include \char`\"{}../include/\+Net\+Layer/\+Net\+Layer.\+hpp\char`\"{}}\\*
+{\ttfamily \#include $<$sqlpp11/sqlpp11.\+h$>$}\\*
+{\ttfamily \#include $<$sqlpp11/mysql/mysql.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}../sql/ddl\+\_\+definition.\+h\char`\"{}}\\*
+Include dependency graph for main.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{da/dce/main_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classexample_1_1connection__state}{example\+::connection\+\_\+state}
+\item 
+class \hyperlink{classexample_1_1server__state}{example\+::server\+\_\+state}
+\item 
+struct \hyperlink{structexample_1_1client__state}{example\+::client\+\_\+state}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespaceexample}{example}
+\item 
+ \hyperlink{namespaceexample_1_1to__s}{example\+::to\+\_\+s}
+\item 
+ \hyperlink{namespaceexample_1_1to__c}{example\+::to\+\_\+c}
+\item 
+ \hyperlink{namespaceutils}{utils}
+\item 
+ \hyperlink{namespacedb__actions}{db\+\_\+actions}
+\item 
+ \hyperlink{namespacedb__actions_1_1impl}{db\+\_\+actions\+::impl}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{main_8cpp_a65c994309c46f3ed7e29dde5b3e71437}{E\+X\+A\+M\+P\+L\+E\+\_\+\+U\+S\+E\+\_\+\+U\+D\+P}~0
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \hyperlink{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}{example\+::\+My\+Settings} = \hyperlink{structexperiment_1_1Settings}{nle\+::\+Settings}$<$ \hyperlink{namespacenl_a5a2105bdb0a0734402590ce0805d7e31}{nl\+::\+U\+Int32} $>$
+\item 
+using \hyperlink{namespaceexample_af793395d62fc2b1e6ffb8fa73d751c26}{example\+::\+My\+Server\+Config} = decltype(my\+\_\+server\+\_\+config)
+\item 
+using \hyperlink{namespaceexample_a1d0fadf5159e96dd9c1f2c1d645ed430}{example\+::\+My\+Client\+Config} = decltype(my\+\_\+client\+\_\+config)
+\item 
+using \hyperlink{namespaceexample_a691724c505d8b776cc3d6e6ecdd86c30}{example\+::\+My\+Ctx\+Server} = \hyperlink{classexperiment_1_1ContextHost}{nle\+::\+Context\+Host}$<$ \hyperlink{namespaceexample_af793395d62fc2b1e6ffb8fa73d751c26}{My\+Server\+Config} $>$
+\item 
+using \hyperlink{namespaceexample_a15f26e1f0bedfa575b4f5832a2b679b5}{example\+::\+My\+Ctx\+Client} = \hyperlink{classexperiment_1_1ContextHost}{nle\+::\+Context\+Host}$<$ \hyperlink{namespaceexample_a1d0fadf5159e96dd9c1f2c1d645ed430}{My\+Client\+Config} $>$
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0}{example\+::cs} \{ \\*
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a4a36cb415836aac2347936579383dcf4}{example\+::cs\+::unlogged}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad688c4ccd7e20183b67f80d8816a2126}{example\+::cs\+::logged}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a8eaec4759daa38fd837a17e49bbbc3e4}{example\+::cs\+::awaiting\+\_\+channel\+\_\+list}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a9a33fad9e59a1d8e6912dc3509873487}{example\+::cs\+::selecting\+\_\+channel}, 
+\\*
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a99c4ab692021ecaed7eb12e45e47a55a}{example\+::cs\+::awaiting\+\_\+login\+\_\+response}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0ad1e6a64ad538fae0a705a18763af9db4}{example\+::cs\+::awaiting\+\_\+create\+\_\+channel\+\_\+response}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0ab81f4f2d5c43a5238dd9f28bf5028e48}{example\+::cs\+::awaiting\+\_\+registration\+\_\+response}, 
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0a0ce1208f71b22e41554fcb3cc3e68368}{example\+::cs\+::awaiting\+\_\+create\+\_\+message\+\_\+response}, 
+\\*
+\hyperlink{namespaceexample_a229123c56827091122d3cc29bf73a6c0aa4a4aaf73f45f312479a56bbdeed79c3}{example\+::cs\+::awaiting\+\_\+subscribe\+\_\+response}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\auto \hyperlink{main_8cpp_a50f943fe652175eaaf0c085673d2f999}{get\+Input} (const std\+::string \&title)
+\item 
+auto \hyperlink{main_8cpp_a9e0f5afe0258d2977cde1deac7bdca80}{get\+Input\+Line} (const std\+::string \&title)
+\item 
+auto \& \hyperlink{main_8cpp_a2cc2b6be86b1c0ece8c6b01797caf07f}{db} ()
+\item 
+void \hyperlink{main_8cpp_a315226cb92f537622c22e8788f484bd9}{initialize\+\_\+db\+\_\+connection} ()
+\item 
+\hyperlink{namespaceexample_1_1to__s_ac90e4002b4bbdae9f36a0614fe263e45}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T} (Registration,(                                                                                                                                           
+                                                                                                   ((std\+::string), user),                                                                                                   ((std\+::string), pass)))
+\item 
+\hyperlink{namespaceexample_1_1to__s_a404f95a3f92f77d9e8f551037c0d7271}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T} (Login,(                                                                                                                                           
+                                                                                                   ((std\+::string), user),                                                                                                   ((std\+::string), pass)))
+\item 
+\hyperlink{namespaceexample_1_1to__s_ad3d5b87cae0b8c1449fd84757093c9af}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+1} (Create\+Channel,(                                                                                                                                           
+                                                                                                           (std\+::string), name))
+\item 
+\hyperlink{namespaceexample_1_1to__s_ae2441a21a7d9463f7df856b33dca60ab}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+1} (Delete\+Channel,(                                                                                                   
+                                                                                                           (int), id))
+\item 
+\hyperlink{namespaceexample_1_1to__s_a29e3a089b479f8dd619fdbf4ebb6b6bd}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+1} (Subscribe,(                                                                                                   
+                                                                                                           (int), id))
+\item 
+\hyperlink{namespaceexample_1_1to__s_acf8fc2468fd6df5ba81aee0681ab9b40}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T} (Send\+Message,(                                                                                                                                                           
+                                                                                                   ((int), channel\+\_\+id),                   
+                                                                                                   ((std\+::string), contents)))
+\item 
+\hyperlink{namespaceexample_1_1to__s_aba7eca9145725bd852017768b0563163}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T} (Get\+Messages,(                                                                                                                                   
+                                                                                                   ((int), channel\+\_\+id),                                                                                                   ((int), count)))
+\item 
+\hyperlink{namespaceexample_1_1to__s_aaf777f6423de0654c5555ae32e182638}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+0} (Channel\+List)
+\item 
+\hyperlink{namespaceexample_1_1to__s_ac88cfa8b7faa1cb4b0718f43f951cdb9}{example\+::to\+\_\+s\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+0} (Logout)
+\item 
+\hyperlink{namespaceexample_1_1to__c_ad5209fcbd7b509f14576e86ee3840db9}{example\+::to\+\_\+c\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T} (Outcome,(                                                                                                                   
+                                                                                                   ((bool), valid),                                                                                                   ((int), type)))
+\item 
+\hyperlink{namespaceexample_1_1to__c_af56932fb854bb06e55e6dc91fb9650f0}{example\+::to\+\_\+c\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+1} (Messages,(                                                                                                                                                                                                               
+                                                                                                           (std\+::vector$<$ std\+::string $>$), messages))
+\item 
+\hyperlink{namespaceexample_1_1to__c_a66b812776e4a8cc18c60ca269cb761ec}{example\+::to\+\_\+c\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+1} (Channels,(                                                                                                                                                                                                               
+                                                                                                           (std\+::vector$<$ std\+::string $>$), channels))
+\item 
+\hyperlink{namespaceexample_1_1to__c_a02e4be92664cfcf4a067fbd448d0f67f}{example\+::to\+\_\+c\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T} (Notify,(                                                                                                                                       
+                                                                                                   ((int), channel\+\_\+id),                                                                                                   ((std\+::string), msg)))
+\item 
+\hyperlink{namespaceexample_1_1to__c_aeeb0e7a1b2f8ac94e68e618340edd77d}{example\+::to\+\_\+c\+::\+N\+L\+\_\+\+D\+E\+F\+I\+N\+E\+\_\+\+P\+C\+K\+T\+\_\+0} (Timed\+Out)
+\item 
+auto \hyperlink{namespaceutils_aeb52738fe874fae1e774531af21ebc61}{utils\+::hash\+\_\+pwd} (const std\+::string \&x)
+\item 
+{\footnotesize template$<$typename T , typename T\+F $>$ }\\bool \hyperlink{namespacedb__actions_1_1impl_a23a14574c7862e72401ab6183666bf3b}{db\+\_\+actions\+::impl\+::execute\+\_\+if\+\_\+not\+\_\+empty} (T \&\&r, T\+F \&\&f)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\void \hyperlink{namespacedb__actions_a9b636374cbe5116fcc1efee9608dc9f6}{db\+\_\+actions\+::for\+\_\+channels} (T\+F \&\&f)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\bool \hyperlink{namespacedb__actions_a824939df2b60497514c935e79f0ad7c3}{db\+\_\+actions\+::message\+\_\+by\+\_\+id} (int id, T\+F \&\&f)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\bool \hyperlink{namespacedb__actions_a370b23cf8e2cc650c8a9e60eee1d9aa1}{db\+\_\+actions\+::user\+\_\+by\+\_\+id} (int id, T\+F \&\&f)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\bool \hyperlink{namespacedb__actions_a2fece3bf2fac3c362d7901a9e81d993e}{db\+\_\+actions\+::user\+\_\+by\+\_\+username} (const std\+::string \&username, T\+F \&\&f)
+\item 
+bool \hyperlink{namespacedb__actions_a400a2caa8f65cd54fa0fcb375bdecbf2}{db\+\_\+actions\+::has\+\_\+user\+\_\+by\+\_\+id} (int id)
+\item 
+bool \hyperlink{namespacedb__actions_aba19c40b046ef3f3aaa019b17e1c5bab}{db\+\_\+actions\+::has\+\_\+user\+\_\+by\+\_\+username} (const std\+::string \&username)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\bool \hyperlink{namespacedb__actions_a55faadfd512659fa53981137fb9b77e2}{db\+\_\+actions\+::channel\+\_\+by\+\_\+id} (int id, T\+F \&\&f)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\bool \hyperlink{namespacedb__actions_a5f0dc52c0af031bb2b7d908bcb535ff0}{db\+\_\+actions\+::channel\+\_\+by\+\_\+name} (const std\+::string \&name, T\+F \&\&f)
+\item 
+bool \hyperlink{namespacedb__actions_aae5f18f38a517aee999bb89c33a40b35}{db\+\_\+actions\+::has\+\_\+channel\+\_\+by\+\_\+id} (int id)
+\item 
+bool \hyperlink{namespacedb__actions_a8a4ac9753b7e3e341c460c4d03e9ead3}{db\+\_\+actions\+::has\+\_\+channel\+\_\+by\+\_\+name} (const std\+::string \&name)
+\item 
+auto \hyperlink{namespacedb__actions_a1140fa2d83a925887d84af7dd1d3f48c}{db\+\_\+actions\+::create\+\_\+user} (const std\+::string \&user, const std\+::string \&pass)
+\item 
+auto \hyperlink{namespacedb__actions_af5ccc00e3ef7a4107fab34e9e0ac9dca}{db\+\_\+actions\+::create\+\_\+channel} (int user\+\_\+id, const std\+::string \&name)
+\item 
+auto \hyperlink{namespacedb__actions_a2104452f2b71b698ce7d80fb8c63103e}{db\+\_\+actions\+::delete\+\_\+channel} (int id)
+\item 
+auto \hyperlink{namespacedb__actions_a9bf6564bf6679de104eb00b17eb2f4f1}{db\+\_\+actions\+::add\+\_\+user\+\_\+to\+\_\+channel} (int user\+\_\+id, int channel\+\_\+id)
+\item 
+auto \hyperlink{namespacedb__actions_ad21e638190a93a6908bf7e0d5fb439da}{db\+\_\+actions\+::remove\+\_\+user\+\_\+from\+\_\+channel} (int user\+\_\+id, int channel\+\_\+id)
+\item 
+auto \hyperlink{namespacedb__actions_a7fdd5f88b66c7118917f7d4735e8072b}{db\+\_\+actions\+::create\+\_\+message} (int user\+\_\+id, int channel\+\_\+id, const std\+::string \&contents)
+\item 
+auto \hyperlink{namespacedb__actions_a0e5112d1b03184666b078fc2853e1524}{db\+\_\+actions\+::is\+\_\+user\+\_\+in\+\_\+channel} (int user\+\_\+id, int channel\+\_\+id)
+\item 
+{\footnotesize template$<$typename T\+F $>$ }\\void \hyperlink{namespacedb__actions_a283211f5acf4c185aa229901e65b4054}{db\+\_\+actions\+::for\+\_\+users\+\_\+subscribed\+\_\+to} (int channel\+\_\+id, T\+F \&\&f)
+\item 
+constexpr auto \hyperlink{namespaceexample_ac2cef3a58375e350f325130a9ed9e346}{example\+::my\+\_\+pckt\+\_\+binds} (nle\+::pckt\+\_\+binds$<$ to\+\_\+s\+::\+Registration, to\+\_\+s\+::\+Login, to\+\_\+s\+::\+Create\+Channel, to\+\_\+s\+::\+Delete\+Channel, to\+\_\+s\+::\+Send\+Message, to\+\_\+s\+::\+Get\+Messages, to\+\_\+s\+::\+Channel\+List, to\+\_\+s\+::\+Subscribe, to\+\_\+s\+::\+Logout, to\+\_\+c\+::\+Outcome, to\+\_\+c\+::\+Messages, to\+\_\+c\+::\+Notify, to\+\_\+c\+::\+Channels, to\+\_\+c\+::\+Timed\+Out $>$())
+\item 
+constexpr auto \hyperlink{namespaceexample_a86eab8c8648c370d8dbf00cf2f841fd9}{example\+::my\+\_\+server\+\_\+tunnel} (\hyperlink{structexperiment_1_1tunnel__type}{nle\+::tunnel\+\_\+type}$<$ \hyperlink{classnl_1_1Tunnel_1_1TCPListener}{nl\+::\+Tunnel\+::\+T\+C\+P\+Listener} $>$\{\})
+\item 
+constexpr auto \hyperlink{namespaceexample_a0c17778857fd8a16e970c1fcf2050f02}{example\+::my\+\_\+client\+\_\+tunnel} (\hyperlink{structexperiment_1_1tunnel__type}{nle\+::tunnel\+\_\+type}$<$ \hyperlink{classnl_1_1Tunnel_1_1TCPSckt}{nl\+::\+Tunnel\+::\+T\+C\+P\+Sckt} $>$\{\})
+\item 
+constexpr auto \hyperlink{namespaceexample_ac04453c909e716e9769692290761b844}{example\+::my\+\_\+server\+\_\+config} (nle\+::make\+\_\+config$<$ \hyperlink{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}{My\+Settings} $>$(my\+\_\+pckt\+\_\+binds, my\+\_\+server\+\_\+tunnel))
+\item 
+constexpr auto \hyperlink{namespaceexample_a2e75dd524031f59d04a53e5073228ac0}{example\+::my\+\_\+client\+\_\+config} (nle\+::make\+\_\+config$<$ \hyperlink{namespaceexample_a5efa1dbb95bf11993a49738e533e7d0a}{My\+Settings} $>$(my\+\_\+pckt\+\_\+binds, my\+\_\+client\+\_\+tunnel))
+\item 
+void \hyperlink{namespaceexample_ab71cf8c7d29ccb4a44b67da2d34aa00d}{example\+::start\+Server} ()
+\item 
+void \hyperlink{namespaceexample_ad4a8834efe793f3decd11753886aedc9}{example\+::start\+Client} (\hyperlink{namespacenl_a12899c87e239db66809da0a71fcc9129}{nl\+::\+Port} port)
+\item 
+int \hyperlink{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ mysql\+::connection $>$ \hyperlink{main_8cpp_a1731b884d64163dd7cafae857ef1cade}{\+\_\+db}
+\item 
+\hyperlink{structexample__ddl_1_1TblUser}{example\+\_\+ddl\+::\+Tbl\+User} \hyperlink{main_8cpp_ab447dc5252778fe840bbb4e00a92a4a9}{tbl\+\_\+user}
+\item 
+\hyperlink{structexample__ddl_1_1TblChannel}{example\+\_\+ddl\+::\+Tbl\+Channel} \hyperlink{main_8cpp_a30e4055ec2a1fa489eb0e91ed699f5cb}{tbl\+\_\+channel}
+\item 
+\hyperlink{structexample__ddl_1_1TblMessage}{example\+\_\+ddl\+::\+Tbl\+Message} \hyperlink{main_8cpp_af83789a2f8718cf114bf79426f3b7aa5}{tbl\+\_\+message}
+\item 
+\hyperlink{structexample__ddl_1_1TblUserChannel}{example\+\_\+ddl\+::\+Tbl\+User\+Channel} \hyperlink{main_8cpp_a3fc59da21ce18842b534adf2538e9799}{tbl\+\_\+user\+\_\+channel}
+\item 
+constexpr int \hyperlink{namespaceexample_1_1to__c_a1c413c74bbeeb1dac71eb03f6fff15f4}{example\+::to\+\_\+c\+::ot\+\_\+login} = 0
+\item 
+constexpr int \hyperlink{namespaceexample_1_1to__c_a25c07b1a24b3a551b7345e568f301dcd}{example\+::to\+\_\+c\+::ot\+\_\+registration} = 1
+\item 
+constexpr int \hyperlink{namespaceexample_1_1to__c_a18193092770b31fb4ca1288392ffc4b5}{example\+::to\+\_\+c\+::ot\+\_\+create\+\_\+channel} = 2
+\item 
+constexpr int \hyperlink{namespaceexample_1_1to__c_a2b9a654e3547c13f770851600e4231d0}{example\+::to\+\_\+c\+::ot\+\_\+create\+\_\+message} = 3
+\item 
+constexpr int \hyperlink{namespaceexample_1_1to__c_ae7d3f340353b066ddc0703fc2c2ca5c7}{example\+::to\+\_\+c\+::ot\+\_\+subscribe} = 4
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{main_8cpp_a65c994309c46f3ed7e29dde5b3e71437}{}\index{main.\+cpp@{main.\+cpp}!E\+X\+A\+M\+P\+L\+E\+\_\+\+U\+S\+E\+\_\+\+U\+D\+P@{E\+X\+A\+M\+P\+L\+E\+\_\+\+U\+S\+E\+\_\+\+U\+D\+P}}
+\index{E\+X\+A\+M\+P\+L\+E\+\_\+\+U\+S\+E\+\_\+\+U\+D\+P@{E\+X\+A\+M\+P\+L\+E\+\_\+\+U\+S\+E\+\_\+\+U\+D\+P}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{E\+X\+A\+M\+P\+L\+E\+\_\+\+U\+S\+E\+\_\+\+U\+D\+P}]{\setlength{\rightskip}{0pt plus 5cm}\#define E\+X\+A\+M\+P\+L\+E\+\_\+\+U\+S\+E\+\_\+\+U\+D\+P~0}\label{main_8cpp_a65c994309c46f3ed7e29dde5b3e71437}
+
+
+\subsection{Function Documentation}
+\hypertarget{main_8cpp_a2cc2b6be86b1c0ece8c6b01797caf07f}{}\index{main.\+cpp@{main.\+cpp}!db@{db}}
+\index{db@{db}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{db()}]{\setlength{\rightskip}{0pt plus 5cm}auto\& db (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{main_8cpp_a2cc2b6be86b1c0ece8c6b01797caf07f}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{df/d0a/main_8cpp_a2cc2b6be86b1c0ece8c6b01797caf07f_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{main_8cpp_a50f943fe652175eaaf0c085673d2f999}{}\index{main.\+cpp@{main.\+cpp}!get\+Input@{get\+Input}}
+\index{get\+Input@{get\+Input}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{get\+Input(const std\+::string \&title)}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ auto get\+Input (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{title}
+\end{DoxyParamCaption}
+)}\label{main_8cpp_a50f943fe652175eaaf0c085673d2f999}
+\hypertarget{main_8cpp_a9e0f5afe0258d2977cde1deac7bdca80}{}\index{main.\+cpp@{main.\+cpp}!get\+Input\+Line@{get\+Input\+Line}}
+\index{get\+Input\+Line@{get\+Input\+Line}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{get\+Input\+Line(const std\+::string \&title)}]{\setlength{\rightskip}{0pt plus 5cm}auto get\+Input\+Line (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{title}
+\end{DoxyParamCaption}
+)}\label{main_8cpp_a9e0f5afe0258d2977cde1deac7bdca80}
+\hypertarget{main_8cpp_a315226cb92f537622c22e8788f484bd9}{}\index{main.\+cpp@{main.\+cpp}!initialize\+\_\+db\+\_\+connection@{initialize\+\_\+db\+\_\+connection}}
+\index{initialize\+\_\+db\+\_\+connection@{initialize\+\_\+db\+\_\+connection}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{initialize\+\_\+db\+\_\+connection()}]{\setlength{\rightskip}{0pt plus 5cm}void initialize\+\_\+db\+\_\+connection (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{main_8cpp_a315226cb92f537622c22e8788f484bd9}
+
+
+Here is the caller graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=274pt]{df/d0a/main_8cpp_a315226cb92f537622c22e8788f484bd9_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{}\index{main.\+cpp@{main.\+cpp}!main@{main}}
+\index{main@{main}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{main()}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4}
+
+
+Here is the call graph for this function\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{df/d0a/main_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{main_8cpp_a1731b884d64163dd7cafae857ef1cade}{}\index{main.\+cpp@{main.\+cpp}!\+\_\+db@{\+\_\+db}}
+\index{\+\_\+db@{\+\_\+db}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{\+\_\+db}]{\setlength{\rightskip}{0pt plus 5cm}std\+::unique\+\_\+ptr$<$mysql\+::connection$>$ \+\_\+db}\label{main_8cpp_a1731b884d64163dd7cafae857ef1cade}
+\hypertarget{main_8cpp_a30e4055ec2a1fa489eb0e91ed699f5cb}{}\index{main.\+cpp@{main.\+cpp}!tbl\+\_\+channel@{tbl\+\_\+channel}}
+\index{tbl\+\_\+channel@{tbl\+\_\+channel}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{tbl\+\_\+channel}]{\setlength{\rightskip}{0pt plus 5cm}{\bf example\+\_\+ddl\+::\+Tbl\+Channel} tbl\+\_\+channel}\label{main_8cpp_a30e4055ec2a1fa489eb0e91ed699f5cb}
+\hypertarget{main_8cpp_af83789a2f8718cf114bf79426f3b7aa5}{}\index{main.\+cpp@{main.\+cpp}!tbl\+\_\+message@{tbl\+\_\+message}}
+\index{tbl\+\_\+message@{tbl\+\_\+message}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{tbl\+\_\+message}]{\setlength{\rightskip}{0pt plus 5cm}{\bf example\+\_\+ddl\+::\+Tbl\+Message} tbl\+\_\+message}\label{main_8cpp_af83789a2f8718cf114bf79426f3b7aa5}
+\hypertarget{main_8cpp_ab447dc5252778fe840bbb4e00a92a4a9}{}\index{main.\+cpp@{main.\+cpp}!tbl\+\_\+user@{tbl\+\_\+user}}
+\index{tbl\+\_\+user@{tbl\+\_\+user}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{tbl\+\_\+user}]{\setlength{\rightskip}{0pt plus 5cm}{\bf example\+\_\+ddl\+::\+Tbl\+User} tbl\+\_\+user}\label{main_8cpp_ab447dc5252778fe840bbb4e00a92a4a9}
+\hypertarget{main_8cpp_a3fc59da21ce18842b534adf2538e9799}{}\index{main.\+cpp@{main.\+cpp}!tbl\+\_\+user\+\_\+channel@{tbl\+\_\+user\+\_\+channel}}
+\index{tbl\+\_\+user\+\_\+channel@{tbl\+\_\+user\+\_\+channel}!main.\+cpp@{main.\+cpp}}
+\subsubsection[{tbl\+\_\+user\+\_\+channel}]{\setlength{\rightskip}{0pt plus 5cm}{\bf example\+\_\+ddl\+::\+Tbl\+User\+Channel} tbl\+\_\+user\+\_\+channel}\label{main_8cpp_a3fc59da21ce18842b534adf2538e9799}
