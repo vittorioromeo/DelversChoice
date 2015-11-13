@@ -1,4 +1,4 @@
-\documentclass[12pt]{report}
+\documentclass[11pt]{report}
 
 \usepackage{verbatim}
 \usepackage{fullpage}
@@ -226,8 +226,8 @@
 
         The abstraction provided by the library must work asynchronously by default, but an option to use blocking IO must be present.
 
-    \chapter{Software Requirements Specification}
 
+    \chapter{Software Requirements Specification}
 
         \section{Introduction}
 
@@ -629,7 +629,7 @@
                     \begin{figure}[H]
                     \caption{Handling outgoing payloads - use case diagram.}
                     \centering
-                    \includegraphics[width=0.65\textwidth]{d/uc/outgoing.png}
+                    \includegraphics[width=0.75\textwidth]{d/uc/outgoing.png}
                     \end{figure}
 
 
@@ -671,7 +671,10 @@
                 In the Unified Modeling Language, activity diagrams are intended to model both computational and organisational processes (i.e. workflows).
                 Activity diagrams show the overall flow of control.
 
-                \newpage
+%                \newpage
+%\\
+
+\bigskip
                 The following diagram shows the required steps to define a serializable type.
 
                 \begin{figure}[H]
@@ -682,7 +685,8 @@
 
 
 
-                \newpage
+                %\newpage
+                %\\
                 The following diagram shows the required steps to serialize an object into a payload.
 
                 \begin{figure}[H]
@@ -695,7 +699,8 @@
 
 
 
-                \newpage
+                %\newpage
+                %\\
                 The following diagram shows the required steps to deserialize a payload into an object.
 
                 \begin{figure}[H]
@@ -708,7 +713,8 @@
 
 
 
-                \newpage
+               % \newpage
+               %\\
                 The following diagram shows the required steps to define a tunnel.
 
                 \begin{figure}[H]
@@ -723,6 +729,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to create a managed host.
 
                 \begin{figure}[H]
@@ -736,6 +743,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to create and bind a dispatch table.
 
                 \begin{figure}[H]
@@ -748,7 +756,8 @@
 
 
 
-                \newpage
+\newpage
+                %\\
                 The following diagram shows the required steps to create a context host.
 
                 \begin{figure}[H]
@@ -762,6 +771,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to receive a bound payload.
 
                 \begin{figure}[H]
@@ -775,6 +785,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to send a bound payload.
 
                 \begin{figure}[H]
@@ -787,7 +798,7 @@
 
 
 
-                \newpage
+                %   \newpage
                 \newpage
 
             \subsection{Class diagrams}
@@ -818,7 +829,7 @@
                 \begin{figure}[H]
                 \caption{Managed buffer collaboration diagram.}
                 \centering
-                \includegraphics[width=0.4\textwidth]{d/coll/coll_pcktbuf.png}
+                \includegraphics[width=0.5\textwidth]{d/coll/coll_pcktbuf.png}
                 \end{figure}
 
                 \newpage
@@ -826,7 +837,7 @@
                 \begin{figure}[H]
                 \caption{Managed host collaboration diagram.}
                 \centering
-                \includegraphics[width=0.4\textwidth]{d/coll/coll_manhost.png}
+                \includegraphics[width=0.5\textwidth]{d/coll/coll_manhost.png}
                 \end{figure}
 
                 \newpage
@@ -842,7 +853,7 @@
                 \begin{figure}[H]
                 \caption{Dispatch table collaboration diagram.}
                 \centering
-                \includegraphics[width=0.4\textwidth]{d/coll/coll_disptab.png}
+                \includegraphics[width=0.5\textwidth]{d/coll/coll_disptab.png}
                 \end{figure}
 
                 \newpage                
@@ -884,9 +895,9 @@
 
                 Docker uses resource isolation features of the Linux kernel such as \emph{cgroups} and \emph{kernel namespaces} to allow independent containers to run within a single Linux instance.
 
-                This technology has been used since the beginning of the development process to \emph{separate veeForum data and packages} from the host system and to dramatically increase \emph{portability} and \emph{ease of testing}.
+                This technology has been used since the beginning of the development process to \emph{separate NetLayer data and packages} from the host system and to dramatically increase \emph{portability} and \emph{ease of testing}.
 
-                Docker is used for the example projects bundled with NetLayer that require a web server or a database.1
+                Docker is used for the example projects bundled with NetLayer that require a web server or a database.
 
             \section{Version control system}
                 Version control systems (VCSs) allow the \emph{management of changes} to documents, computer programs, large web sites, and other collections of information.
@@ -898,12 +909,14 @@
 
                 Git is widely appreciated in the private and open-source programming communities - it was initially designed and developed by \emph{Linus Torvalds} for Linux kernel development in 2005, and has since become the most widely adopted version control system for software development.
 
-                The veeForum project is \emph{open-source} and \emph{appreciates feedback and contributions}. It is hosted on \emph{GitHub}, a web-based Git repository hosting service, which offers all of the distributed revision control and source code management (SCM) functionality of Git, while adding \emph{additional features} that make collaboration and public contributions easy and accessible.
+                The NetLayer project is \emph{open-source} and \emph{appreciates feedback and contributions}. It is hosted on \emph{GitHub}, a web-based Git repository hosting service, which offers all of the distributed revision control and source code management (SCM) functionality of Git, while adding \emph{additional features} that make collaboration and public contributions easy and accessible.
 
             \section{Test-driven development}
                 The \emph{test-driven development} (TDD) paradigm was used to develop NetLayer and example applications. 
 
                 TDD is a software development process that relies on the repetition of a very short development cycle: first the developer writes an automated test case that defines a desired improvement or new function, then produces the minimum amount of code to pass that test, and finally refactors the new code to acceptable standards.
+
+                As specified by the client, the \emph{CMake} build system has been used to develop and deploy the library. The CMake build system comes with a very powerful and easy-to-use testing framework, \emph{CTest}, which allows tests to be executed in parallel conveniently. Tests are simple \emph{.cpp} source files containing a main function and asserts. If one of the asserts does not pass, or if the test crashes, the test is considered failed.
 
             \section{Technologies used}
                 C++14, which is the latest official C++ standard, released in 2 March 2014 \emph{(paper N3936)}, is the language of choice for NetLayer.
@@ -1007,55 +1020,82 @@
 
 
 
-%%% TODO %%% 
-
 \part{Conclusion}
     \chapter{Learning experience}
 
-        Creating the \emph{veeForum} framework was an incredible learning experience. Many new technologies had to be used and integrated in the project to achieve a satisfactory final result.
+        Creating the \emph{NetLayer} library was a very useful learning experience.
 
         \begin{itemize}
-            \item \emph{Planning and design}: using Software Engineering guidelines and design processes was extremely educational and contributed to the quality of the project.
+            \item \emph{Planning and design}: using Software Engineering guidelines and design processes was extremely educational and contributed to the quality of the project. 
+            
             \item \emph{GNU/Linux containers}: using Docker containers for the database and the web application was beneficial in understanding the advantages of containers and allowed a decoupled and highly portable final result.
-            \item \emph{\LaTeX{} and LatexPP}: using \LaTeX{} and writing a simple preprocessor for it was a very education thesis-writing and typesetting experience and definitely resulted in a high-quality document.
-            \item \emph{Complex database design}: having to deal with 20+ tables, 30+ triggers and 15+ stored procedures for the correct functioning of the system was a very educational experience in complex SQL coding and database design practices. Making everything work toghether, safely and efficiently, required learning complex SQL constructs such as \emph{cursors} and \emph{imperative loops} and spending a lot of time on table/relationship design beforehand.
-            \item \emph{Complex PHP framework}: having two feature-rich PHP modules that needed to conveniently expose functionality to communicate with the database to the developer was a great learning experience in \emph{object-oriented development} and \emph{library design}. Generating HTML using polymorphic PHP class hierarchies was also extremely beneficial in the understanding of dynamic HTML page generation processes and tree-like syntactic structures.
+            
+            \item \emph{\LaTeX{} and LatexPP}: using \LaTeX{} and writing a simple preprocessor for it was a very education thesis-writing and typesetting experience and definitely resulted in a higher quality final document.
+
+            \item \emph{Networking protocols}: implementing an abstraction over networking protocols (tunnels) was imporant to understand the commonalities and key difference between existing protocols.
+
+            \item \emph{C++14 metaprogramming}: writing metaprogramming utilities and functions from scratch was a good exercise in modern C++ metaprogramming. A new paradigm, called \emph{dependent typing} or \emph{type-value encoding}, was recently discovered and publicized by active members of the C++ community such as Paul Fultz II and Louis Dionne - NetLayer does use this paradigm for the compile-time configuration setup mechanisms.
         \end{itemize}
 
     \chapter{Future}
         
-        \emph{veeForum} can be greatly improved, and will probably be expanded upon and used as the forum framework for some future projects.
+        \emph{NetLayer} can be greatly improved, and will probably be expanded upon and used as the forum framework for some future projects.
 
-            Here are some possible improvements:
+        Here are some possible improvements for the library modules:
 
-            \begin{itemize}
-                \item \emph{Theming and customization}: add theming capabilities and user-friendly graphical customization options to the default web application.
-                \item \emph{Private messaging}: add synchronous and asynchronous private messaging capabilities between users (and/or groups), along with new permissions and privileges.
-                \item \emph{RSS feed}: add the possibility to subscribe to sections/threads/users and receive an RSS feed.
-                \item \emph{Public JSON API}: add a public RESTful JSON API that can be used to retrieve the forum contents and display them in custom clients.
-                \item \emph{Personal user profiles}: add personal user profile customization options, such as avatars, biographies, interests, contact information, etc...
-                \item \emph{Email notifications}: allow users to receive notification alerts as emails.
-                \item \emph{Dashboard}: add a dashboard displaying the most popular threads and users in the main page.
-                \item \emph{Real-time statistics}: show the real-time number of users viewing a particular section or thread directly in the web interface.
-                \item \emph{Mailing list support}: add a mailing bot that can be used to interact with the forum contents directly from the user's favorite email client.
-            \end{itemize}
+        \begin{itemize}
+            \item \emph{Busy loops}: instead of using loops continously running in a separate thread until a condition is met, condition variable threading primitives and more efficient construct may be used.
+            
+            \item \emph{Payloads}: some protocols, such as TCP, are connection-based. Having a template-based payload type may allow memory savings and performance improvements by avoiding the unnecessary specification of the sender/target address.
+            
+            \item \emph{Additional abstractions}: the current context host and managed host abstractions allow developers to easily create server-client architectures. Creating more distributed architectures, such as P2P, is possible in the current state of the library, but it is not as convenient. Future versions of NetLayer should have easy-to-use abstractions for P2P architectures.
+            
+            \item \emph{"Fixed" serialization}: when packet size is not dynamic and known in advance (at compile-time), more efficient fixed-size serialization constructs should be implemented to avoid dynaic buffer resizing while sending and receiving packets.
+
+            \item \emph{AutoSyncGen integration}: one of my other projects, AutoSyncGen, is a networking library that allows users to automatically synchronize data structures using delta compression. Since this is a very widely used compression method, it would be convenient for developers to be able to easily integrate AutoSyncGen with NetLayer.
+
+            \item \emph{Removing SFML dependency}: SFML is used as a thin abstraction layer over OS sockets and OS functions. To maximize portability and efficiency of NetLayer, the functionality provided by SFML could be rewritten. SFML is a C++03 library - possible benefits of eliminating this dependency could result in a more modern interface, in more efficiency thanks to \emph{move semantics} and new modern C++ features and possibly \emph{web sockets} usage through \emph{Emscripten}.
+
+            \item \emph{Lock-free data structures}: currently, a \emph{lock-based} thread-safe queue is used to receive and send payloads. Lock-free data structures could improve performance, since locking and unlocking is a very expensive operation.
+
+            \item \emph{Encrypted tunnels}: secure, encrypted tunnels, could be provided by default with the library. 
+
+            \item \emph{Composable tunnels}: generalizing tunnels even more, by allowing composition, could make the underyling data transfer process much more flexible and powerful. Encryption, for example, could be a component or modifier that could be attached to any existing tunnel.
+
+            \item \emph{boost::hana}: modern C++14 and C++17 metaprogramming should be based around the idea of \emph{dependent typing} or \emph{type-value encoding}. \emph{boost::hana}, a metaprogramming library developed by Louis Dionne, that was recently accepted in the Boost project, is currently the most advanced and powerful implementation of the aforementioned paradigm.
+
+            \item \emph{Monadic error handling}: error handling is currently done through return values and error codes, to allow usage of NetLayer in development domains that do not use exceptions for performance reasons. \emph{Rust} and functional programming language achieve very good results by combining the performance of error codes and the composability of exceptions in \emph{monadic error handling}. 
+
+            \item \emph{Avoid std::function overhead}: \emph{std::function}, a type-erasure-based generic wrapper around callable objects and functions, is used widely throughout the library. In some occasions, it could be possible to directly deduce the type of user-specified function objects without having to resort to possibly inefficient type-erasure.
+
+            \item \emph{Customizable packet reliability}: some packets are very important and should be reliable. Some packets are less important and can be lost during communication. It would be very convenient for the user to have abstractions provided by NetLayer that allow choosing the desired reliability of packet types at compile-time.
+        \end{itemize}
 
 
 
-%%% TODO %%% 
+
 
 \part{Example application: NLBroadcast}
     
     \chapter{Project specifications}    
 
         \section{Client request}
-            The client requests a command-line persistent chat application, allowing users to register, login, create channels and broadcast messages.
-            The application should be able to run both in server mode and client mode. 
+            The client requests the implentation of an example application that uses NetLayer. 
+            
+            The desired program is a \emph{command-line chat application} that allows users to create broadcast channels and to send broadcast messages. All messages and data must be stored in a \emph{MySQL relational database}. Users must be registered and logged in before executing any of the aforementioned actions. Users can subscribe to channels and receive notification when new messages are broadcasted to them.
 
-            The messages must be saved and users must be able to retrieve them by specifying a date range.
+            The underlying protocol used to communicate between servers must be chosen at compile-time.
 
-            Users registered to the system can subscribe to any number of channels. When users are logged in, and a message is broadcasted to one of the channels they're subscribed to, they must receive a notification with the broadcast content.
+            The requested application must fulfill the following requirements:
 
+            \begin{itemize}
+                \item It must have a command-line user interface. 
+                \item The UI must allow users to choose between the role of server and client, to register and login, to send messages, receive messages, create and delete channels, etc.
+                \item Channels and messages must be stored in a MySQL database.
+                \item The underlying network protocol (TCP, UDP, ...) must be chosen at compile-time.
+                \item The messages must be saved and users must be able to retrieve them by specifying a date range.
+                \item Users registered to the system can subscribe to any number of channels. When users are logged in, and a message is broadcasted to one of the channels they're subscribed to, they must receive a notification with the broadcast content.
+            \end{itemize}
         \section{Scope}
 
                 \subsection{Identity}
@@ -1125,35 +1165,69 @@
             \input{df/d0a/main_8cpp}
         
         \section{Screenshots}
+            
+            \begin{figure}[!htb]
+            \caption{Server mode.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/0.png}
+            \end{figure}
+
+            \begin{figure}[!htb]
+            \caption{Client mode.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/1.png}
+            \end{figure}
 
 
+            \begin{figure}[!htb]
+            \caption{Client mode - registration and login.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/2.png}
+            \end{figure}
 
 
-%%% TODO %%% 
+            \begin{figure}[!htb]
+            \caption{Client mode - message broadcasting and channel subscription.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/3.png}
+            \end{figure}
+
+
 
 \part{References}
-   
-        
-        Listed below are the references used during the development of \emph{veeForum} and the writing of this thesis.
+    Listed below are the references used during the development of \emph{NetLayer} and the writing of this thesis.
 
-        \begin{itemize}
-            \item veeForum GitHub repository: \url{https://github.com/SuperV1234/veeForum}
-            \item LatexPP GitHub repository: \url{https://github.com/SuperV1234/Experiments}
-            \item UNIME website: \url{http://unime.it}
-            \item My personal website: \url{https://vittorioromeo.info}
+    \begin{itemize}
+        \item NetLayer GitHub repository: \\ \url{https://github.com/SuperV1234/DelversChoice/tree/master/DCServer/NetLayer}
+        \item NLBroadcast GitHub repository: \\ \url{https://github.com/SuperV1234/DelversChoice/tree/master/DCServer/NetLayer/src}
+        \item LatexPP GitHub repository: \\ \url{https://github.com/SuperV1234/latexpp}
+        \item SSVUtils GitHub repository: \\ \url{https://github.com/SuperV1234/SSVUtils}
+        \item UNIME website: \\ \url{http://unime.it}
+        \item My personal website: \\ \url{https://vittorioromeo.info}
 
-            \item ShareLaTeX learn: \url{https://www.sharelatex.com/learn}
-            \item Wikipedia - Software engineering: \url{http://en.wikipedia.org/wiki/Software_engineering}
-            \item Software engineering vs Programming: \url{http://www.ics.uci.edu/~ziv/ooad/intro_to_se/tsld008.htm}
-            \item IEEE SRS guidelines: \url{home.agh.edu.pl/~jsw/io/IEEE830.doc}
-            \item MariaDB documentation: \url{https://mariadb.org/docs/}
-            \item PHP documentation: \url{http://php.net/docs.php}
-        
-            \item Git documentation: \url{https://git-scm.com/documentation}
-            \item Docker documentation: \url{https://docs.docker.com/}
-            \item GitHub: \url{https://github.com/}
-            \item Arch Linux wiki: \url{https://wiki.archlinux.org/}
-        \end{itemize}
+        \item sqlpp11 GitHub repository: \\ \url{https://github.com/rbock/sqlpp11}
+        \item sqlpp11-connector-mysql GitHub repository: \\ \url{https://github.com/rbock/sqlpp11-connector-mysql}
+
+        \item SFML website: \\ \url{http://www.sfml-dev.org/}
+        \item SFML GitHub repository: \\ \url{http://github.com/LaurentGomila/SFML}
+
+        \item ShareLaTeX learn: \\ \url{https://www.sharelatex.com/learn}
+        \item Wikipedia - Software engineering: \\ \url{http://en.wikipedia.org/wiki/Software_engineering}
+        \item Software engineering vs Programming: \\ \url{http://www.ics.uci.edu/~ziv/ooad/intro_to_se/tsld008.htm}
+        \item IEEE SRS guidelines: \\ \url{home.agh.edu.pl/~jsw/io/IEEE830.doc}
+        \item MariaDB documentation: \\ \url{https://mariadb.org/docs/}
+
+        \item Dependent typing (Paul Fultz II's blog): \\ \url{http://pfultz2.com/blog/2015/01/24/dependent-typing/}
+        \item boost::hana (Louis Dionne): \\ \url{https://github.com/boostorg/hana}
+
+        \item PlantUML website: \\ \url{http://plantuml.com/}
+        \item Doxygen website: \\ \url{http://www.stack.nl/~dimitri/doxygen/}
+    
+        \item Git documentation: \\ \url{https://git-scm.com/documentation}
+        \item Docker documentation: \\ \url{https://docs.docker.com/}
+        \item GitHub: \\ \url{https://github.com/}
+        \item Arch Linux wiki: \\ \url{https://wiki.archlinux.org/}
+    \end{itemize}
 
 
 

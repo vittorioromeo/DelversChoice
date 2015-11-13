@@ -1,17 +1,24 @@
-%%% TODO %%% 
-
 \part{Example application: NLBroadcast}
     
     \chapter{Project specifications}    
 
         \section{Client request}
-            The client requests a command-line persistent chat application, allowing users to register, login, create channels and broadcast messages.
-            The application should be able to run both in server mode and client mode. 
+            The client requests the implentation of an example application that uses NetLayer. 
+            
+            The desired program is a \emph{command-line chat application} that allows users to create broadcast channels and to send broadcast messages. All messages and data must be stored in a \emph{MySQL relational database}. Users must be registered and logged in before executing any of the aforementioned actions. Users can subscribe to channels and receive notification when new messages are broadcasted to them.
 
-            The messages must be saved and users must be able to retrieve them by specifying a date range.
+            The underlying protocol used to communicate between servers must be chosen at compile-time.
 
-            Users registered to the system can subscribe to any number of channels. When users are logged in, and a message is broadcasted to one of the channels they're subscribed to, they must receive a notification with the broadcast content.
+            The requested application must fulfill the following requirements:
 
+            \begin{itemize}
+                \item It must have a command-line user interface. 
+                \item The UI must allow users to choose between the role of server and client, to register and login, to send messages, receive messages, create and delete channels, etc.
+                \item Channels and messages must be stored in a MySQL database.
+                \item The underlying network protocol (TCP, UDP, ...) must be chosen at compile-time.
+                \item The messages must be saved and users must be able to retrieve them by specifying a date range.
+                \item Users registered to the system can subscribe to any number of channels. When users are logged in, and a message is broadcasted to one of the channels they're subscribed to, they must receive a notification with the broadcast content.
+            \end{itemize}
         \section{Scope}
 
                 \subsection{Identity}
@@ -82,3 +89,28 @@
         
         \section{Screenshots}
             
+            \begin{figure}[!htb]
+            \caption{Server mode.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/0.png}
+            \end{figure}
+
+            \begin{figure}[!htb]
+            \caption{Client mode.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/1.png}
+            \end{figure}
+
+
+            \begin{figure}[!htb]
+            \caption{Client mode - registration and login.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/2.png}
+            \end{figure}
+
+
+            \begin{figure}[!htb]
+            \caption{Client mode - message broadcasting and channel subscription.}
+            \centering
+            \includegraphics[width=1\textwidth]{screens/3.png}
+            \end{figure}

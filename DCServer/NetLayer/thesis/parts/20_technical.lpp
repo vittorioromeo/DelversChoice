@@ -32,9 +32,9 @@
 
                 Docker uses resource isolation features of the Linux kernel such as \emph{cgroups} and \emph{kernel namespaces} to allow independent containers to run within a single Linux instance.
 
-                This technology has been used since the beginning of the development process to \emph{separate veeForum data and packages} from the host system and to dramatically increase \emph{portability} and \emph{ease of testing}.
+                This technology has been used since the beginning of the development process to \emph{separate NetLayer data and packages} from the host system and to dramatically increase \emph{portability} and \emph{ease of testing}.
 
-                Docker is used for the example projects bundled with NetLayer that require a web server or a database.1
+                Docker is used for the example projects bundled with NetLayer that require a web server or a database.
 
             \section{Version control system}
                 Version control systems (VCSs) allow the \emph{management of changes} to documents, computer programs, large web sites, and other collections of information.
@@ -46,12 +46,14 @@
 
                 Git is widely appreciated in the private and open-source programming communities - it was initially designed and developed by \emph{Linus Torvalds} for Linux kernel development in 2005, and has since become the most widely adopted version control system for software development.
 
-                The veeForum project is \emph{open-source} and \emph{appreciates feedback and contributions}. It is hosted on \emph{GitHub}, a web-based Git repository hosting service, which offers all of the distributed revision control and source code management (SCM) functionality of Git, while adding \emph{additional features} that make collaboration and public contributions easy and accessible.
+                The NetLayer project is \emph{open-source} and \emph{appreciates feedback and contributions}. It is hosted on \emph{GitHub}, a web-based Git repository hosting service, which offers all of the distributed revision control and source code management (SCM) functionality of Git, while adding \emph{additional features} that make collaboration and public contributions easy and accessible.
 
             \section{Test-driven development}
                 The \emph{test-driven development} (TDD) paradigm was used to develop NetLayer and example applications. 
 
                 TDD is a software development process that relies on the repetition of a very short development cycle: first the developer writes an automated test case that defines a desired improvement or new function, then produces the minimum amount of code to pass that test, and finally refactors the new code to acceptable standards.
+
+                As specified by the client, the \emph{CMake} build system has been used to develop and deploy the library. The CMake build system comes with a very powerful and easy-to-use testing framework, \emph{CTest}, which allows tests to be executed in parallel conveniently. Tests are simple \emph{.cpp} source files containing a main function and asserts. If one of the asserts does not pass, or if the test crashes, the test is considered failed.
 
             \section{Technologies used}
                 C++14, which is the latest official C++ standard, released in 2 March 2014 \emph{(paper N3936)}, is the language of choice for NetLayer.

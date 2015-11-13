@@ -54,8 +54,8 @@
 
         The abstraction provided by the library must work asynchronously by default, but an option to use blocking IO must be present.
 
-    \chapter{Software Requirements Specification}
 
+    \chapter{Software Requirements Specification}
 
         \section{Introduction}
 
@@ -457,7 +457,7 @@
                     \begin{figure}[H]
                     \caption{Handling outgoing payloads - use case diagram.}
                     \centering
-                    \includegraphics[width=0.65\textwidth]{d/uc/outgoing.png}
+                    \includegraphics[width=0.75\textwidth]{d/uc/outgoing.png}
                     \end{figure}
 
 
@@ -499,7 +499,10 @@
                 In the Unified Modeling Language, activity diagrams are intended to model both computational and organisational processes (i.e. workflows).
                 Activity diagrams show the overall flow of control.
 
-                \newpage
+%                \newpage
+%\\
+
+\bigskip
                 The following diagram shows the required steps to define a serializable type.
 
                 \begin{figure}[H]
@@ -510,7 +513,8 @@
 
 
 
-                \newpage
+                %\newpage
+                %\\
                 The following diagram shows the required steps to serialize an object into a payload.
 
                 \begin{figure}[H]
@@ -523,7 +527,8 @@
 
 
 
-                \newpage
+                %\newpage
+                %\\
                 The following diagram shows the required steps to deserialize a payload into an object.
 
                 \begin{figure}[H]
@@ -536,7 +541,8 @@
 
 
 
-                \newpage
+               % \newpage
+               %\\
                 The following diagram shows the required steps to define a tunnel.
 
                 \begin{figure}[H]
@@ -551,6 +557,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to create a managed host.
 
                 \begin{figure}[H]
@@ -564,6 +571,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to create and bind a dispatch table.
 
                 \begin{figure}[H]
@@ -576,7 +584,8 @@
 
 
 
-                \newpage
+\newpage
+                %\\
                 The following diagram shows the required steps to create a context host.
 
                 \begin{figure}[H]
@@ -590,6 +599,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to receive a bound payload.
 
                 \begin{figure}[H]
@@ -603,6 +613,7 @@
 
 
                 \newpage
+                %\\
                 The following diagram shows the required steps to send a bound payload.
 
                 \begin{figure}[H]
@@ -615,7 +626,7 @@
 
 
 
-                \newpage
+                %   \newpage
                 \newpage
 
             \subsection{Class diagrams}
@@ -646,7 +657,7 @@
                 \begin{figure}[H]
                 \caption{Managed buffer collaboration diagram.}
                 \centering
-                \includegraphics[width=0.4\textwidth]{d/coll/coll_pcktbuf.png}
+                \includegraphics[width=0.5\textwidth]{d/coll/coll_pcktbuf.png}
                 \end{figure}
 
                 \newpage
@@ -654,7 +665,7 @@
                 \begin{figure}[H]
                 \caption{Managed host collaboration diagram.}
                 \centering
-                \includegraphics[width=0.4\textwidth]{d/coll/coll_manhost.png}
+                \includegraphics[width=0.5\textwidth]{d/coll/coll_manhost.png}
                 \end{figure}
 
                 \newpage
@@ -670,7 +681,7 @@
                 \begin{figure}[H]
                 \caption{Dispatch table collaboration diagram.}
                 \centering
-                \includegraphics[width=0.4\textwidth]{d/coll/coll_disptab.png}
+                \includegraphics[width=0.5\textwidth]{d/coll/coll_disptab.png}
                 \end{figure}
 
                 \newpage                
