@@ -1,3 +1,4 @@
+// TODO: ???
 #define EXAMPLE_USE_UDP 0
 
 #include "../include/NetLayer/NetLayer.hpp"
@@ -17,34 +18,31 @@
 
 int main()
 {
-    initialize_db_connection();
+    // TODO: !!!
+    // initialize_db_connection();
 
-    ssvu::lo("Choose") << "\n"
-                       << "0. Server\n"
-                       << "1. Client\n"
-                       << "_. Exit\n";
-
-    auto choice(getInput<int>("Choice"));
-
-    if(choice == 0)
-    {
-        example::startServer();
-    }
-    else if(choice == 1)
-    {
+    exec_choice( // .
+        "Server",
+        []
+        {
+            example::startServer();
+        }, // .
+        "Client",
+        []
+        {
 #if EXAMPLE_USE_UDP
-        std::cout << "Port?:\n";
-        auto port(getInput<nl::Port>("Port"));
-
-        example::startClient(port);
+            example::startClient(ask_input<nl::Port>("port"));
 #else
-        example::startClient(0);
+            example::startClient(0);
 #endif
-    }
-    else
-    {
-        std::terminate();
-    }
+        }, // .
+        "Exit",
+        []
+        {
+            std::terminate();
+        });
 
     return 0;
 }
+
+// TODO: check slides before exam

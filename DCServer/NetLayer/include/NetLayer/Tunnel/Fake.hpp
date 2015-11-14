@@ -5,8 +5,6 @@
 
 namespace nl
 {
-
-    // TODO
     namespace Tunnel
     {
         struct Fake

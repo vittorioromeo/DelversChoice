@@ -117,87 +117,76 @@ namespace example
             }
             else if(s.s == cs::unlogged)
             {
-                ssvu::lo("Choose") << "\n"
-                                   << "0. Register\n"
-                                   << "1. Login\n"
-                                   << "_. Exit\n";
-
-                auto choice(getInput<int>("Choice"));
-
-                if(choice == 0 || choice == 1)
-                {
-                    std::string username, password;
-
-                    ssvu::lo() << "Insert username:\n";
-                    std::cin >> username;
-
-                    ssvu::lo() << "Insert password:\n";
-                    std::cin >> password;
-
-                    if(choice == 0)
+                exec_choice( // .
+                    "Register",
+                    [&]
                     {
-                        h.try_make_and_send_pckt<to_s::Registration>(
-                            serveraddr, username, password);
+                        h.try_make_and_send_pckt<to_s::Registration>(serveraddr,
+                            ask_input<std::string>("username"),
+                            ask_input<std::string>("password"));
 
                         s.s = cs::awaiting_registration_response;
-                    }
-                    else if(choice == 1)
+                    },
+                    "Login",
+                    [&]
                     {
-                        h.try_make_and_send_pckt<to_s::Login>(
-                            serveraddr, username, password);
+                        h.try_make_and_send_pckt<to_s::Login>(serveraddr,
+                            ask_input<std::string>("username"),
+                            ask_input<std::string>("password"));
 
                         s.s = cs::awaiting_login_response;
-                    }
-                }
-                else
-                {
-                    h.stop();
-                    break;
-                }
+                    },
+                    "Exit",
+                    [&]
+                    {
+                        h.stop();
+
+                        // TODO: ???
+                        // break;
+                    });
             }
             else if(s.s == cs::logged)
             {
-                ssvu::lo("Choose") << "\n"
-                                   << "0. Create channel\n"
-                                   << "1. Get channel list\n"
-                                   << "2. Subscribe to channel\n"
-                                   << "3. Send broadcast\n"
-                                   << "_. Logout\n";
+                exec_choice( // .
+                    "Create channel",
+                    [&]
+                    {
+                        h.try_make_and_send_pckt<to_s::CreateChannel>(
+                            serveraddr, ask_input<std::string>("channel name"));
 
-                auto choice(getInput<int>("Choice"));
+                        s.s = cs::awaiting_create_channel_response;
+                    },
+                    "Get channel list",
+                    [&]
+                    {
+                        h.try_make_and_send_pckt<to_s::ChannelList>(serveraddr);
 
-                if(choice == 0)
-                {
-                    auto name = getInput<std::string>("Channel name:");
-                    h.try_make_and_send_pckt<to_s::CreateChannel>(
-                        serveraddr, name);
-                    s.s = cs::awaiting_create_channel_response;
-                }
-                else if(choice == 1)
-                {
-                    h.try_make_and_send_pckt<to_s::ChannelList>(serveraddr);
-                    s.s = cs::awaiting_channel_list;
-                }
-                else if(choice == 2)
-                {
-                    auto ch_id(getInput<int>("Channel ID"));
-                    h.try_make_and_send_pckt<to_s::Subscribe>(
-                        serveraddr, ch_id);
-                    s.s = cs::awaiting_subscribe_response;
-                }
-                else if(choice == 3)
-                {
-                    auto ch_id(getInput<int>("Channel ID"));
-                    auto msg = getInput<std::string>("Message:");
-                    h.try_make_and_send_pckt<to_s::SendMessage>(
-                        serveraddr, ch_id, msg);
-                    s.s = cs::awaiting_create_message_response;
-                }
-                else
-                {
-                    h.try_make_and_send_pckt<to_s::Logout>(serveraddr);
-                    s.s = cs::unlogged;
-                }
+                        s.s = cs::awaiting_channel_list;
+                    },
+                    "Subscribe to channel",
+                    [&]
+                    {
+                        h.try_make_and_send_pckt<to_s::Subscribe>(
+                            serveraddr, ask_input<int>("channel ID"));
+
+                        s.s = cs::awaiting_subscribe_response;
+                    },
+                    "Send broadcast",
+                    [&]
+                    {
+                        h.try_make_and_send_pckt<to_s::SendMessage>(serveraddr,
+                            ask_input<int>("channel ID"),
+                            ask_input<std::string>("message"));
+
+                        s.s = cs::awaiting_create_message_response;
+                    },
+                    "Logout",
+                    [&]
+                    {
+                        h.try_make_and_send_pckt<to_s::Logout>(serveraddr);
+
+                        s.s = cs::unlogged;
+                    });
             }
 
             std::this_thread::sleep_for(100ms);

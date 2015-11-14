@@ -3,20 +3,62 @@
 #include "../include/NetLayer/NetLayer.hpp"
 
 template <typename T>
-auto getInput(const std::string& title)
+auto safe_cin()
 {
-    T input;
-    std::cin >> input;
+    T temp;
 
-    ssvu::lo(title) << input << "\n";
-    return input;
+    std::cin >> temp;
+    std::cin.clear();
+    std::cin.ignore(2048, '\n');
+
+    return temp;
 }
 
-auto getInputLine(const std::string& title)
+template <typename T>
+auto ask_input(const std::string& x)
 {
-    std::string input;
-    std::getline(std::cin, input);
+    std::cout << "Enter " << x << ":\n";
+    return safe_cin<T>();
+}
 
-    // ssvu::lo(title) << input << "\n";
-    return input;
+template <typename... Ts>
+auto exec_choice(Ts&&... xs)
+{
+    auto next_idx(0);
+    ssvu::lo() << "Choose:\n";
+
+    // TODO: vrmc::static_for(...)
+
+    ssvu::forArgs<2>(
+        [&next_idx](auto&& t, auto&&)
+        {
+            if(next_idx != (sizeof...(Ts) / 2 - 1))
+            {
+                ssvu::lo() << next_idx;
+            }
+            else
+            {
+                ssvu::lo() << "_";
+            }
+
+            ssvu::lo() << ") " << t << "\n";
+
+            ++next_idx;
+        },
+        FWD(xs)...);
+
+    auto choice(safe_cin<int>());
+    next_idx = 0;
+    ssvu::forArgs<2>(
+        [&next_idx, &choice](auto&& t, auto&& f)
+        {
+            if(choice == next_idx)
+            {
+                ssvu::lo() << "Choice: " << t << "\n";
+                f();
+            }
+
+            ++next_idx;
+        },
+        FWD(xs)...);
 }

@@ -59,9 +59,6 @@ namespace nl
         public:
             using BaseType::BaseType;
 
-            // TODO: remove
-            ~ManagedRecvBuf() { ::nl::debugLo() << "~recvbuf\n"; }
-
             auto recv_step()
             {
                 // TODO: cv wait?
