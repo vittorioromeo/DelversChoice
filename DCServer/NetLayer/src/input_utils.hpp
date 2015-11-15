@@ -14,6 +14,17 @@ auto safe_cin()
     return temp;
 }
 
+auto ask_input_line(const std::string& x)
+{
+    std::cout << "Enter " << x << ":\n";
+
+    std::string temp;
+    std::getline(std::cin, temp);
+    std::cin.clear();
+
+    return temp;
+}
+
 template <typename T>
 auto ask_input(const std::string& x)
 {
@@ -24,7 +35,9 @@ auto ask_input(const std::string& x)
 template <typename... Ts>
 auto exec_choice(Ts&&... xs)
 {
-    auto next_idx(0);
+    int next_idx(0);
+    constexpr int last_valid_idx(sizeof...(Ts) / 2 - 1);
+
     ssvu::lo() << "Choose:\n";
 
     // TODO: vrmc::static_for(...)
@@ -32,7 +45,7 @@ auto exec_choice(Ts&&... xs)
     ssvu::forArgs<2>(
         [&next_idx](auto&& t, auto&&)
         {
-            if(next_idx != (sizeof...(Ts) / 2 - 1))
+            if(next_idx != last_valid_idx)
             {
                 ssvu::lo() << next_idx;
             }
@@ -52,7 +65,8 @@ auto exec_choice(Ts&&... xs)
     ssvu::forArgs<2>(
         [&next_idx, &choice](auto&& t, auto&& f)
         {
-            if(choice == next_idx)
+            if((next_idx == last_valid_idx && choice >= last_valid_idx) ||
+                choice == next_idx)
             {
                 ssvu::lo() << "Choice: " << t << "\n";
                 f();

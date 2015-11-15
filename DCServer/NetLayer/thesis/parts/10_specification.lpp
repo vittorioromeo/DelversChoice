@@ -48,11 +48,13 @@
 
         The client intends using the requested library \emph{to build platforms} for various projects, both for internal company usage and public usage.
 
-        It is imperative for the library to be easily integrable with existing legacy system, such as architectures depending on relational databases.
+        It is imperative for the library to be easily integrable with existing legacy systems, such as architectures depending on relational databases.
 
         For ease of development and deployment, the client requested the library to be optionally usable in \emph{header-only} mode and compatibility with the \emph{CMake} build system.
 
         The abstraction provided by the library must work asynchronously by default, but an option to use blocking IO must be present.
+
+        The client also explicitly requested a simple example application that uses the library to communicate with a \emph{MySQL database}.
 
 
     \chapter{Software Requirements Specification}
@@ -183,7 +185,7 @@
             \begin{itemize}
                 \item \emph{Packet Buffer}: dynamically resizable buffer that can store and provide serialized generic data.
                 \item \emph{Address}: union of an IP address and a port.
-                \item \emph{Payload}: abstraction consisting of an Address and PcktBuf. It can be sent to and received by Tunnel instances.
+                \item \emph{Payload}: abstraction consisting of an Address and a  Packet Buffer. It can be sent to and received by Tunnel instances.
                 \item \emph{Tunnel}: abstraction of a Payload provider/receiver. The default Tunnel is an UDP socket.
                 \item \emph{Thread Safe Queue}: a lock-based thread safe queue that supports concurrent enqueueing and dequeueing.
                 \item \emph{Managed Packet Buffer}: abstraction consisting of a Thread Safe Queue and a reference to a Tunnel. It can be either a \emph{Managed Receive Buffer}, which enqueues received data from the tunnel, or a \emph{Managed Send Buffer}, which enqueues data that will be sent through the tunnel.
@@ -242,8 +244,8 @@
 
                   \subsubsection{Tunnel management}
                     \begin{itemize}
-                        \item \emph{Default tunnel: UDP}: a tunnel implementation, wrapping an UDP socket, is provided by default.
-                        \item \emph{Default tunnel: mock}: a mock tunnel, for unit-testing purposes, is provided by default.
+                        \item \emph{Default tunnel - UDP}: a tunnel implementation, wrapping an UDP socket, is provided by default.
+                        \item \emph{Default tunnel - mock}: a mock tunnel, for unit-testing purposes, is provided by default.
                         \item \emph{Tunnel interface}: an extensible tunnel interface is provided, allowing the users of the library to implement their own network tunnels.
                     \end{itemize}
 
@@ -411,11 +413,6 @@
                             \item NetLayer was correctly included.
                             \item A context host was defined.
                             \item Payload types were bound to dispatch table.
-                        \end{itemize}
-
-                    \paragraph{Flow of events}
-                        \begin{itemize}
-                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}

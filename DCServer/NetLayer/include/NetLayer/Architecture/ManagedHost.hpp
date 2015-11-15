@@ -77,11 +77,7 @@ namespace nl
         {
         }
 
-        ~ManagedHostImpl()
-        {
-            stop();
-            ::nl::debugLo() << "Destroyed ManagedHost\n";
-        }
+        ~ManagedHostImpl() { stop(); }
 
         template <typename TF>
         auto& emplace_busy_loop(TF&& f)

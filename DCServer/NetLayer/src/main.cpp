@@ -18,8 +18,7 @@
 
 int main()
 {
-    // TODO: !!!
-    // initialize_db_connection();
+    initialize_db_connection();
 
     exec_choice( // .
         "Server",

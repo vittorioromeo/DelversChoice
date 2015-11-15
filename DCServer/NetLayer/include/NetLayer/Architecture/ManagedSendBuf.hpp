@@ -45,8 +45,6 @@ namespace nl
         public:
             using BaseType::BaseType;
 
-            ~ManagedSendBuf() { ::nl::debugLo() << "~sendbuf\n"; }
-
             auto send_step()
             {
                 auto toSend(this->try_dequeue_for(100ms, p));

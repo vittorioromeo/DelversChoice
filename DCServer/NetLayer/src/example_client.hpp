@@ -152,7 +152,7 @@ namespace example
                     [&]
                     {
                         h.try_make_and_send_pckt<to_s::CreateChannel>(
-                            serveraddr, ask_input<std::string>("channel name"));
+                            serveraddr, ask_input_line("channel name"));
 
                         s.s = cs::awaiting_create_channel_response;
                     },
@@ -176,7 +176,7 @@ namespace example
                     {
                         h.try_make_and_send_pckt<to_s::SendMessage>(serveraddr,
                             ask_input<int>("channel ID"),
-                            ask_input<std::string>("message"));
+                            ask_input_line("message"));
 
                         s.s = cs::awaiting_create_message_response;
                     },

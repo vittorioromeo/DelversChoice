@@ -225,11 +225,13 @@
 
         The client intends using the requested library \emph{to build platforms} for various projects, both for internal company usage and public usage.
 
-        It is imperative for the library to be easily integrable with existing legacy system, such as architectures depending on relational databases.
+        It is imperative for the library to be easily integrable with existing legacy systems, such as architectures depending on relational databases.
 
         For ease of development and deployment, the client requested the library to be optionally usable in \emph{header-only} mode and compatibility with the \emph{CMake} build system.
 
         The abstraction provided by the library must work asynchronously by default, but an option to use blocking IO must be present.
+
+        The client also explicitly requested a simple example application that uses the library to communicate with a \emph{MySQL database}.
 
 
     \chapter{Software Requirements Specification}
@@ -360,7 +362,7 @@
             \begin{itemize}
                 \item \emph{Packet Buffer}: dynamically resizable buffer that can store and provide serialized generic data.
                 \item \emph{Address}: union of an IP address and a port.
-                \item \emph{Payload}: abstraction consisting of an Address and PcktBuf. It can be sent to and received by Tunnel instances.
+                \item \emph{Payload}: abstraction consisting of an Address and a  Packet Buffer. It can be sent to and received by Tunnel instances.
                 \item \emph{Tunnel}: abstraction of a Payload provider/receiver. The default Tunnel is an UDP socket.
                 \item \emph{Thread Safe Queue}: a lock-based thread safe queue that supports concurrent enqueueing and dequeueing.
                 \item \emph{Managed Packet Buffer}: abstraction consisting of a Thread Safe Queue and a reference to a Tunnel. It can be either a \emph{Managed Receive Buffer}, which enqueues received data from the tunnel, or a \emph{Managed Send Buffer}, which enqueues data that will be sent through the tunnel.
@@ -419,8 +421,8 @@
 
                   \subsubsection{Tunnel management}
                     \begin{itemize}
-                        \item \emph{Default tunnel: UDP}: a tunnel implementation, wrapping an UDP socket, is provided by default.
-                        \item \emph{Default tunnel: mock}: a mock tunnel, for unit-testing purposes, is provided by default.
+                        \item \emph{Default tunnel - UDP}: a tunnel implementation, wrapping an UDP socket, is provided by default.
+                        \item \emph{Default tunnel - mock}: a mock tunnel, for unit-testing purposes, is provided by default.
                         \item \emph{Tunnel interface}: an extensible tunnel interface is provided, allowing the users of the library to implement their own network tunnels.
                     \end{itemize}
 
@@ -588,11 +590,6 @@
                             \item NetLayer was correctly included.
                             \item A context host was defined.
                             \item Payload types were bound to dispatch table.
-                        \end{itemize}
-
-                    \paragraph{Flow of events}
-                        \begin{itemize}
-                            \item
                         \end{itemize}
 
                     \paragraph{Post-conditions}
@@ -933,7 +930,7 @@
 
                 The \emph{SSVUtils} library, used throughout the whole program, features many heterogeneous self-contained modules: an efficient and modern handwritten JSON parser, a preprocessor metaprogramming module, a template metaprogramming module, automatic console formatted output for containers and user-defined types, efficient data structures (bimap, handle vector, growable arrays), advanced memory management facilities, type-safe variadic unions, handwritten templating system, filesystem management, easy benchmarking of portions of code, and much more.
 
-                An additional dependencies for NetLayer is the \emph{SFML} library, which offers lightweight abstraction over sockets and packets.
+                An additional dependency for NetLayer is the \emph{SFML} library, which offers lightweight abstraction over sockets and packets.
 
             \section{Thesis}
                 The current document was written using \LaTeX{}, an high-quality typesetting system; it includes features designed for the production of \emph{technical and scientific documentation}.
@@ -1023,6 +1020,338 @@
     \input{df/da7/structnl_1_1impl_1_1Pckt}
     \input{da/d3d/classnl_1_1impl_1_1ThreadSafeQueue}
     \input{d5/dbb/classnl_1_1impl_1_1Tunnel_1_1UDPSckt}
+
+\chapter{Tunnel implementations}
+    \section{UDP socket}
+        Implementing a Tunnel that wraps an UDP socket was very straightforward.
+
+!!(cpp)
+!!{
+    class UDPSckt
+    {
+    private:
+        // SFML socket class.
+        ScktUdp sckt;
+
+    public:
+        // Prevent copies.
+        UDPSckt(const UDPSckt&) = delete;
+        UDPSckt& operator=(const UDPSckt&) = delete;
+
+        // Allow move operations.
+        UDPSckt(UDPSckt&&) = default;
+        UDPSckt& operator=(UDPSckt&&) = default;
+
+        template <typename... Ts>
+        UDPSckt(Ts&&... xs)
+            : sckt{FWD(xs)...}
+        {
+            sckt.setBlocking(false);
+        }
+
+        ~UDPSckt() 
+        { 
+            sckt.unbind(); 
+        }
+
+        bool bind(Port x) 
+        { 
+            return sckt.bind(x) == sf::Socket::Done; 
+        }
+        
+        bool bound() const noexcept 
+        { 
+            return sckt.getLocalPort() != 0; 
+        }
+
+        auto receive_payload(Payload& p)
+        {
+            return scktRecv(sckt, p) == sf::Socket::Done;
+        }
+
+        auto send_payload(Payload& p)
+        {
+            return scktSend(sckt, p) == sf::Socket::Done;
+        }
+    };
+!!}
+
+    \section{TCP socket}
+        Implementing a TCP socket wasn't as straightforward as the UDP one, since UDP is stateless and fits very nicely into the concept and interface of a tunnel.
+
+        Two separate implementations were required: a \emph{listener TCP tunnel} that keeps track of connections and allocates/deallocates TCP sockets when required, and a \emph{barebones TCP tunnel} that only sends and receives data.
+
+        \subsection{TCP listener connection}
+
+            The TCP listener tunnel was implemented using two classes. The first one, \emph{TCPListenerConn}, represents an active connection that the listener is keeping track of. It contains a timer to force-disconnect idle clients, and a TCP socket to receive/send data over the TCP connection.
+
+!!(cpp)
+!!{
+    class TCPListenerConn
+    {
+    private:
+        // Socket.
+        sf::TcpSocket _sckt;
+
+        // Timeout counter.
+        int _ctr{0};
+
+    public:
+        TCPListenerConn() { _sckt.setBlocking(false); }
+
+        // Prevent copies.
+        TCPListenerConn(const TCPListenerConn&) = delete;
+        TCPListenerConn& operator=(const TCPListenerConn&) = delete;
+
+        // Allow move operations.
+        TCPListenerConn(TCPListenerConn&&) = default;
+        TCPListenerConn& operator=(TCPListenerConn&&) = default;
+
+        // Try receiving a dummy packet to detect disconnection.
+        void recv_dummy_or_inc_ctr()
+        {
+            std::size_t dummy;
+            if(_sckt.receive(&dummy, 0, dummy) == sf::Socket::Disconnected)
+            {
+                _ctr += 1;
+            }
+            else
+            {
+                reset_ctr();
+            }
+        }
+
+        void reset_ctr() { _ctr = 0; }
+        auto ctr() const noexcept { return _ctr; }
+
+        auto port() const noexcept { return _sckt.getRemotePort(); }
+        auto ip() const noexcept { return _sckt.getRemoteAddress(); }
+
+        auto& sckt() { return _sckt; }
+    };
+!!}
+
+        \subsection{TCP listener}
+
+            The TCP listener tunnel keeps track of all TCP connections, and abstracts data send/receive operations using addresses.
+
+!!(cpp)
+!!{
+    class TCPListener
+    {
+    private:
+        using ConnUPtr = std::unique_ptr<TCPListenerConn>;
+
+        // SFML TCP listener.
+        ListenerTcp sckt;
+
+        // Thread that accepts new connections.
+        std::future<void> _accept_fut;
+
+        // Max timeout counter value.
+        static constexpr int _temp_ctr_max{10};
+
+        // Active connections.
+        std::map<PAddress, ConnUPtr> _connection_map;
+
+        // Unused connections (free sockets).
+        std::vector<ConnUPtr> _free_conns;
+
+        // State of the accept thread.
+        std::atomic<bool> _busy{false};
+
+        // Create some free sockets.
+        void create_free_sockets()
+        {
+            for(auto i(0u); i < 5; ++i)
+            {
+                _free_conns.emplace_back(std::make_unique<TCPListenerConn>());
+            }
+        }
+
+        // Get the first free socket, or create some if none available.
+        auto get_free_socket()
+        {
+            // Cleanup dead sockets
+            std::vector<decltype(std::begin(_connection_map))> to_delete;
+            for(auto itr(std::begin(_connection_map));
+                itr != std::end(_connection_map); ++itr)
+            {
+                auto& s(itr->second);
+
+                s->recv_dummy_or_inc_ctr();
+                if(s->ctr() > _temp_ctr_max)
+                {
+                    s->reset_ctr();
+                    _free_conns.emplace_back(std::move(s));
+                    to_delete.emplace_back(itr);
+                }
+            }
+
+            for(auto itr : to_delete)
+            {
+                _connection_map.erase(itr);
+            }
+
+            if(_free_conns.empty())
+            {
+                create_free_sockets();
+            }
+
+            auto fs(std::move(_free_conns.back()));
+            _free_conns.pop_back();
+
+            return fs;
+        }
+
+        // Start connection-accept thread.
+        void start_accept_fut()
+        {
+            _busy = true;
+            _accept_fut = std::async(std::launch::async, [this]
+                {
+                    while(_busy)
+                    {
+                        auto fs(get_free_socket());
+
+                        auto retry_res = retry(5, [this, &fs]
+                            {
+                                if(sckt.accept(fs->sckt()) ==
+                                    sf::Socket::Status::Done)
+                                {
+                                    auto r_ip = fs->ip();
+                                    auto r_port = fs->port();
+
+                                    // Add new connection to map.
+                                    PAddress key{r_ip, r_port};
+                                    _connection_map[key] = std::move(fs);
+
+                                    return true;
+                                }
+
+                                return false;
+                            });
+
+                        if(retry_res) continue;
+
+                        // If retry failed, recycle free socket.
+                        _free_conns.emplace_back(std::move(fs));
+                    }
+                });
+        }
+
+    public:
+        // Prevent copies.
+        TCPListener(const TCPListener&) = delete;
+        TCPListener& operator=(const TCPListener&) = delete;
+
+        // Allow move operations.
+        TCPListener(TCPListener&&) = default;
+        TCPListener& operator=(TCPListener&&) = default;
+
+        template <typename... Ts>
+        TCPListener(Ts&&... xs)
+            : sckt{FWD(xs)...}
+        {
+            sckt.setBlocking(false);
+        }
+
+        auto bound() const noexcept { return sckt.getLocalPort() != 0; }
+
+        ~TCPListener()
+        {
+            _busy = false;
+            sckt.close();
+        }
+
+        bool bind(Port port)
+        {
+            if(sckt.listen(port) == sf::Socket::Error)
+            {
+                return false;
+            }
+
+            start_accept_fut();
+            return true;
+        }
+
+        // Check all connections for received data.
+        auto receive_payload(Payload& p)
+        {
+            for(auto& c : _connection_map)
+            {
+                auto& a(c.first);
+                auto& s(c.second);
+
+                if(s->sckt().receive(p.data) == sf::Socket::Done)
+                {
+                    p.address = a;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // Send data to specific connection, by address.
+        auto send_payload(Payload& p)
+        {
+            const auto& ta(p.address);
+            if(_connection_map.count(ta) == 0)
+            {    
+                return false;
+            }
+
+            return _connection_map[ta]->sckt().send(p.data) == sf::Socket::Done;
+        }
+    };
+!!}
+
+        \subsection{Barebones TCP tunnel}   
+
+        Closely resembles the UDP tunnel.
+        
+!!(cpp)
+!!{
+    class TCPSckt
+    {
+    private:
+        ScktTcp sckt;
+
+    public:
+        TCPSckt(const TCPSckt&) = delete;
+        TCPSckt& operator=(const TCPSckt&) = delete;
+
+        TCPSckt(TCPSckt&&) = default;
+        TCPSckt& operator=(TCPSckt&&) = default;
+
+        template <typename... Ts>
+        TCPSckt(Ts&&... xs)
+            : sckt{FWD(xs)...}
+        {
+            sckt.setBlocking(false);
+        }
+
+        auto bound() const noexcept { return sckt.getLocalPort() != 0; }
+
+        ~TCPSckt() { sckt.disconnect(); }
+
+        bool bind(IpAddr ip, Port port, sf::Time timeout = sf::Time::Zero)
+        {
+            return sckt.connect(ip, port, timeout) == sf::Socket::Done;
+        }
+
+        auto receive_payload(Payload& p)
+        {
+            return sckt.receive(p.data) == sf::Socket::Done;
+        }
+
+        auto send_payload(Payload& p)
+        {
+            return sckt.send(p.data) == sf::Socket::Done;
+        }
+    };
+!!}
 
 
 
