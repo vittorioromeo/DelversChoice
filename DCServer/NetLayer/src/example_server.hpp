@@ -178,7 +178,7 @@ namespace example
                         });
                 }
 
-                print_success(success, "user "s + user + " logged in\n");
+                print_success(success, "user "s + user + " login\n");
                 h.try_make_and_send_pckt<to_c::Outcome>(
                     sender, success, to_c::ot_login);
             });

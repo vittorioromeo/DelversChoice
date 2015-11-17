@@ -33,6 +33,10 @@ namespace nl
         // TODO:
         // Threads:
         std::vector<std::unique_ptr<impl::busy_loop>> _busy_loops;
+        mutable std::mutex _busy_loops_mutex;
+
+        auto& get_busy_loops() { return _busy_loops; }
+        const auto& get_busy_loops() const { return _busy_loops; }
 
         void emplace_default_busy_loops()
         {
@@ -75,6 +79,7 @@ namespace nl
         ManagedHostImpl(Port port, TTunnelArgs&&... ts)
             : _ip{IpAddr::getLocalAddress()}, _port{port}, _tunnel{FWD(ts)...}
         {
+            get_busy_loops().reserve(100);
         }
 
         ~ManagedHostImpl() { stop(); }
@@ -82,22 +87,40 @@ namespace nl
         template <typename TF>
         auto& emplace_busy_loop(TF&& f)
         {
-            _busy_loops.emplace_back(std::make_unique<impl::busy_loop>(FWD(f)));
+            auto l(make_unique_lock(_busy_loops_mutex));
+            auto& bl_vec(get_busy_loops());
 
-            return _busy_loops.back();
+            bl_vec.emplace_back(std::make_unique<impl::busy_loop>(FWD(f)));
+            return bl_vec.back();
         }
 
         bool busy() const noexcept
         {
-            for(const auto& bf : _busy_loops)
-                if(bf->busy()) return true;
+            auto l(make_unique_lock(_busy_loops_mutex));
+            auto& bl_vec(get_busy_loops());
+
+            for(const auto& bf : bl_vec)
+            {
+                if(bf->busy())
+                {
+                    return true;
+                }
+            }
 
             return false;
         }
 
         void stop()
         {
-            for(auto& bf : _busy_loops) bf->stop();
+            auto l(make_unique_lock(_busy_loops_mutex));
+            auto& bl_vec(get_busy_loops());
+
+            for(auto& bf : bl_vec)
+            {
+                bf->stop();
+            }
+
+            bl_vec.clear();
         }
 
         template <typename TDuration>

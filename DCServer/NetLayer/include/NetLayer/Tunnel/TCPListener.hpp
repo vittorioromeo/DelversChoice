@@ -3,48 +3,13 @@
 #include "../Common/Common.hpp"
 #include "../Payload/Payload.hpp"
 #include "../Utils/Retry.hpp"
+#include "../Utils/MkUniqueLock.hpp"
+#include "./TCPListenerConn.hpp"
 
 namespace nl
 {
     namespace Tunnel
     {
-        class TCPListenerConn
-        {
-        private:
-            sf::TcpSocket _sckt;
-            int _ctr{0};
-
-        public:
-            TCPListenerConn() { _sckt.setBlocking(false); }
-
-            TCPListenerConn(const TCPListenerConn&) = delete;
-            TCPListenerConn& operator=(const TCPListenerConn&) = delete;
-
-            TCPListenerConn(TCPListenerConn&&) = default;
-            TCPListenerConn& operator=(TCPListenerConn&&) = default;
-
-            void recv_dummy_or_inc_ctr()
-            {
-                std::size_t dummy;
-                if(_sckt.receive(&dummy, 0, dummy) == sf::Socket::Disconnected)
-                {
-                    _ctr += 1;
-                }
-                else
-                {
-                    reset_ctr();
-                }
-            }
-
-            void reset_ctr() { _ctr = 0; }
-            auto ctr() const noexcept { return _ctr; }
-
-            auto port() const noexcept { return _sckt.getRemotePort(); }
-            auto ip() const noexcept { return _sckt.getRemoteAddress(); }
-
-            auto& sckt() { return _sckt; }
-        };
-
         class TCPListener
         {
         private:
@@ -58,6 +23,8 @@ namespace nl
             std::vector<ConnUPtr> _free_conns;
 
             std::atomic<bool> _busy{false};
+
+            std::mutex _listener_mutex;
 
             void create_free_sockets()
             {
@@ -128,7 +95,13 @@ namespace nl
                                             << "Accepted TCP connection\n"
                                             << key << "\n\n";
 
-                                        _connection_map[key] = std::move(fs);
+                                        {
+                                            auto l(make_unique_lock(
+                                                _listener_mutex));
+
+                                            _connection_map[key] =
+                                                std::move(fs);
+                                        }
 
                                         return true;
                                     }
@@ -142,7 +115,10 @@ namespace nl
                             //  << "Retry accept TCP connection failed\n";
 
                             // If retry failed:
-                            _free_conns.emplace_back(std::move(fs));
+                            {
+                                auto l(make_unique_lock(_listener_mutex));
+                                _free_conns.emplace_back(std::move(fs));
+                            }
                         }
                     });
             }
@@ -165,6 +141,8 @@ namespace nl
 
             ~TCPListener()
             {
+                auto l(make_unique_lock(_listener_mutex));
+
                 _busy = false;
                 sckt.close();
             }
@@ -182,6 +160,8 @@ namespace nl
 
             auto receive_payload(Payload& p)
             {
+                auto l(make_unique_lock(_listener_mutex));
+
                 for(auto& c : _connection_map)
                 {
                     auto& a(c.first);
@@ -206,6 +186,8 @@ namespace nl
 
             auto send_payload(Payload& p)
             {
+                auto l(make_unique_lock(_listener_mutex));
+
                 const auto& ta(p.address);
                 if(_connection_map.count(ta) == 0)
                 {
