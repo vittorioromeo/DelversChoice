@@ -43,5 +43,3 @@ int main()
 
     return 0;
 }
-
-// TODO: check slides before exam
