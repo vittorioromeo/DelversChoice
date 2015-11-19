@@ -1,6 +1,0 @@
-\pagenumbering{gobble}
-\newcommand{\atoc}[1]{\addtocontents{toc}{#1\par}}
-\renewcommand{\thesection}{\arabic{section}.}
-\tableofcontents
-\newpage
-\pagenumbering{arabic}
