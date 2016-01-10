@@ -5,7 +5,7 @@
 
 namespace ggj
 {
-    struct ChoiceSingleDrop : public Choice
+    struct ChoiceSingleDrop final : public Choice
     {
         ssvu::UPtr<Drop> drop{nullptr};
 

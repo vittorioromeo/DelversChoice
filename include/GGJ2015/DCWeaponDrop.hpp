@@ -5,7 +5,7 @@
 
 namespace ggj
 {
-    struct WeaponDrop : public Drop
+    struct WeaponDrop final : public Drop
     {
         Weapon weapon;
         WeaponStatsDraw wsd;

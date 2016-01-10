@@ -5,7 +5,7 @@
 
 namespace ggj
 {
-    struct ChoiceAdvance : public Choice
+    struct ChoiceAdvance final : public Choice
     {
         sf::Sprite advanceSprite;
 

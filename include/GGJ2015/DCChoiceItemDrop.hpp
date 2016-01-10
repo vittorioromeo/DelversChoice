@@ -5,7 +5,7 @@
 
 namespace ggj
 {
-    struct ChoiceItemDrop : public Choice
+    struct ChoiceItemDrop final : public Choice
     {
         sf::Sprite drops;
         ItemDrops itemDrops;

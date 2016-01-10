@@ -7,7 +7,7 @@
 
 namespace ggj
 {
-    struct DropIE : public Drop
+    struct DropIE final : public Drop
     {
         std::vector<InstantEffect> ies;
         ssvs::BitmapTextRich btr{*getAssets().fontObStroked};

@@ -5,7 +5,7 @@
 
 namespace ggj
 {
-    struct ArmorDrop : public Drop
+    struct ArmorDrop final : public Drop
     {
         Armor armor;
         ArmorStatsDraw asd;

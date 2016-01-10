@@ -5,7 +5,7 @@
 
 namespace ggj
 {
-    struct ChoiceCreature : public Choice
+    struct ChoiceCreature final : public Choice
     {
         Creature creature;
         CreatureStatsDraw csd;
